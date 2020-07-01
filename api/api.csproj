@@ -1,0 +1,298 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>TeamLease.CssService</AssemblyName>
+    <RootNamespace>TeamLease.CssService</RootNamespace>
+    <UserSecretsId>34ed21dd-2c16-4498-8957-2e4ca71d8b27</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Areas\Advertisements\**" />
+    <Compile Remove="Areas\Amazon\**" />
+    <Compile Remove="Areas\AssociateProfile\**" />
+    <Compile Remove="Areas\Associates\**" />
+    <Compile Remove="Areas\Banking\**" />
+    <Compile Remove="Areas\Bsr\**" />
+    <Compile Remove="Areas\Clients\**" />
+    <Compile Remove="Areas\InputExceptions\**" />
+    <Compile Remove="Areas\InputMapping\**" />
+    <Compile Remove="Areas\Inputs\**" />
+    <Compile Remove="Areas\Invoices\**" />
+    <Compile Remove="Areas\MinimumWageChange\**" />
+    <Compile Remove="Areas\Notifications\**" />
+    <Compile Remove="Areas\OfferLetter\**" />
+    <Compile Remove="Areas\Password\**" />
+    <Compile Remove="Areas\PaymentDetails\**" />
+    <Compile Remove="Areas\Reports\**" />
+    <Compile Remove="Areas\SalaryCalculator\**" />
+    <Compile Remove="Areas\SalaryRevision\**" />
+    <Compile Remove="Areas\Utilities\**" />
+    <Compile Remove="Migrations\alcs objects\**" />
+    <Content Remove="Areas\Advertisements\**" />
+    <Content Remove="Areas\Amazon\**" />
+    <Content Remove="Areas\AssociateProfile\**" />
+    <Content Remove="Areas\Associates\**" />
+    <Content Remove="Areas\Banking\**" />
+    <Content Remove="Areas\Bsr\**" />
+    <Content Remove="Areas\Clients\**" />
+    <Content Remove="Areas\InputExceptions\**" />
+    <Content Remove="Areas\InputMapping\**" />
+    <Content Remove="Areas\Inputs\**" />
+    <Content Remove="Areas\Invoices\**" />
+    <Content Remove="Areas\MinimumWageChange\**" />
+    <Content Remove="Areas\Notifications\**" />
+    <Content Remove="Areas\OfferLetter\**" />
+    <Content Remove="Areas\Password\**" />
+    <Content Remove="Areas\PaymentDetails\**" />
+    <Content Remove="Areas\Reports\**" />
+    <Content Remove="Areas\SalaryCalculator\**" />
+    <Content Remove="Areas\SalaryRevision\**" />
+    <Content Remove="Areas\Utilities\**" />
+    <Content Remove="Migrations\alcs objects\**" />
+    <EmbeddedResource Remove="Areas\Advertisements\**" />
+    <EmbeddedResource Remove="Areas\Amazon\**" />
+    <EmbeddedResource Remove="Areas\AssociateProfile\**" />
+    <EmbeddedResource Remove="Areas\Associates\**" />
+    <EmbeddedResource Remove="Areas\Banking\**" />
+    <EmbeddedResource Remove="Areas\Bsr\**" />
+    <EmbeddedResource Remove="Areas\Clients\**" />
+    <EmbeddedResource Remove="Areas\InputExceptions\**" />
+    <EmbeddedResource Remove="Areas\InputMapping\**" />
+    <EmbeddedResource Remove="Areas\Inputs\**" />
+    <EmbeddedResource Remove="Areas\Invoices\**" />
+    <EmbeddedResource Remove="Areas\MinimumWageChange\**" />
+    <EmbeddedResource Remove="Areas\Notifications\**" />
+    <EmbeddedResource Remove="Areas\OfferLetter\**" />
+    <EmbeddedResource Remove="Areas\Password\**" />
+    <EmbeddedResource Remove="Areas\PaymentDetails\**" />
+    <EmbeddedResource Remove="Areas\Reports\**" />
+    <EmbeddedResource Remove="Areas\SalaryCalculator\**" />
+    <EmbeddedResource Remove="Areas\SalaryRevision\**" />
+    <EmbeddedResource Remove="Areas\Utilities\**" />
+    <EmbeddedResource Remove="Migrations\alcs objects\**" />
+    <None Remove="Areas\Advertisements\**" />
+    <None Remove="Areas\Amazon\**" />
+    <None Remove="Areas\AssociateProfile\**" />
+    <None Remove="Areas\Associates\**" />
+    <None Remove="Areas\Banking\**" />
+    <None Remove="Areas\Bsr\**" />
+    <None Remove="Areas\Clients\**" />
+    <None Remove="Areas\InputExceptions\**" />
+    <None Remove="Areas\InputMapping\**" />
+    <None Remove="Areas\Inputs\**" />
+    <None Remove="Areas\Invoices\**" />
+    <None Remove="Areas\MinimumWageChange\**" />
+    <None Remove="Areas\Notifications\**" />
+    <None Remove="Areas\OfferLetter\**" />
+    <None Remove="Areas\Password\**" />
+    <None Remove="Areas\PaymentDetails\**" />
+    <None Remove="Areas\Reports\**" />
+    <None Remove="Areas\SalaryCalculator\**" />
+    <None Remove="Areas\SalaryRevision\**" />
+    <None Remove="Areas\Utilities\**" />
+    <None Remove="Migrations\alcs objects\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Areas\Services\AlcsAssociateService.cs" />
+    <Compile Remove="Areas\Services\AlcsBankingService.cs" />
+    <Compile Remove="Areas\Services\AlcsInputMappingService.cs" />
+    <Compile Remove="Areas\Services\AlcsInputsSyncService.cs" />
+    <Compile Remove="Areas\Services\AlcsMinimumWageService.cs" />
+    <Compile Remove="Areas\Services\AlcsPaymentDetailsService.cs" />
+    <Compile Remove="Areas\Services\AlcsReportService.cs" />
+    <Compile Remove="Areas\Services\AlcsSalaryCalcData.cs" />
+    <Compile Remove="Areas\Services\AlcsSalaryRevisionService.cs" />
+    <Compile Remove="Areas\Services\AlcsSyncService .cs" />
+    <Compile Remove="Areas\Services\AlcsUtilityService.cs" />
+    <Compile Remove="Areas\Services\AssociateProfileService.cs" />
+    <Compile Remove="Areas\Services\CandidateService.cs" />
+    <Compile Remove="Areas\Services\TestAlcsController.cs" />
+    <Compile Remove="Areas\Services\TestSpData.cs" />
+    <Compile Remove="Areas\Services\TestSPDataService.cs" />
+    <Compile Remove="Areas\Security\SecurityTestController.cs" />
+    <Compile Remove="Migrations\20190820161025_sv_1.cs" />
+    <Compile Remove="Migrations\20190820161025_sv_1.Designer.cs" />
+    <Compile Remove="Migrations\20190828110327_sv_2.cs" />
+    <Compile Remove="Migrations\20190828110327_sv_2.Designer.cs" />
+    <Compile Remove="Migrations\20190828132205_sv_3.cs" />
+    <Compile Remove="Migrations\20190828132205_sv_3.Designer.cs" />
+    <Compile Remove="Migrations\20190828155923_sv_4.cs" />
+    <Compile Remove="Migrations\20190828155923_sv_4.Designer.cs" />
+    <Compile Remove="Migrations\20190831102854_sv_5.cs" />
+    <Compile Remove="Migrations\20190831102854_sv_5.Designer.cs" />
+    <Compile Remove="Migrations\20190903073148_sv_6.cs" />
+    <Compile Remove="Migrations\20190903073148_sv_6.Designer.cs" />
+    <Compile Remove="Migrations\20190905101545_rt_v1.cs" />
+    <Compile Remove="Migrations\20190905101545_rt_v1.Designer.cs" />
+    <Compile Remove="Migrations\20190912175012_sv_7.cs" />
+    <Compile Remove="Migrations\20190912175012_sv_7.Designer.cs" />
+    <Compile Remove="Migrations\20190920062639_rt_v2.cs" />
+    <Compile Remove="Migrations\20190920062639_rt_v2.Designer.cs" />
+    <Compile Remove="Migrations\20190925092737_sv_8.cs" />
+    <Compile Remove="Migrations\20190925092737_sv_8.Designer.cs" />
+    <Compile Remove="Migrations\20190925112730_rt_v3.cs" />
+    <Compile Remove="Migrations\20190925112730_rt_v3.Designer.cs" />
+    <Compile Remove="Migrations\20191002121940_sv_9.cs" />
+    <Compile Remove="Migrations\20191002121940_sv_9.Designer.cs" />
+    <Compile Remove="Migrations\20191002130253_sv_10.cs" />
+    <Compile Remove="Migrations\20191002130253_sv_10.Designer.cs" />
+    <Compile Remove="Migrations\20191005061945_sv_11.cs" />
+    <Compile Remove="Migrations\20191005061945_sv_11.Designer.cs" />
+    <Compile Remove="Migrations\20191005063100_sv_12.cs" />
+    <Compile Remove="Migrations\20191005063100_sv_12.Designer.cs" />
+    <Compile Remove="Migrations\20191005170414_sv_14.cs" />
+    <Compile Remove="Migrations\20191005170414_sv_14.Designer.cs" />
+    <Compile Remove="Migrations\20191009062728_sv_15.cs" />
+    <Compile Remove="Migrations\20191009062728_sv_15.Designer.cs" />
+    <Compile Remove="Migrations\20191010045257_sv_16.cs" />
+    <Compile Remove="Migrations\20191010045257_sv_16.Designer.cs" />
+    <Compile Remove="Migrations\20191011045551_sv_17.cs" />
+    <Compile Remove="Migrations\20191011045551_sv_17.Designer.cs" />
+    <Compile Remove="Migrations\20191011071958_sv_18.cs" />
+    <Compile Remove="Migrations\20191011071958_sv_18.Designer.cs" />
+    <Compile Remove="Migrations\20191011085833_sv_19.cs" />
+    <Compile Remove="Migrations\20191011085833_sv_19.Designer.cs" />
+    <Compile Remove="Migrations\20191011093928_sv_20.cs" />
+    <Compile Remove="Migrations\20191011093928_sv_20.Designer.cs" />
+    <Compile Remove="Migrations\20191011132021_sv_21.cs" />
+    <Compile Remove="Migrations\20191011132021_sv_21.Designer.cs" />
+    <Compile Remove="Migrations\20191011132127_sv_22.cs" />
+    <Compile Remove="Migrations\20191011132127_sv_22.Designer.cs" />
+    <Compile Remove="Migrations\20191015071011_sv_23.cs" />
+    <Compile Remove="Migrations\20191015071011_sv_23.Designer.cs" />
+    <Compile Remove="Migrations\20191023035646_sv24.cs" />
+    <Compile Remove="Migrations\20191023035646_sv24.Designer.cs" />
+    <Compile Remove="Migrations\20191023050206_sv25.cs" />
+    <Compile Remove="Migrations\20191023050206_sv25.Designer.cs" />
+    <Compile Remove="Migrations\20191024031015_sv26.cs" />
+    <Compile Remove="Migrations\20191024031015_sv26.Designer.cs" />
+    <Compile Remove="Migrations\20191029085410_sv_27.cs" />
+    <Compile Remove="Migrations\20191029085410_sv_27.Designer.cs" />
+    <Compile Remove="Migrations\20191030043033_sv28.cs" />
+    <Compile Remove="Migrations\20191030043033_sv28.Designer.cs" />
+    <Compile Remove="Migrations\20191031115614_rt_28.cs" />
+    <Compile Remove="Migrations\20191031115614_rt_28.Designer.cs" />
+    <Compile Remove="Migrations\20191104091924_sv29.cs" />
+    <Compile Remove="Migrations\20191104091924_sv29.Designer.cs" />
+    <Compile Remove="Migrations\20191104091956_sv30.cs" />
+    <Compile Remove="Migrations\20191104091956_sv30.Designer.cs" />
+    <Compile Remove="Migrations\20191112053310_sv31.cs" />
+    <Compile Remove="Migrations\20191112053310_sv31.Designer.cs" />
+    <Compile Remove="Migrations\20191113054949_sv32.cs" />
+    <Compile Remove="Migrations\20191113054949_sv32.Designer.cs" />
+    <Compile Remove="Migrations\20191120171630_sv33.cs" />
+    <Compile Remove="Migrations\20191120171630_sv33.Designer.cs" />
+    <Compile Remove="Migrations\20191126073129_rt_34.cs" />
+    <Compile Remove="Migrations\20191126073129_rt_34.Designer.cs" />
+    <Compile Remove="Migrations\20191128145200_sv34.cs" />
+    <Compile Remove="Migrations\20191128145200_sv34.Designer.cs" />
+    <Compile Remove="Migrations\20191129052256_sv35.cs" />
+    <Compile Remove="Migrations\20191129052256_sv35.Designer.cs" />
+    <Compile Remove="Migrations\20191129073536_sv36.cs" />
+    <Compile Remove="Migrations\20191129073536_sv36.Designer.cs" />
+    <Compile Remove="Migrations\20191129074732_sv37.cs" />
+    <Compile Remove="Migrations\20191129074732_sv37.Designer.cs" />
+    <Compile Remove="Migrations\20191201045601_sv38.cs" />
+    <Compile Remove="Migrations\20191201045601_sv38.Designer.cs" />
+    <Compile Remove="Migrations\20191211043148_sv39.cs" />
+    <Compile Remove="Migrations\20191211043148_sv39.Designer.cs" />
+    <Compile Remove="Migrations\20191215102707_sv40.cs" />
+    <Compile Remove="Migrations\20191215102707_sv40.Designer.cs" />
+    <Compile Remove="Migrations\20191217165704_sv41.cs" />
+    <Compile Remove="Migrations\20191217165704_sv41.Designer.cs" />
+    <Compile Remove="Migrations\20191219092331_rt_42.cs" />
+    <Compile Remove="Migrations\20191219092331_rt_42.Designer.cs" />
+    <Compile Remove="Migrations\20191220101647_sv43.cs" />
+    <Compile Remove="Migrations\20191220101647_sv43.Designer.cs" />
+    <Compile Remove="Migrations\20191229075928_sv44.cs" />
+    <Compile Remove="Migrations\20191229075928_sv44.Designer.cs" />
+    <Compile Remove="Migrations\20191229081228_sv45.cs" />
+    <Compile Remove="Migrations\20191229081228_sv45.Designer.cs" />
+    <Compile Remove="Migrations\20200102095504_sv46.cs" />
+    <Compile Remove="Migrations\20200102095504_sv46.Designer.cs" />
+    <Compile Remove="Migrations\20200102095627_sv47.cs" />
+    <Compile Remove="Migrations\20200102095627_sv47.Designer.cs" />
+    <Compile Remove="Migrations\20200108113604_sv48.cs" />
+    <Compile Remove="Migrations\20200108113604_sv48.Designer.cs" />
+    <Compile Remove="Migrations\20200305062811_csb1.cs" />
+    <Compile Remove="Migrations\20200305062811_csb1.Designer.cs" />
+    <Compile Remove="Migrations\20200422115518_cm1.cs" />
+    <Compile Remove="Migrations\20200422115518_cm1.Designer.cs" />
+    <Compile Remove="Migrations\20200506061704_cm2.cs" />
+    <Compile Remove="Migrations\20200506061704_cm2.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="aws-beanstalk-tools-defaults.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Migrations\alcs_procedures.sql" />
+    <None Remove="Migrations\functions.sql" />
+    <None Remove="Migrations\quartz.sql" />
+    <None Remove="Migrations\schema.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Areas\Reports\Models.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Amazon.Lambda.Core" Version="1.1.0" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.104.11" />
+    <PackageReference Include="AWSSDK.Lambda" Version="3.3.106.9" />
+    <PackageReference Include="AWSSDK.S3" Version="3.3.110.5" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.3.101.87" />
+    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.3.101.105" />
+    <PackageReference Include="CsvHelper" Version="12.1.2" />
+    <PackageReference Include="DotNetZip" Version="1.13.4" />
+    <PackageReference Include="FreeSpire.XLS" Version="9.2.1" />
+    <PackageReference Include="Microsoft.AspNet.SignalR.Client" Version="2.4.1" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.1.1" />
+    <PackageReference Include="MimeKit" Version="2.2.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.2" />
+    <PackageReference Include="Quartz" Version="3.0.7" />
+    <PackageReference Include="Quartz.Serialization.Json" Version="3.0.7" />
+    <PackageReference Include="RestSharp" Version="106.6.10" />
+    <PackageReference Include="SharpZipLib" Version="1.2.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
+    <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.18" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".ebextensions\timezone.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.PROD.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.TEST.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.UAT.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,95 @@
+Sl_No,Emp_No,Transaction_Month,Transaction_Year,PayCode,OT_Hours,Invoice_Number,Remarks,Amount,Interaction_ID,PEM_Pay_Code,PEM_Description
+1,993182,4,2019,VEHM,,,,100,111-222-333,ACCOMOALW,Accommodation Allowance
+2,962359,4,2019,VEHM,,,,200,111-222-333,AdhocBon,Adhoc Bonus Annual
+3,891307,4,2019,VEHM,,,,300,111-222-333,ADVREC,Advance Recovery
+4,889196,4,2019,VEHM,,,,400,111-222-333,ALLOW,Allowance
+5,867253,4,2019,VEHM,,,,500,111-222-333,ANNLEVENCH,Annual Leave Encashment
+6,834252,4,2019,VEHM,,,,600,111-222-333,ANNSTBONUS,Annual Statutory Bonus
+7,237821,4,2019,VEHM,,,,700,111-222-333,ARREARS,Arrears
+8,165319,4,2019,VEHM,,,,800,111-222-333,ASBONSDDNI,Annual Statutory Bonus Deduction Not Invoiced
+9,1567762,4,2019,VEHM,,,,900,111-222-333,ASBONSENNI,Annual Statutory Bonus Earning Not Invoiced
+10,1566235,4,2019,VEHM,,,,1000,111-222-333,BUSDED,Bus Deduction
+11,1562663,4,2019,VEHM,,,,1100,111-222-333,CANDED,Canteen Deduction
+12,1561906,4,2019,VEHM,,,,1200,111-222-333,DEFINCEN,Deferred Incentive
+,,,,,,,,,,DLYALOW,Daily Allowance
+,,,,,,,,,,DW,Double wages  Days (Formula Based)
+,,,,,,,,,,DWAMT,Double wages Days (Amount)
+,,,,,,,,,,EXGRDDNI,Exgratia Deduction Not Invoiced
+,,,,,,,,,,EXGRENNI,Exgratia Earning Not Invoiced
+,,,,,,,,,,FOODALW,Food Allowance
+,,,,,,,,,,GIFTTXBL,Gift Taxable
+,,,,,,,,,,GRATUITY,Gratuity
+,,,,,,,,,,GYMPERQST,GYM PERQUISITE
+,,,,,,,,,,HOLDYPAY,Holiday Pay
+,,,,,,,,,,IDCRDCHRG,ID Card Charge
+,,,,,,,,,,IDCRDDED,ID Card Deduction
+,,,,,,,,,,IMPRREC,Imprest Recovery
+,,,,,,,,,,INCDDNI,Incentives Deduction Not Invoiced
+,,,,,,,,,,INCDDNI1,Incentives Deduction Not Invoiced1
+,,,,,,,,,,INCDDNI2,Incentives Deduction Not Invoiced2
+,,,,,,,,,,INCDDNI3,Incentives Deduction Not Invoiced3
+,,,,,,,,,,INCDDNI4,Incentives Deduction Not Invoiced4
+,,,,,,,,,,INCDDNI5,Incentives Deduction Not Invoiced5
+,,,,,,,,,,INCENNI,Incentives Earning Not Invoiced
+,,,,,,,,,,INCENNI1,Incentives Earning Not Invoiced1
+,,,,,,,,,,INCENNI2,Incentives Earning Not Invoiced2
+,,,,,,,,,,INCENNI3,Incentives Earning Not Invoiced3
+,,,,,,,,,,INCENNI4,Incentives Earning Not Invoiced4
+,,,,,,,,,,INCENNI5,Incentives Earning Not Invoiced5
+,,,,,,,,,,INCENT,Incentives
+,,,,,,,,,,LEAVWAGS,Leave with Wages
+,,,,,,,,,,LEVENCH,Leave Encashment Days (Formula Based)
+,,,,,,,,,,LEVENCHAMT,Leave Encashment Days (Amount)
+,,,,,,,,,,LEVNCSHTX,Leave Encash Taxable
+,,,,,,,,,,LUNCALOW,Lunch Allowance
+,,,,,,,,,,LWW,Labour Welfare -LWW Days (Formula Based)
+,,,,,,,,,,LWWAMT,Labour Welfare -LWW Days (Amount)
+,,,,,,,,,,MEDALOW,Medical Allowance
+,,,,,,,,,,MOBDEDC,Mobile Deduction
+,,,,,,,,,,MOBREIMB,Mobile Allowance - 2
+,,,,,,,,,,MTBenFund,MT Benevolent Fund
+,,,,,,,,,,MTBONUS,Exgratia
+,,,,,,,,,,MTConsol,Monthly Consolidated
+,,,,,,,,,,MTCONV,Monthly Conveyance
+,,,,,,,,,,MTDA,Performance Allowance
+,,,,,,,,,,MTInsu,MT Insurance
+,,,,,,,,,,MTLTA,Monthly LTA Reimbursment
+,,,,,,,,,,MTSTPNDINC,Monthly Stipend Incentives
+,,,,,,,,,,MTVPF,Voluntary PF
+,,,,,,,,,,NFH,National Family Health Days (Formula Based)
+,,,,,,,,,,NFHAMT,National Family Health Days (Amount)
+,,,,,,,,,,NFXDHDPAY,National Fixed Holiday Pay
+,,,,,,,,,,NOTCPAYAMT,Notice Pay Days (Amount)
+,,,,,,,,,,NOTICPAY,Notice Pay Days (Formula Based)
+,,,,,,,,,,NOTREC,Notice Recovery
+,,,,,,,,,,NTXREIMB,Non Taxable Reimbursement
+,,,,,,,,,,OA,Other Allowance
+,,,,,,,,,,OD,Other Deductions
+,,,,,,,,,,OFNFDNI,OSP FNF Not Invoiced
+,,,,,,,,,,OLREFUND,OL Deposit Refund
+,,,,,,,,,,OT,Overtime Charges
+,,,,,,,,,,OTH,Overtime Hours (Formula Based)
+,,,,,,,,,,OTHCHRGS,Other Charges
+,,,,,,,,,,OTHDNI,Others Deduction Not Invoiced
+,,,,,,,,,,OTHERINC,Other Income
+,,,,,,,,,,OUTSTNALW,Out station Allowance
+,,,,,,,,,,PAYCRDDED,Payroll Card Deduction
+,,,,,,,,,,PAYDEDC,Payroll Deduction
+,,,,,,,,,,PERINCDDNI,Performance Incentives Deduction Not Invoiced
+,,,,,,,,,,PERINCENNI,Performance Incentives Earning Not Invoiced
+,,,,,,,,,,QRTINCENT,Quarterly Incentive
+,,,,,,,,,,REM,reimbursment
+,,,,,,,,,,RET,Retrenchment Days (Formula Based)
+,,,,,,,,,,RETAMT,Retrenchment Days (Amount)
+,,,,,,,,,,RTRNCOMP,Retrenchment Compensation
+,,,,,,,,,,RVKSTPY,Revoke Stop Pay Dummy PE
+,,,,,,,,,,SADVDDNI,Salary Advance Deduction Not Invoiced
+,,,,,,,,,,SHIFTALW,Shift Allowance
+,,,,,,,,,,SPLBONUS,Special Bonus
+,,,,,,,,,,SPLPRFALW,Special Performance Allowance
+,,,,,,,,,,SUBALLOW,Subsistence Allowance
+,,,,,,,,,,SUPALW,Supplementary Allow
+,,,,,,,,,,TA,Travel Allowance
+,,,,,,,,,,TDSRETAIN,TDS On Retainers
+,,,,,,,,,,TRANSALW,Transport Allowance
+,,,,,,,,,,VEHM,Vehicle Maintenance
