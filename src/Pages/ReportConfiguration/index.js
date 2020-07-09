@@ -1,26 +1,122 @@
 import React from "react";
+import { connect } from "react-redux";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import logo from "../../dist/images/logo.png";
+import * as action_type from "../../actions/reportconfig/reportManagment";
 
 class ReportConfiguration extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       modal: false,
+      reportQuery: "",
+      reportEmail: "",
+      reportFormat: "Excel",
+      reportInterval: "1 Hour",
+      reportId: -1,
+      reportName: "",
+      report_dbStatus: false,
     };
   }
-  componentDidMount() {}
+  componentDidMount() {
+    this.props.GET_REPORT_NAMES();
+  }
 
   componentWillUnmount() {}
+  componentWillReceiveProps(nextProps) {
+    console.log(nextProps);
+    if (nextProps.report_dbStatus) {
+      this.clear();
+    }
+    if(Object.keys(nextProps.report_object).length){
+      this.setState({
+        reportQuery: nextProps.report_object.reportQuery,
+        reportEmail: nextProps.report_object.reportEmail,
+        reportFormat: nextProps.report_object.reportFormat,
+        reportInterval: nextProps.report_object.reportInterval,
+        reportId: nextProps.report_object.reportId,
+        reportName: nextProps.report_object.reportName,
+      })
+    }
+  }
   showAddWidget(flag) {
     this.setState((prevState) => ({
       // prevState?
       modal: flag,
     }));
+    if (!flag) this.props.GET_REPORT_NAMES();
   }
   logout() {
     window.location.href = "/";
+  }
+  clear() {
+    this.setState({
+      reportQuery: "",
+      reportEmail: "",
+      reportFormat: "Excel",
+      reportInterval: "1 Hour",
+      reportId: -1,
+      reportName: "",
+    });
+  }
+  handleChange = (e) => {
+    let _name = e.target.name;
+    let _value = e.target.value;
+    this.setState((prevState) => {
+      let _tempField = Object.assign({}, prevState);
+      _tempField[_name] = _value;
+      return _tempField;
+    });
+  };
+  loadReportName() {
+    if (this.props.report_name.length) {
+      return this.props.report_name.map((xx) => {
+        return <option value={xx.reportId}>{xx.reportName}</option>;
+      });
+    }
+  }
+  addReport() {
+    this.props.POST_REPORT_DETAILS(this.state);
+    this.clear();
+    this.setState({
+      report_dbStatus: true,
+    });
+    setTimeout(() => {
+      this.setState({
+        report_dbStatus: false,
+      });
+    }, 2000);
+  }
+  loadReportDetails(e) {
+    this.setState({
+      reportId: parseInt(e.target.value),
+    });
+    this.props.VIEW_REPORT_DETAILS(parseInt(e.target.value));
+  }
+  bindTableHeader() {
+    if (this.props.report_details.length) {
+      return this.props.report_details[0].gridColumns.map((_head, _index) => {
+        return <th class="border border-b-2 whitespace-no-wrap">{_head}</th>;
+      });
+    }
+  }
+  bindTableBody() {
+    if (this.props.report_details.length) {
+      return this.props.report_details[0].gridData.map((_head, _index) => {
+        return (
+          <tr onClick={() => this.drillDown({ _head })}>
+            {_head.map((_body) => {
+              return <td class="border">{_body}</td>;
+            })}
+          </tr>
+        );
+      });
+    }
+  }
+  editReport() {
+    this.showAddWidget(true);
+    this.props.EDIT_REPORT_DETAILS(this.state.reportId)
   }
   render() {
     return (
@@ -82,7 +178,7 @@ class ReportConfiguration extends React.Component {
                   <polyline points="16 17 21 12 16 7"></polyline>
                   <line x1="21" y1="12" x2="9" y2="12"></line>
                 </svg>
-                <span className="userwelcome">Welcome Santhosh</span>
+                <span className="userwelcome">Welcome ADMIN</span>
               </div>
             </div>
           </div>
@@ -158,10 +254,12 @@ class ReportConfiguration extends React.Component {
                         stroke-width="1.5"
                         stroke-linecap="round"
                         stroke-linejoin="round"
-                        class="feather feather-mail mx-auto"
+                        class="feather feather-users mx-auto"
                       >
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                       </svg>{" "}
                     </div>
                     <div class="side-menu__title"> User Configuration </div>
@@ -262,25 +360,32 @@ class ReportConfiguration extends React.Component {
                         <select
                           class="select2 w-full input border mt-2 "
                           style={{ width: "50%" }}
+                          onChange={(e) => this.loadReportDetails(e)}
                         >
-                          <option value="1">
-                            Detailed View of Unauthorised Transactions
+                          <option value="0">
+                            Select Report to View or Edit
                           </option>
-                          <option value="2">
-                            Detailed View of Authorised Transactions
-                          </option>
-                          <option value="3">
-                            Detailed View of Total Transactions
-                          </option>
+                          {this.loadReportName()}
                         </select>{" "}
+                        <button
+                          style={{ padding: "0 35px" }}
+                          onClick={() => this.editReport()}
+                        >
+                          Edit
+                        </button>
+                        <button>Download </button>
                       </div>
-                      <div class="preview">
+                      <div
+                        className={`preview ${
+                          !this.props.report_details.length ? "hidden" : ""
+                        }`}
+                      >
                         <div class="overflow-x-auto">
                           <h3
                             class="font-medium text-base mr-auto text-2xl "
                             style={{ "margin-bottom": "30px" }}
                           >
-                            Detailed View of Unauthorised Transactions
+                            Detailed Report View
                           </h3>{" "}
                           <table class="table">
                             {" "}
@@ -288,98 +393,10 @@ class ReportConfiguration extends React.Component {
                               {" "}
                               <tr class="text-white">
                                 {" "}
-                                <th class="border border-b-2 whitespace-no-wrap">
-                                  Branch Name
-                                </th>{" "}
-                                <th class="border border-b-2 whitespace-no-wrap">
-                                  Branch Code
-                                </th>{" "}
-                                <th class="border border-b-2 whitespace-no-wrap">
-                                  Total Transactions
-                                </th>{" "}
-                                <th class="border border-b-2 whitespace-no-wrap">
-                                  Action
-                                </th>{" "}
+                                {this.bindTableHeader()}
                               </tr>{" "}
                             </thead>{" "}
-                            <tbody>
-                              {" "}
-                              <tr>
-                                {" "}
-                                <td class="border">MTHATHA PLAZA</td>{" "}
-                                <td class="border">221</td>{" "}
-                                <td class="border">5</td>{" "}
-                                <td class="border">
-                                  <a
-                                    href="/reportdetails"
-                                    target="_blank"
-                                    class="custom_anchor"
-                                  >
-                                    View Details
-                                  </a>
-                                </td>{" "}
-                              </tr>{" "}
-                              <tr>
-                                {" "}
-                                <td class="border">MPUMALANGA</td>{" "}
-                                <td class="border">222</td>{" "}
-                                <td class="border">30</td>{" "}
-                                <td class="border">
-                                  <a
-                                    href="/reportdetails"
-                                    target="_blank"
-                                    class="custom_anchor"
-                                  >
-                                    View Details
-                                  </a>
-                                </td>{" "}
-                              </tr>{" "}
-                              <tr>
-                                {" "}
-                                <td class="border">GAUTENG</td>{" "}
-                                <td class="border">223</td>{" "}
-                                <td class="border">35</td>{" "}
-                                <td class="border">
-                                  <a
-                                    href="/reportdetails"
-                                    target="_blank"
-                                    class="custom_anchor"
-                                  >
-                                    View Details
-                                  </a>
-                                </td>{" "}
-                              </tr>{" "}
-                              <tr>
-                                {" "}
-                                <td class="border">KWAZULU NATAL</td>{" "}
-                                <td class="border">224</td>{" "}
-                                <td class="border">14</td>{" "}
-                                <td class="border">
-                                  <a
-                                    href="/reportdetails"
-                                    target="_blank"
-                                    class="custom_anchor"
-                                  >
-                                    View Details
-                                  </a>
-                                </td>{" "}
-                              </tr>{" "}
-                              <tr>
-                                {" "}
-                                <td class="border">EAST LONDON</td>{" "}
-                                <td class="border">225</td>{" "}
-                                <td class="border">16</td>{" "}
-                                <td class="border">
-                                  <a
-                                    href="/reportdetails"
-                                    target="_blank"
-                                    class="custom_anchor"
-                                  >
-                                    View Details
-                                  </a>
-                                </td>{" "}
-                              </tr>{" "}
-                            </tbody>{" "}
+                            <tbody> {this.bindTableBody()}</tbody>{" "}
                           </table>{" "}
                         </div>
                       </div>
@@ -401,10 +418,17 @@ class ReportConfiguration extends React.Component {
                       </h1>
                     </div>
                     <div class="p-5" id="vertical-bar-chart">
-                      <div class="preview">
+                      <div class="preview validate-form">
                         <div class="overflow-x-auto">
                           {" "}
                           <div class="modal__content relative custom_model_content">
+                            <div
+                              className={`rounded-md px-5 py-4 mb-2 bg-theme-9 text-white ${
+                                !this.state.report_dbStatus ? "hidden" : ""
+                              }`}
+                            >
+                              Report added successfully{" "}
+                            </div>
                             <div class="flex flex-col sm:flex-row items-center">
                               {" "}
                               <label class="w-full sm:w-20 sm:text-right sm:mr-5">
@@ -414,6 +438,9 @@ class ReportConfiguration extends React.Component {
                                 type="text"
                                 class="input w-full border mt-2 flex-1"
                                 placeholder="Store Performance"
+                                name="reportName"
+                                value={this.state.reportName}
+                                onChange={(e) => this.handleChange(e)}
                               />{" "}
                             </div>{" "}
                             <div class="flex flex-col sm:flex-row items-center">
@@ -424,7 +451,10 @@ class ReportConfiguration extends React.Component {
                               <textarea
                                 class="input w-full border mt-2 flex-1"
                                 placeholder="Select statement"
-                                style={{ height: "400px" }}
+                                style={{ height: "300px" }}
+                                name="reportQuery"
+                                value={this.state.reportQuery}
+                                onChange={(e) => this.handleChange(e)}
                               />{" "}
                             </div>{" "}
                             <div class="flex flex-col sm:flex-row items-center">
@@ -436,6 +466,9 @@ class ReportConfiguration extends React.Component {
                                 type="text"
                                 class="input w-full border mt-2 flex-1"
                                 placeholder="Store Performance"
+                                name="reportEmail"
+                                value={this.state.reportEmail}
+                                onChange={(e) => this.handleChange(e)}
                               />{" "}
                             </div>{" "}
                             <div class="flex flex-col sm:flex-row items-center mt-3">
@@ -443,7 +476,12 @@ class ReportConfiguration extends React.Component {
                               <label class="w-full sm:w-20 sm:text-right sm:mr-5">
                                 File Format
                               </label>{" "}
-                              <select class="select2 w-full input w-full border mt-2 flex-1">
+                              <select
+                                class="select2 w-full input w-full border mt-2 flex-1"
+                                name="reportFormat"
+                                value={this.state.reportFormat}
+                                onChange={(e) => this.handleChange(e)}
+                              >
                                 <option value="1">Excel</option>
                                 <option value="2">PDF</option>
                               </select>{" "}
@@ -453,24 +491,45 @@ class ReportConfiguration extends React.Component {
                               <label class="w-full sm:w-20 sm:text-right sm:mr-5">
                                 Send Report Every
                               </label>{" "}
-                              <select class="select2 w-full input w-full border mt-2 flex-1">
+                              <select
+                                class="select2 w-full input w-full border mt-2 flex-1"
+                                name="reportInterval"
+                                value={this.state.reportInterval}
+                                onChange={(e) => this.handleChange(e)}
+                              >
                                 <option value="1">1 Hour</option>
                                 <option value="2">4 Hours</option>
                                 <option value="3">6 Hours</option>
                                 <option value="3">Once per day</option>
                               </select>{" "}
                             </div>{" "}
+                            <div class="flex flex-col sm:flex-row items-center mt-3">
+                              {" "}
+                              <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                                IsActive
+                              </label>{" "}
+                              <input
+                                type="checkbox"
+                                checked={true}
+                                name="isActive"
+                                class="input border mr-2"
+                                id="vertical-remember-me"
+                              />
+                            </div>{" "}
                             <div class="sm:ml-20 sm:pl-5 mt-5">
                               {" "}
                               <button
                                 type="button"
-                                class="button bg-theme-1 text-white"                               
+                                class="button bg-theme-1 text-white"
+                                style={{ float: "right" }}
+                                onClick={() => this.addReport()}
                               >
                                 Submit
                               </button>{" "}
                               <button
                                 type="button"
-                                class="button bg-theme-1 text-white"                               
+                                class="button bg-theme-1 text-white"
+                                style={{ float: "right", marginRight: "10px" }}
                               >
                                 Cancel
                               </button>{" "}
@@ -512,4 +571,31 @@ class ReportConfiguration extends React.Component {
     );
   }
 }
-export default ReportConfiguration;
+const mapProperties = (state) => {
+  return {
+    report_name: state.reportReducer.report_name,
+    report_dbStatus: state.reportReducer.report_dbStatus,
+    report_details: state.reportReducer.report_details,
+    report_object: state.reportReducer.report_object,
+  };
+};
+const dispatch_action = (dispatch) => {
+  //console.log("userDetails.UserContext.firmId", userDetails.UserContext.firmId)
+
+  return {
+    GET_REPORT_NAMES: () => dispatch(action_type._getReportNames()),
+    POST_REPORT_DETAILS: (_state) =>
+      dispatch(action_type._post_ReportDetails(_state)),
+    VIEW_REPORT_DETAILS: (_state) =>
+      dispatch(action_type._view_ReportDetails(_state)),
+    EDIT_REPORT_DETAILS: (_id) =>
+      dispatch(action_type._edit_ReportDetails(_id)),
+    /*POST_DASHBOARD_WIDGETS: (_state) =>
+    
+      dispatch(action_type._post_dashboardWidget(_state)),
+    DELETE_DASHBOARD_WIDGETS: (_id) =>
+      dispatch(action_type._delete_dashboardWidget(_id)),*/
+  };
+};
+
+export default connect(mapProperties, dispatch_action)(ReportConfiguration);

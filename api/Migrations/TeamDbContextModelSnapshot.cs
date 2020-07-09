@@ -131,9 +131,6 @@ namespace TeamLease.CssService.Migrations
                     b.Property<string>("Status")
                         .HasColumnName("status");
 
-                    b.Property<int>("TotalTransactions")
-                        .HasColumnName("total_transactions");
-
                     b.Property<int>("TransactionId")
                         .HasColumnName("id");
 
@@ -157,23 +154,23 @@ namespace TeamLease.CssService.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnName("created_date");
 
-                    b.Property<string>("DashbaordCreatedBy")
-                        .HasColumnName("ud_createdby");
-
-                    b.Property<DateTime?>("DashbaordCreatedOn")
-                        .HasColumnName("ud_createdon");
-
                     b.Property<DateTime?>("DashbaordModifiedOn")
                         .HasColumnName("ud_modifiedon");
 
                     b.Property<string>("DashbaordQuery")
                         .HasColumnName("ud_query");
 
+                    b.Property<string>("DashbaordQueryL1")
+                        .HasColumnName("ud_querylevel1");
+
+                    b.Property<string>("DashbaordQueryL2")
+                        .HasColumnName("ud_querylevel2");
+
+                    b.Property<string>("DashbaordQueryL3")
+                        .HasColumnName("ud_querylevel3");
+
                     b.Property<string>("DashboardChartType")
                         .HasColumnName("ud_charttype");
-
-                    b.Property<int>("DashboardId")
-                        .HasColumnName("ud_id");
 
                     b.Property<string>("DashboardUserId")
                         .HasColumnName("ud_userid");
@@ -390,15 +387,6 @@ namespace TeamLease.CssService.Migrations
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnName("modified_date");
 
-                    b.Property<int>("ReportConfigId")
-                        .HasColumnName("config_id");
-
-                    b.Property<string>("ReportCreatedBy")
-                        .HasColumnName("rc_createdby");
-
-                    b.Property<DateTime?>("ReportCreatedOn")
-                        .HasColumnName("rc_createdon");
-
                     b.Property<string>("ReportEmail")
                         .HasColumnName("rc_email");
 
@@ -487,15 +475,8 @@ namespace TeamLease.CssService.Migrations
                     b.Property<string>("Email")
                         .HasColumnName("email");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnName("first_name");
-
                     b.Property<DateTime?>("LastLoggedIn")
                         .HasColumnName("last_logged_in");
-
-                    b.Property<string>("LastName")
-                        .HasColumnName("last_name");
 
                     b.Property<string>("ModifiedBy")
                         .HasColumnName("modified_by");
@@ -506,15 +487,6 @@ namespace TeamLease.CssService.Migrations
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnName("password");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnName("phonenumber");
-
-                    b.Property<string>("ProfileImageUrl")
-                        .HasColumnName("profile_img_url");
-
-                    b.Property<string>("Source")
-                        .HasColumnName("source");
 
                     b.Property<int>("Status")
                         .HasColumnName("user_status");

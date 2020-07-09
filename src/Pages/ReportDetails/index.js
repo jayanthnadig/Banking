@@ -1,7 +1,9 @@
 import React from "react";
+import { connect } from "react-redux";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import logo from "../../dist/images/logo.svg";
+import * as action_type from "../../actions/reportconfig/reportManagment";
 
 class ReportDetails extends React.Component {
   constructor(props) {
@@ -11,111 +13,11 @@ class ReportDetails extends React.Component {
     };
   }
   componentDidMount() {
-    let chart = am4core.create("chartdiv", am4charts.PieChart);
-    let chart1 = am4core.create("chartdiv1", am4charts.XYChart);
-    chart.data = [
-      {
-        country: "Lithuania",
-        litres: 501.9,
-      },
-      {
-        country: "Czech Republic",
-        litres: 301.9,
-      },
-      {
-        country: "Ireland",
-        litres: 201.1,
-      },
-      {
-        country: "Germany",
-        litres: 165.8,
-      },
-      {
-        country: "Australia",
-        litres: 139.9,
-      },
-      {
-        country: "Austria",
-        litres: 128.3,
-      },
-      {
-        country: "UK",
-        litres: 99,
-      },
-      {
-        country: "Belgium",
-        litres: 60,
-      },
-      {
-        country: "The Netherlands",
-        litres: 50,
-      },
-    ];
-
-    chart1.data = [
-      {
-        country: "Lithuania",
-        litres: 501.9,
-      },
-      {
-        country: "Czech Republic",
-        litres: 301.9,
-      },
-      {
-        country: "Ireland",
-        litres: 201.1,
-      },
-      {
-        country: "Germany",
-        litres: 165.8,
-      },
-      {
-        country: "Australia",
-        litres: 139.9,
-      },
-      {
-        country: "Austria",
-        litres: 128.3,
-      },
-      {
-        country: "UK",
-        litres: 99,
-      },
-      {
-        country: "Belgium",
-        litres: 60,
-      },
-      {
-        country: "The Netherlands",
-        litres: 50,
-      },
-    ];
-    this.chart = chart;
-    this.chart1 = chart1;
-    // Add and configure Series
-    let pieSeries = chart.series.push(new am4charts.PieSeries());
-    pieSeries.dataFields.value = "litres";
-    pieSeries.dataFields.category = "country";
-
-    let categoryAxis = chart1.xAxes.push(new am4charts.CategoryAxis());
-    categoryAxis.dataFields.category = "country";
-    categoryAxis.title.text = "Countries";
-
-    let valueAxis = chart1.yAxes.push(new am4charts.ValueAxis());
-    valueAxis.title.text = "Litres sold (M)";
-
-    let series = chart1.series.push(new am4charts.ColumnSeries());
-    series.dataFields.valueY = "litres";
-    series.dataFields.categoryX = "country";
+   
   }
 
   componentWillUnmount() {
-    if (this.chart) {
-      this.chart.dispose();
-    }
-    if (this.chart1) {
-      this.chart1.dispose();
-    }
+  
   }
   showAddWidget(_flag) {
     this.setState({
@@ -321,4 +223,22 @@ class ReportDetails extends React.Component {
     );
   }
 }
-export default ReportDetails;
+const mapProperties = (state) => {
+  return {
+    report_name: state.reportReducer.report_name,
+  };
+};
+const dispatch_action = (dispatch) => {
+  //console.log("userDetails.UserContext.firmId", userDetails.UserContext.firmId)
+
+  return {
+    GET_REPORT_NAMES: () => dispatch(action_type._getReportNames()),
+    /*POST_DASHBOARD_WIDGETS: (_state) =>
+      dispatch(action_type._post_dashboardWidget(_state)),
+    DELETE_DASHBOARD_WIDGETS: (_id) =>
+      dispatch(action_type._delete_dashboardWidget(_id)),*/
+  };
+};
+
+export default connect(mapProperties, dispatch_action)(ReportDetails);
+

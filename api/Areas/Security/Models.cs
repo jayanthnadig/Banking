@@ -6,23 +6,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 using ASNRTech.CoreService.Core.Models;
 using ASNRTech.CoreService.Enums;
 
-namespace ASNRTech.CoreService.Security {
+namespace ASNRTech.CoreService.Security
+{
     [Serializable]
     [Table("users", Schema = "public")]
-    public class User : BaseModel {
+    public class User : BaseModel
+    {
+        //[Column("first_name")]
+        //[Required]
+        //public string FirstName { get; set; }
 
-        [Column("first_name")]
-        [Required]
-        public string FirstName { get; set; }
-
-        [Column("last_name")]
-        public string LastName { get; set; }
+        //[Column("last_name")]
+        //public string LastName { get; set; }
 
         [Column("last_logged_in")]
         public DateTime? LastLoggedIn { get; set; }
-
-        [Column("source")]
-        public string Source { get; set; }
 
         [Column("email")]
         public string Email { get; set; }
@@ -42,25 +40,22 @@ namespace ASNRTech.CoreService.Security {
         [Required]
         public UserStatus Status { get; set; }
 
-        [Column("profile_img_url")]
-        public string ProfileImageUrl { get; set; }
+        //[Column("phonenumber")]
+        //public string PhoneNumber { get; set; }
 
-        [Column("phonenumber")]
-        public string PhoneNumber { get; set; }
+        //public string Name() {
+        //    return $"{this.FirstName} {this.LastName}";
+        //}
 
-        public string Name() {
-            return $"{this.FirstName} {this.LastName}";
-        }
-
-        public User() {
+        public User()
+        {
             this.Status = UserStatus.Active;
-            //this.Clients = new List<ClientDto>();
         }
     }
 
     [Table("user_sessions", Schema = "public")]
-    public class UserSession : BaseModel {
-
+    public class UserSession : BaseModel
+    {
         [Column("user_id")]
         public string UserId { get; set; }
 
@@ -73,18 +68,20 @@ namespace ASNRTech.CoreService.Security {
         [Column("active")]
         public bool Active { get; set; }
 
-        public UserSession() {
+        public UserSession()
+        {
             this.Active = true;
         }
     }
 
-    public class LoginModel {
+    public class LoginModel
+    {
         public string UserId { get; set; }
         public string Password { get; set; }
-        //public string LoginAccessKey { get; set; }
     }
 
-    public class LoginResponseModel {
+    public class LoginResponseModel
+    {
         public string UserId { get; set; }
         public string Token { get; set; }
         public string Email { get; set; }
@@ -95,8 +92,8 @@ namespace ASNRTech.CoreService.Security {
     }
 
     [Table("upload_log", Schema = "public")]
-    public class UploadLog : BaseModel {
-
+    public class UploadLog : BaseModel
+    {
         [Column("client_id")]
         public string ClientId { get; set; }
 
@@ -116,39 +113,10 @@ namespace ASNRTech.CoreService.Security {
         public int jobID { get; set; }
     }
 
-    //[Table("Transactions", Schema = "public")]
-    //public class Transactions : BaseModel {
-    //    [Column("id")]
-    //    public int TransactionId { get; set; }
-
-    //    [Column("branchname")]
-    //    public string BranchName { get; set; }
-
-    //    [Column("branchcode")]
-    //    public string BranchCode { get; set; }
-
-    //    [Column("total_transactions")]
-    //    public int TotalTransactions { get; set; }
-
-    //    [Column("makerid")]
-    //    public string MakerId { get; set; }
-
-    //    [Column("assignedto")]
-    //    public string AssignedTo { get; set; }
-
-    //    [Column("postingdate")]
-    //    public DateTime? PostingDate { get; set; }
-
-    //    [Column("functionid")]
-    //    public string FunctionId { get; set; }
-
-    //    [Column("transaction_status")]
-    //    public string TransactionStatus { get; set; }
-
-    //    [Column("branch_type")]
-    //    public string BranchType { get; set; }
-
-    //    [Column("status")]
-    //    public string Status { get; set; }
-    //}
+    public class AddEditNewUser : LoginModel
+    {
+        public int TableId { get; set; }
+        public bool IsActive { get; set; }
+        public string UserEmail { get; set; }
+    }
 }

@@ -28,7 +28,9 @@ namespace ASNRTech.CoreService.Config {
 
             services.AddSwaggerGen(c => c.SwaggerDoc(API_VERSION, new Info { Title = $"ASNRTech CORE API ({Utilities.Utility.Environment}) {API_VERSION}", Version = API_VERSION }));
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // Modified due to widget edit on 1st july 2020
+
+            //services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddCors();
 

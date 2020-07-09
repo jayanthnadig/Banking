@@ -6,17 +6,22 @@ using System.Linq;
 using ASNRTech.CoreService.Core.Models;
 using ASNRTech.CoreService.Enums;
 
-namespace ASNRTech.CoreService.Dashboard {
-    public class DashboardWidget {
+namespace ASNRTech.CoreService.Dashboard
+{
+    public class DashboardWidget
+    {
         public string WidgetName { get; set; }
-        public int WidgetID { get; set; }
+        public int WidgetId { get; set; }
         public string WidgetType { get; set; }
         public string WidgetQuery { get; set; }
+        public string WidgetQueryLevel1 { get; set; }
+        public string WidgetQueryLevel2 { get; set; }
+        public string WidgetQueryLevel3 { get; set; }
     }
 
     [Table("Chart_Type", Schema = "public")]
-    public class ChartType : BaseModel {
-
+    public class ChartType : BaseModel
+    {
         [Column("chart_id")]
         public int ChartId { get; set; }
 
@@ -25,11 +30,8 @@ namespace ASNRTech.CoreService.Dashboard {
     }
 
     [Table("User_Dashboard", Schema = "public")]
-    public class UserDashboard : BaseModel {
-
-        [Column("ud_id")]
-        public int DashboardId { get; set; }
-
+    public class UserDashboard : BaseModel
+    {
         [Column("ud_userid")]
         public string DashboardUserId { get; set; }
 
@@ -42,19 +44,22 @@ namespace ASNRTech.CoreService.Dashboard {
         [Column("ud_query")]
         public string DashbaordQuery { get; set; }
 
-        [Column("ud_createdby")]
-        public string DashbaordCreatedBy { get; set; }
+        [Column("ud_querylevel1")]
+        public string DashbaordQueryL1 { get; set; }
 
-        [Column("ud_createdon")]
-        public DateTime? DashbaordCreatedOn { get; set; }
+        [Column("ud_querylevel2")]
+        public string DashbaordQueryL2 { get; set; }
+
+        [Column("ud_querylevel3")]
+        public string DashbaordQueryL3 { get; set; }
 
         [Column("ud_modifiedon")]
         public DateTime? DashbaordModifiedOn { get; set; }
     }
 
     [Table("Transactions", Schema = "public")]
-    public class Transactions : BaseModel {
-
+    public class Transactions : BaseModel
+    {
         [Column("id")]
         public int TransactionId { get; set; }
 
@@ -64,8 +69,8 @@ namespace ASNRTech.CoreService.Dashboard {
         [Column("branchcode")]
         public string BranchCode { get; set; }
 
-        [Column("total_transactions")]
-        public int TotalTransactions { get; set; }
+        //[Column("total_transactions")]
+        //public int TotalTransactions { get; set; }
 
         [Column("makerid")]
         public string MakerId { get; set; }
@@ -89,22 +94,37 @@ namespace ASNRTech.CoreService.Dashboard {
         public string Status { get; set; }
     }
 
-    public class Widgets : LoadWidgets {
+    public class Widgets : LoadWidgets
+    {
         public int ChartID { get; set; }
         public string WidgetValues { get; set; }
         public string WidgetQuery { get; set; }
     }
 
-    public class LoadWidgets : DashboardWidget {
-
-        //public string WidgetName { get; set; }
-        //public int WidgetID { get; set; }
-        //public string WidgetType { get; set; }
+    public class LoadWidgets : DashboardWidget
+    {
         public WidgetRead[] WidgetData { get; set; }
     }
 
-    public class WidgetRead {
+    public class OnScreenClick
+    {
+        public string ClickLevel { get; set; }
+        public int ClickedWidgetId { get; set; }
+        public string ClickedOnValue { get; set; }
+        public string[] GridColumns { get; set; }
+        public List<string[]> GridData { get; set; }
+        public SelectedGridInput[] GridInput { get; set; }
+    }
+
+    public class WidgetRead
+    {
         public string Name { get; set; }
         public int Count { get; set; }
+    }
+
+    public class SelectedGridInput
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
     }
 }

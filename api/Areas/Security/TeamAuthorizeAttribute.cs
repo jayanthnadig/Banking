@@ -14,19 +14,23 @@ using ASNRTech.CoreService.Logging;
 using ASNRTech.CoreService.Services;
 using ASNRTech.CoreService.Utilities;
 
-namespace ASNRTech.CoreService.Security {
-    public class TeamAuthorizeAttribute : TypeFilterAttribute {
-
-        public TeamAuthorizeAttribute(AccessType accessType = AccessType.Client, bool clientScoped = true) : base(typeof(TeamAuthorizeFilter)) {
+namespace ASNRTech.CoreService.Security
+{
+    public class TeamAuthorizeAttribute : TypeFilterAttribute
+    {
+        public TeamAuthorizeAttribute(AccessType accessType = AccessType.Client, bool clientScoped = true) : base(typeof(TeamAuthorizeFilter))
+        {
             this.Arguments = (new object[] { accessType, clientScoped });
         }
 
-        public TeamAuthorizeAttribute(AccessType accessType = AccessType.Client, SecurityCheckType securityCheckType = SecurityCheckType.Client) : base(typeof(TeamAuthorizeFilter)) {
+        public TeamAuthorizeAttribute(AccessType accessType = AccessType.Client, SecurityCheckType securityCheckType = SecurityCheckType.Client) : base(typeof(TeamAuthorizeFilter))
+        {
             this.Arguments = (new object[] { accessType, securityCheckType });
         }
     }
 
-    public class TeamAuthorizeFilter : IAuthorizationFilter {
+    public class TeamAuthorizeFilter : IAuthorizationFilter
+    {
         private static readonly string className = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString();
 
         private readonly AccessType accessType;
@@ -34,33 +38,40 @@ namespace ASNRTech.CoreService.Security {
         private readonly SecurityCheckType securityCheckType = SecurityCheckType.Client;
         private string requestId = "";
 
-        public TeamAuthorizeFilter() {
+        public TeamAuthorizeFilter()
+        {
         }
 
-        public TeamAuthorizeFilter(AccessType accessType, bool clientScoped) {
+        public TeamAuthorizeFilter(AccessType accessType, bool clientScoped)
+        {
             this.accessType = accessType;
             this.clientScoped = clientScoped;
         }
 
-        public TeamAuthorizeFilter(AccessType accessType, SecurityCheckType securityCheckType) {
+        public TeamAuthorizeFilter(AccessType accessType, SecurityCheckType securityCheckType)
+        {
             this.accessType = accessType;
             this.securityCheckType = securityCheckType;
         }
 
-        public void OnAuthorization(AuthorizationFilterContext context) {
+        public void OnAuthorization(AuthorizationFilterContext context)
+        {
             requestId = Utility.GetRequestId(context.HttpContext);
 
-            if (accessType == AccessType.Open) {
+            if (accessType == AccessType.Open)
+            {
                 return;
             }
 
             IHeaderDictionary headers = context.HttpContext.Request.Headers;
             string clientId = string.Empty;
 
-            if (clientScoped) {
+            if (clientScoped)
+            {
                 clientId = GetClientIdFromRoute(context);
 
-                if (clientId == null) {
+                if (clientId == null)
+                {
                     context.Result = new NotFoundResult();
                     return;
                 }
@@ -68,14 +79,16 @@ namespace ASNRTech.CoreService.Security {
 
             KeyValuePair<JwtTokenValidationStatus, LoginResponseModel> validationStatus = ValidateJwt(context.HttpContext);
 
-            if (validationStatus.Key != JwtTokenValidationStatus.Valid) {
+            if (validationStatus.Key != JwtTokenValidationStatus.Valid)
+            {
                 context.Result = new UnauthorizedResult();
                 return;
             }
 
             User user = ValidateSession(context, validationStatus.Value);
 
-            if (user == null) {
+            if (user == null)
+            {
                 context.Result = new UnauthorizedResult();
                 return;
             }
@@ -86,26 +99,31 @@ namespace ASNRTech.CoreService.Security {
             //    return;
             //}
 
-            if (user == null) {
+            if (user == null)
+            {
                 return;
             }
 
-            if (user.UserType == UserType.Client) {
+            if (user.UserType == UserType.Client)
+            {
                 // check clients have access to this route
-                if ((accessType & AccessType.Client) != AccessType.Client) {
+                if ((accessType & AccessType.Client) != AccessType.Client)
+                {
                     context.Result = new UnauthorizedResult();
                     return;
                 }
             }
-            else if (user.UserType == UserType.Anchor) {
-                // check anchors have access to this route
-                if ((accessType & AccessType.Anchor) != AccessType.Anchor) {
-                    context.Result = new UnauthorizedResult();
-                    return;
-                }
+            //else if (user.UserType == UserType.Anchor)
+            //{
+            //    // check anchors have access to this route
+            //    if ((accessType & AccessType.Anchor) != AccessType.Anchor)
+            //    {
+            //        context.Result = new UnauthorizedResult();
+            //        return;
+            //    }
 
-                // check anchor has access to this client
-            }
+            //    // check anchor has access to this client
+            //}
 
             context.HttpContext.SetValue(Constants.CONTEXT_USER, user);
 
@@ -113,37 +131,44 @@ namespace ASNRTech.CoreService.Security {
             context.HttpContext.User = genericPrincipal;
             Thread.CurrentPrincipal = genericPrincipal;
 
-            if (!string.IsNullOrWhiteSpace(clientId)) {
+            if (!string.IsNullOrWhiteSpace(clientId))
+            {
                 context.HttpContext.SetValue(Constants.CONTEXT_CLIENT_ID, clientId);
             }
         }
 
-        internal static KeyValuePair<JwtTokenValidationStatus, LoginResponseModel> ValidateJwt(HttpContext httpContext) {
+        internal static KeyValuePair<JwtTokenValidationStatus, LoginResponseModel> ValidateJwt(HttpContext httpContext)
+        {
             string jwt = string.Empty;
             IHeaderDictionary headers = httpContext.Request.Headers;
-            if (headers.ContainsKey(Constants.HEADER_JWT_CLIENT_TOKEN)) {
+            if (headers.ContainsKey(Constants.HEADER_JWT_CLIENT_TOKEN))
+            {
                 jwt = headers[Constants.HEADER_JWT_CLIENT_TOKEN];
             }
 
-            if (string.IsNullOrWhiteSpace(jwt)) {
+            if (string.IsNullOrWhiteSpace(jwt))
+            {
                 jwt = HttpUtility.GetQueryStringValue(httpContext, Constants.QUERY_PARAM_JWT);
             }
 
             return Jwt.Validate(jwt);
         }
 
-        private string GetClientIdFromRoute(AuthorizationFilterContext context) {
+        private string GetClientIdFromRoute(AuthorizationFilterContext context)
+        {
             return GetParamFromRoute(context, Constants.ROUTE_PARAM_CLIENT_ID, true);
         }
 
-        private string GetParamFromRoute(AuthorizationFilterContext context, string param, bool logMissingParam) {
+        private string GetParamFromRoute(AuthorizationFilterContext context, string param, bool logMissingParam)
+        {
             const string METHOD_NAME = "GetParamFromRoute";
 
             RouteValueDictionary keyValuePairs = context.RouteData.Values;
 
             object value = keyValuePairs.FirstOrDefault(x => string.Equals(x.Key, param, StringComparison.OrdinalIgnoreCase)).Value;
 
-            if (value == null && logMissingParam) {
+            if (value == null && logMissingParam)
+            {
                 LoggerService.LogInfo(requestId, className, METHOD_NAME, $"Can't determine {param} from route. {context.HttpContext.Request.Path}");
                 return null;
             }
@@ -151,27 +176,33 @@ namespace ASNRTech.CoreService.Security {
             return (string) value;
         }
 
-        private User ValidateSession(AuthorizationFilterContext context, LoginResponseModel loginResponseModel) {
+        private User ValidateSession(AuthorizationFilterContext context, LoginResponseModel loginResponseModel)
+        {
             User user = null;
 
             string sessionIdFromCache = CacheService.GetSessionId(context.HttpContext, loginResponseModel.SessionId);
 
             // TODO: Handle sessions between server restarts and app-updates
-            if (!string.IsNullOrWhiteSpace(sessionIdFromCache)) {
+            if (!string.IsNullOrWhiteSpace(sessionIdFromCache))
+            {
                 user = CacheService.GetUserAsync(context.HttpContext, loginResponseModel.UserId).Result;
             }
 
-            if (user == null) {
-                using (TeamDbContext dbContext = new TeamDbContext()) {
+            if (user == null)
+            {
+                using (TeamDbContext dbContext = new TeamDbContext())
+                {
                     UserSession userSession = dbContext.UserSessions.FirstOrDefault(e => e.SessionId == loginResponseModel.SessionId && e.Active);
 
-                    if (userSession == null) {
+                    if (userSession == null)
+                    {
                         context.Result = new UnauthorizedResult();
                         return null;
                     }
                     user = dbContext.Users.FirstOrDefault(e => e.UserId == loginResponseModel.UserId.ToUpper(CultureInfo.InvariantCulture));
 
-                    if (user == null) {
+                    if (user == null)
+                    {
                         context.Result = new UnauthorizedResult();
                         return null;
                     }

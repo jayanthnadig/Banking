@@ -95,6 +95,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Security\SslValidator.cs" />
     <Compile Remove="Areas\Services\AlcsAssociateService.cs" />
     <Compile Remove="Areas\Services\AlcsBankingService.cs" />
     <Compile Remove="Areas\Services\AlcsInputMappingService.cs" />
@@ -222,6 +223,12 @@
     <Compile Remove="Migrations\20200422115518_cm1.Designer.cs" />
     <Compile Remove="Migrations\20200506061704_cm2.cs" />
     <Compile Remove="Migrations\20200506061704_cm2.Designer.cs" />
+    <Compile Remove="Migrations\20200630124634_v1.cs" />
+    <Compile Remove="Migrations\20200630124634_v1.Designer.cs" />
+    <Compile Remove="Migrations\20200701174151_v2.cs" />
+    <Compile Remove="Migrations\20200701174151_v2.Designer.cs" />
+    <Compile Remove="Migrations\20200701193001_v3.cs" />
+    <Compile Remove="Migrations\20200701193001_v3.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -237,6 +244,8 @@
 
   <ItemGroup>
     <Compile Include="Areas\Reports\Models.cs" />
+    <Compile Include="Areas\Reports\ReportController.cs" />
+    <Compile Include="Areas\Reports\ReportService.cs" />
   </ItemGroup>
 
   <ItemGroup>

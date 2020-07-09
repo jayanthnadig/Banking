@@ -32,8 +32,18 @@
   display: none!important;
 }
 .error{
+  color: red;  
+}
+.errorLogin{
   color: red;
-  
+    border: 0;
+    position: relative;
+    top: -50px;
+    font-size: 1.5em;
+}
+.warningIconPos{
+  position: relative;
+  left: -35px;
 }
 .custom_pluscircle{
   position: relative;
@@ -106,6 +116,19 @@
 .report_content{
   top: 20px;
   position: relative;
+}
+.grid_input{
+  outline: none;
+  width: 100%;
+}
+.grid_input:focus{
+  color:orange;
+}
+.edit_field{
+  color: orange;
+}
+.txtwhite{
+  color:#fff
 }
 @keyframes App-logo-spin {
   from {

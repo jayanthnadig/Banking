@@ -134,7 +134,7 @@ class Login extends React.Component {
                   </button> */}
                 </div>
                 <div className="intro-x mt-10 xl:mt-24 text-gray-700 text-center xl:text-left">
-                   <span className={`error ${(!this.state.loginstatus)?"hide":""}`}>Invalid Username Or Password</span>
+                   <span className={`errorLogin ${(!this.state.loginstatus)?"hide":""}`}>Invalid Credentials</span>
                   <br /> <br /> <br />
                   <a className="text-theme-1" href="">
                     Terms and Conditions

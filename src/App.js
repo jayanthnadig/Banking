@@ -24,7 +24,7 @@ class App extends Component{
           <Switch>
             <Route exact path="/" component={()=><Login />} />
             <Route exact path="/dashboard" component={()=><Dashboard />} />
-            <Route exact path="/report" component={()=><Report />} />
+            <Route exact path="/report/:id/:id/:id/:id" component={()=><Report />} />
             <Route exact path="/reportdetails" component={()=><ReportDetails />} />
             <Route exact path="/reportconfig" component={()=><ReportConfiguration />} />
             <Route exact path="/userconfig" component={()=><UserConfig />} />
