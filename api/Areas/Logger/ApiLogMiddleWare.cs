@@ -9,19 +9,24 @@ using System.Threading.Tasks;
 using ASNRTech.CoreService.Logging;
 using ASNRTech.CoreService.Utilities;
 
-namespace ASNRTech.CoreService.Core {
-    public class ApiLogMiddleWare {
+namespace ASNRTech.CoreService.Core
+{
+    public class ApiLogMiddleWare
+    {
         private readonly RequestDelegate _next;
         private static readonly HashSet<string> apiRequestBlackList = new HashSet<string>();
         private static readonly HashSet<string> apiResponseBlackList = new HashSet<string>();
         private static readonly HashSet<string> apiBlackList = new HashSet<string>();
 
-        public ApiLogMiddleWare(RequestDelegate next) {
-            if (apiBlackList.Count == 0) {
+        public ApiLogMiddleWare(RequestDelegate next)
+        {
+            if (apiBlackList.Count == 0)
+            {
                 apiBlackList.Add("/swagger/v1/swagger.json");
                 apiBlackList.Add("/v1/auth/login");
 
-                foreach (string item in apiBlackList) {
+                foreach (string item in apiBlackList)
+                {
                     apiRequestBlackList.Add(item);
                     apiResponseBlackList.Add(item);
                 }
@@ -30,7 +35,8 @@ namespace ASNRTech.CoreService.Core {
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context) {
+        public async Task Invoke(HttpContext context)
+        {
             bool logRequestBody = !apiRequestBlackList.Contains(context.Request.Path);
             bool logResponseBody = !apiResponseBlackList.Contains(context.Request.Path);
 
@@ -41,7 +47,8 @@ namespace ASNRTech.CoreService.Core {
             Stream originalBodyStream = context.Response.Body;
 
             //Create a new memory stream...
-            using (MemoryStream responseBody = new MemoryStream()) {
+            using (MemoryStream responseBody = new MemoryStream())
+            {
                 //...and use that for the temporary response body
                 context.Response.Body = responseBody;
 
@@ -58,14 +65,17 @@ namespace ASNRTech.CoreService.Core {
             LoggerService.SaveApiLogEntry(apiLogEntry);
         }
 
-        private async Task<ApiLogEntry> FormatRequest(HttpContext context, bool logBody) {
+        private async Task<ApiLogEntry> FormatRequest(HttpContext context, bool logBody)
+        {
             HttpRequest request = context.Request;
 
             string requestUri = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
-            ApiLogEntry returnValue = new ApiLogEntry {
+            ApiLogEntry returnValue = new ApiLogEntry
+            {
                 RequestId = (string) context.Items[Constants.CONTEXT_CORRELATION_ID],
                 Application = "core-service",
                 User = context.User.Identity.Name,
+                //User = "Admin",
                 RequestContentType = request.ContentType,
                 RequestIpAddress = context.Connection.RemoteIpAddress.ToString(),
                 RequestMethod = request.Method,
@@ -74,7 +84,8 @@ namespace ASNRTech.CoreService.Core {
                 RequestUri = requestUri
             };
 
-            if (logBody) {
+            if (logBody)
+            {
                 var body = request.Body;
 
                 //This line allows us to set the reader for the request back at the beginning of its stream.
@@ -87,9 +98,11 @@ namespace ASNRTech.CoreService.Core {
             return returnValue;
         }
 
-        private async Task<ApiLogEntry> FormatResponse(HttpContext httpContext, ApiLogEntry apiLogEntry, bool logBody) {
+        private async Task<ApiLogEntry> FormatResponse(HttpContext httpContext, ApiLogEntry apiLogEntry, bool logBody)
+        {
             HttpResponse response = httpContext.Response;
-            if (logBody) {
+            if (logBody)
+            {
                 //We need to read the response stream from the beginning...
                 response.Body.Seek(0, SeekOrigin.Begin);
 
@@ -107,24 +120,30 @@ namespace ASNRTech.CoreService.Core {
             return apiLogEntry;
         }
 
-        internal static ApiLogEntry GetApiLogEntry(string requestUrl, HttpMethod method) {
+        internal static ApiLogEntry GetApiLogEntry(string requestUrl, HttpMethod method)
+        {
             return ApiLogMiddleWare.GetApiLogEntry(requestUrl, method, string.Empty);
         }
 
-        internal static ApiLogEntry GetApiLogEntry(string requestUrl, HttpMethod method, List<string> headers) {
+        internal static ApiLogEntry GetApiLogEntry(string requestUrl, HttpMethod method, List<string> headers)
+        {
             return ApiLogMiddleWare.GetApiLogEntry(requestUrl, method, LoggerService.SerializeHeaders(headers));
         }
 
-        internal static ApiLogEntry GetApiLogEntry(string requestUrl, HttpMethod method, WebHeaderCollection headers) {
+        internal static ApiLogEntry GetApiLogEntry(string requestUrl, HttpMethod method, WebHeaderCollection headers)
+        {
             return ApiLogMiddleWare.GetApiLogEntry(requestUrl, method, LoggerService.SerializeHeaders(headers));
         }
 
-        internal static ApiLogEntry GetApiLogEntry(string requestUrl, HttpMethod method, List<KeyValuePair<string, string>> headers) {
+        internal static ApiLogEntry GetApiLogEntry(string requestUrl, HttpMethod method, List<KeyValuePair<string, string>> headers)
+        {
             return ApiLogMiddleWare.GetApiLogEntry(requestUrl, method, LoggerService.SerializeHeaders(headers));
         }
 
-        internal static ApiLogEntry GetApiLogEntry(string requestUrl, HttpMethod method, string headers) {
-            return new ApiLogEntry {
+        internal static ApiLogEntry GetApiLogEntry(string requestUrl, HttpMethod method, string headers)
+        {
+            return new ApiLogEntry
+            {
                 Application = "app-net",
                 Machine = Environment.MachineName,
                 RequestMethod = method.ToString(),

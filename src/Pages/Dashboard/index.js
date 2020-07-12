@@ -21,6 +21,12 @@ class Dashboard extends React.Component {
       widgetQueryLevel1: "",
       widgetQueryLevel2: "",
       widgetQueryLevel3: "",
+      widgetQueryLevel4: "",
+      l1ConnectionString: "",
+      l2ConnectionString: "",
+      l3ConnectionString: "",
+      l4ConnectionString: "",
+      widgetConnectionString: "",
     };
   }
   componentDidMount() {
@@ -29,62 +35,6 @@ class Dashboard extends React.Component {
       userDetails: _userDetails,
     });
     this.props.GET_DASHBOARD_WIDGETS(_userDetails.userid);
-    // let chart = am4core.create("chartdiv", am4charts.PieChart);
-    // let chart1 = am4core.create("chartdiv1", am4charts.XYChart);
-    // chart.data = [
-    //   {
-    //     country: "Authorized",
-    //     litres: 50,
-    //   },
-    //   {
-    //     country: "UnAuthorized",
-    //     litres: 100,
-    //   },
-
-    // ];
-
-    // chart1.data = [
-    //     {
-    //         country: "Authorized",
-    //         litres: 50,
-    //       },
-    //       {
-    //         country: "UnAuthorized",
-    //         litres: 100,
-    //       },
-    // ];
-
-    // this.chart = chart;
-    // this.chart1 = chart1;
-
-    // let pieSeries = chart.series.push(new am4charts.PieSeries());
-    // pieSeries.dataFields.value = "litres";
-    // pieSeries.dataFields.category = "country";
-
-    // let categoryAxis = chart1.xAxes.push(new am4charts.CategoryAxis());
-    // categoryAxis.dataFields.category = "country";
-    // categoryAxis.title.text = "Countries";
-
-    // let valueAxis = chart1.yAxes.push(new am4charts.ValueAxis());
-    // valueAxis.title.text = "Litres sold (M)";
-
-    // let series = chart1.series.push(new am4charts.ColumnSeries());
-    // series.dataFields.valueY = "litres";
-    // series.dataFields.categoryX = "country";
-
-    // pieSeries.slices.template.events.on("hit", function(ev) {
-    //     window.open(
-    //         '/report',
-    //         '_blank'
-    //       );
-    //   }, this);
-
-    //   series.columns.template.events.on("hit", function(ev) {
-    //     window.open(
-    //         '/report',
-    //         '_blank'
-    //       );
-    //   }, this);
   }
 
   componentWillUnmount() {
@@ -117,6 +67,12 @@ class Dashboard extends React.Component {
         _tempField.widgetQueryLevel1 = _obj.widgetQueryLevel1;
         _tempField.widgetQueryLevel2 = _obj.widgetQueryLevel2;
         _tempField.widgetQueryLevel3 = _obj.widgetQueryLevel3;
+        _tempField.widgetQueryLevel4 = _obj.widgetQueryLevel4;
+        _tempField.widgetConnectionString = _obj.widgetConnectionString;
+        _tempField.l1ConnectionString = _obj.l1ConnectionString;
+        _tempField.l2ConnectionString = _obj.l2ConnectionString;
+        _tempField.l3ConnectionString = _obj.l3ConnectionString;
+        _tempField.l4ConnectionString = _obj.l4ConnectionString;
       } else {
         _tempField.widgetName = "";
         _tempField.widgetId = -1;
@@ -125,6 +81,12 @@ class Dashboard extends React.Component {
         _tempField.widgetQueryLevel1 = "";
         _tempField.widgetQueryLevel2 = "";
         _tempField.widgetQueryLevel3 = "";
+        _tempField.widgetQueryLevel4 = "";
+        _tempField.l1ConnectionString = "PgAdmin4ConnectionString";
+        _tempField.l2ConnectionString = "PgAdmin4ConnectionString";
+        _tempField.l3ConnectionString = "PgAdmin4ConnectionString";
+        _tempField.l4ConnectionString = "PgAdmin4ConnectionString";
+        _tempField.widgetConnectionString = "PgAdmin4ConnectionString";
       }
       return _tempField;
     });
@@ -146,6 +108,7 @@ class Dashboard extends React.Component {
     this.props.DELETE_DASHBOARD_WIDGETS(this.state.widgetId);
   }
   logout() {
+    this.props.USER_LOGOUT();
     window.location.href = "/";
   }
   handleChange = (e) => {
@@ -159,7 +122,7 @@ class Dashboard extends React.Component {
   };
   addWidget = () => {
     console.log(this.state.widgetName);
-    this.props.POST_DASHBOARD_WIDGETS(this.state);
+    this.props.POST_DASHBOARD_WIDGETS(JSON.parse(JSON.stringify(this.state)));
   };
   bindDatatoChart() {
     if (this.props.widget_data.length) {
@@ -182,7 +145,9 @@ class Dashboard extends React.Component {
             function (ev) {
               //console.log(ev.target.dataItem.dataContext.name);
               window.open(
-                `/report/${1}/${_chartData.widgetId}/${ev.target.dataItem.dataContext.name}/null`,
+                `/report/${1}/${_chartData.widgetId}/${
+                  ev.target.dataItem.dataContext.name
+                }/null`,
                 "_blank"
               );
             },
@@ -212,7 +177,9 @@ class Dashboard extends React.Component {
             function (ev) {
               console.log(ev.target.dataItem.dataContext.name);
               window.open(
-                `/report/${1}/${_chartData.widgetId}/${ev.target.dataItem.dataContext.name}/null`,
+                `/report/${1}/${_chartData.widgetId}/${
+                  ev.target.dataItem.dataContext.name
+                }/null`,
                 "_blank"
               );
             },
@@ -254,7 +221,9 @@ class Dashboard extends React.Component {
                     stroke-width="1.5"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    className="feather feather-edit mx-auto custom_refresh"
+                    className={`feather feather-edit mx-auto custom_refresh ${
+                      !this.state.userDetails.isEditRights ? "hidden" : ""
+                    }`}
                     onClick={() => this.showAddWidget(true, _chartData)}
                   >
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -270,7 +239,9 @@ class Dashboard extends React.Component {
                     stroke-width="1.5"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    class="feather feather-trash-2 mx-auto"
+                    className={`feather feather-trash-2 mx-auto ${
+                      !this.state.userDetails.isDeleteRights ? "hidden" : ""
+                    }`}
                     onClick={() => this.showDeletePop(true, _chartData)}
                   >
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -378,7 +349,9 @@ class Dashboard extends React.Component {
                   <polyline points="16 17 21 12 16 7"></polyline>
                   <line x1="21" y1="12" x2="9" y2="12"></line>
                 </svg>
-                <span className="userwelcome">Welcome Admin</span>
+                <span className="userwelcome">
+                  Welcome {this.state.userDetails.userid}
+                </span>
               </div>
             </div>
           </div>
@@ -386,7 +359,12 @@ class Dashboard extends React.Component {
             <nav class="side-nav">
               <ul>
                 <li>
-                  <a href="/dashboard" class="side-menu side-menu--active">
+                  <a
+                    href="/dashboard"
+                    className={`side-menu ${
+                      !this.state.modal ? "side-menu--active" : ""
+                    }`}
+                  >
                     <div class="side-menu__icon">
                       {" "}
                       <svg
@@ -406,6 +384,45 @@ class Dashboard extends React.Component {
                       </svg>{" "}
                     </div>
                     <div class="side-menu__title"> Dashboard </div>
+                  </a>
+                </li>
+                <li className={`${
+                      !this.state.userDetails.isAddRights ? "hidden" : ""
+                    }`}>
+                  <a
+                    href="#"
+                    className={`side-menu ${
+                      this.state.modal ? "side-menu--active" : ""
+                    }`}
+                    onClick={() => this.showAddWidget(true, {})}
+                  >
+                    <div class="side-menu__icon">
+                      {" "}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="feather feather-plus-square mx-auto"
+                      >
+                        <rect
+                          x="3"
+                          y="3"
+                          width="18"
+                          height="18"
+                          rx="2"
+                          ry="2"
+                        ></rect>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                      </svg>{" "}
+                    </div>
+                    <div class="side-menu__title"> Add Widgets </div>
                   </a>
                 </li>
 
@@ -439,8 +456,9 @@ class Dashboard extends React.Component {
                     </div>
                   </a>
                 </li>
-
-                <li>
+                <li className={`${
+                      (this.state.userDetails.type!==1) ? "hidden" : ""
+                    }`}>
                   <a href="/userConfig" class="side-menu">
                     <div class="side-menu__icon">
                       {" "}
@@ -470,7 +488,6 @@ class Dashboard extends React.Component {
             <div className="content">
               <div className="intro-y flex items-center mt-8">
                 <h2 className="text-lg font-medium mr-auto">
-                  Chart{" "}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -481,7 +498,7 @@ class Dashboard extends React.Component {
                     stroke-width="1.5"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    className="feather feather-plus-circle mx-auto custom_pluscircle"
+                    className="feather feather-plus-circle mx-auto custom_pluscircle hidden"
                     onClick={() => this.showAddWidget(true, {})}
                   >
                     <circle cx="12" cy="12" r="10"></circle>
@@ -508,244 +525,408 @@ class Dashboard extends React.Component {
                   <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
                 </svg>
               </div>
-              <div className="intro-y grid grid-cols-12 gap-6 mt-5">
+              <div
+                className={`intro-y grid grid-cols-12 gap-6 mt-5 ${
+                  this.state.modal ? "hidden" : ""
+                }`}
+              >
                 {this.bindChartContainer()}
               </div>
-            </div>
-          </div>
-          <div
-            className={`modal p-10 ${
-              this.state.modal ? "show model_show" : ""
-            }`}
-            id="button-modal-preview"
-          >
-            {" "}
-            <div class="modal__content relative custom_model_content validate-form">
-              <div class="flex flex-col sm:flex-row items-center p-5 border-b border-gray-200">
-                <h2 class="font-medium text-base mr-auto">
-                  {this.state.widgetId == -1 ? "Add" : "Edit"} Widget
-                </h2>
-                <div class="w-full sm:w-auto flex items-center sm:ml-auto mt-3 sm:mt-0">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    className="feather feather-x mx-auto"
-                    onClick={() => this.showAddWidget(false, {})}
-                  >
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
+              <div>
+                <div
+                  className={`p-10 ${
+                    this.state.modal ? "show model_show" : "hidden"
+                  }`}
+                  id="button-modal-preview"
+                >
+                  {" "}
+                  <div class="modal__content relative widget_model_content validate-form intro-y box">
+                    <div class="flex flex-col sm:flex-row items-center p-5 border-b border-gray-200">
+                      <h2 class="font-medium text-base mr-auto">
+                        {this.state.widgetId == -1 ? "Add" : "Edit"} Widget
+                      </h2>
+                      <div class="w-full sm:w-auto flex items-center sm:ml-auto mt-3 sm:mt-0">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          className="feather feather-x mx-auto"
+                          onClick={() => this.showAddWidget(false, {})}
+                        >
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-center">
+                      {" "}
+                      <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                        Name
+                      </label>{" "}
+                      <input
+                        type="text"
+                        class="input w-full border mt-2 flex-1"
+                        name="widgetName"
+                        placeholder="Widget Name"
+                        required
+                        value={this.state.widgetName}
+                        onChange={(e) => this.handleChange(e)}
+                      />{" "}
+                    </div>{" "}
+                    <div class="flex flex-col sm:flex-row items-center mt-3">
+                      {" "}
+                      <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                        Widget Type
+                      </label>{" "}
+                      <select
+                        class="select2 w-full input w-full border mt-2 flex-1"
+                        name="widgetType"
+                        value={this.state.widgetType}
+                        onChange={(e) => this.handleChange(e)}
+                      >
+                        <option value="Pie Chart">Pie Chart</option>
+                        <option value="Bar Chart">Bar Chart</option>
+                        <option value="Line Chart">Line Chart</option>
+                      </select>{" "}
+                    </div>{" "}
+                    <div class="flex flex-col sm:flex-row items-center mt-3">
+                      {" "}
+                      <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                        Widget Connection String
+                      </label>{" "}
+                      <select
+                        class="select2 w-full input w-full border mt-2 flex-1"
+                        name="widgetConnectionString"
+                        value={this.state.widgetConnectionString}
+                        onChange={(e) => this.handleChange(e)}
+                      >
+                        <option value="PgAdmin4ConnectionString">
+                          PgAdmin4ConnectionString
+                        </option>
+                        <option value="OracleConnectionString">
+                          OracleConnectionString
+                        </option>
+                        <option value="SqlConnectionString">
+                          SqlConnectionString
+                        </option>
+                      </select>{" "}
+                    </div>{" "}
+                    <div class="flex flex-col sm:flex-row items-center">
+                      {" "}
+                      <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                        Query
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          title="basic tool"
+                          width="24"
+                          height="24"
+                          data-tip
+                          data-for="level0tip"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="tooltip feather feather-alert-octagon w-6 h-6 mr-2 warningIconPos"
+                        >
+                          <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                          <line x1="12" y1="8" x2="12" y2="12"></line>
+                          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <ReactTooltip id="level0tip" place="top" effect="solid">
+                          <table>
+                            <thead>
+                              <th>Name</th>
+                              <th>Count</th>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>Unauthorised</td>
+                                <td>3</td>
+                              </tr>
+                              <tr>
+                                <td>Authorised</td>
+                                <td>2</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </ReactTooltip>
+                      </label>{" "}
+                      <textarea
+                        class="input w-full border mt-2 flex-1"
+                        placeholder="Select statement"
+                        name="widgetQuery"
+                        value={this.state.widgetQuery}
+                        onChange={(e) => this.handleChange(e)}
+                        required
+                        style={{ height: "120px" }}
+                      />{" "}
+                    </div>{" "}
+                    <div class="flex flex-col sm:flex-row items-center mt-3">
+                      {" "}
+                      <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                        Level1 Connection String
+                      </label>{" "}
+                      <select
+                        class="select2 w-full input w-full border mt-2 flex-1"
+                        name="l1ConnectionString"
+                        value={this.state.l1ConnectionString}
+                        onChange={(e) => this.handleChange(e)}
+                      >
+                        <option value="PgAdmin4ConnectionString">
+                          PgAdmin4ConnectionString
+                        </option>
+                        <option value="OracleConnectionString">
+                          OracleConnectionString
+                        </option>
+                        <option value="SqlConnectionString">
+                          SqlConnectionString
+                        </option>
+                      </select>{" "}
+                    </div>{" "}
+                    <div class="flex flex-col sm:flex-row items-center">
+                      {" "}
+                      <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                        Level 1 Query
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          data-tip
+                          data-for="level1tip"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-alert-octagon w-6 h-6 mr-2 warningIconPos"
+                        >
+                          <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                          <line x1="12" y1="8" x2="12" y2="12"></line>
+                          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <ReactTooltip id="level1tip" place="top" effect="solid">
+                          Place holder format should be @ColumnName@ in where
+                          condition -
+                        </ReactTooltip>
+                      </label>{" "}
+                      <textarea
+                        class="input w-full border mt-2 flex-1"
+                        placeholder="Select statement"
+                        name="widgetQueryLevel1"
+                        value={this.state.widgetQueryLevel1}
+                        onChange={(e) => this.handleChange(e)}
+                        style={{ height: "120px" }}
+                      />{" "}
+                    </div>{" "}
+                    <div class="flex flex-col sm:flex-row items-center mt-3">
+                      {" "}
+                      <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                        Level2 Connection String
+                      </label>{" "}
+                      <select
+                        class="select2 w-full input w-full border mt-2 flex-1"
+                        name="l2ConnectionString"
+                        value={this.state.l2ConnectionString}
+                        onChange={(e) => this.handleChange(e)}
+                      >
+                        <option value="PgAdmin4ConnectionString">
+                          PgAdmin4ConnectionString
+                        </option>
+                        <option value="OracleConnectionString">
+                          OracleConnectionString
+                        </option>
+                        <option value="SqlConnectionString">
+                          SqlConnectionString
+                        </option>
+                      </select>{" "}
+                    </div>{" "}
+                    <div class="flex flex-col sm:flex-row items-center">
+                      {" "}
+                      <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                        Level 2 Query
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          data-tip
+                          data-for="level2tip"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-alert-octagon w-6 h-6 mr-2 warningIconPos"
+                        >
+                          <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                          <line x1="12" y1="8" x2="12" y2="12"></line>
+                          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <ReactTooltip id="level2tip" place="top" effect="solid">
+                          Place holder format should be @ColumnName@ in where
+                          condition -
+                        </ReactTooltip>
+                      </label>{" "}
+                      <textarea
+                        class="input w-full border mt-2 flex-1"
+                        placeholder="Select statement"
+                        name="widgetQueryLevel2"
+                        value={this.state.widgetQueryLevel2}
+                        onChange={(e) => this.handleChange(e)}
+                        style={{ height: "120px" }}
+                      />{" "}
+                    </div>{" "}
+                    <div class="flex flex-col sm:flex-row items-center mt-3">
+                      {" "}
+                      <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                        Level3 Connection String
+                      </label>{" "}
+                      <select
+                        class="select2 w-full input w-full border mt-2 flex-1"
+                        name="l3ConnectionString"
+                        value={this.state.l3ConnectionString}
+                        onChange={(e) => this.handleChange(e)}
+                      >
+                        <option value="PgAdmin4ConnectionString">
+                          PgAdmin4ConnectionString
+                        </option>
+                        <option value="OracleConnectionString">
+                          OracleConnectionString
+                        </option>
+                        <option value="SqlConnectionString">
+                          SqlConnectionString
+                        </option>
+                      </select>{" "}
+                    </div>{" "}
+                    <div class="flex flex-col sm:flex-row items-center">
+                      {" "}
+                      <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                        Level 3 Query
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          data-tip
+                          data-for="level3tip"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-alert-octagon w-6 h-6 mr-2 warningIconPos"
+                        >
+                          <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                          <line x1="12" y1="8" x2="12" y2="12"></line>
+                          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <ReactTooltip id="level3tip" place="top" effect="solid">
+                          Place holder format should be @ColumnName@ in where
+                          condition -
+                        </ReactTooltip>
+                      </label>{" "}
+                      <textarea
+                        class="input w-full border mt-2 flex-1"
+                        placeholder="Select statement"
+                        name="widgetQueryLevel3"
+                        value={this.state.widgetQueryLevel3}
+                        onChange={(e) => this.handleChange(e)}
+                        style={{ height: "120px" }}
+                      />{" "}
+                    </div>{" "}
+                    <div class="flex flex-col sm:flex-row items-center mt-3">
+                      {" "}
+                      <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                        Level4 Connection String
+                      </label>{" "}
+                      <select
+                        class="select2 w-full input w-full border mt-2 flex-1"
+                        name="l4ConnectionString"
+                        value={this.state.l4ConnectionString}
+                        onChange={(e) => this.handleChange(e)}
+                      >
+                        <option value="PgAdmin4ConnectionString">
+                          PgAdmin4ConnectionString
+                        </option>
+                        <option value="OracleConnectionString">
+                          OracleConnectionString
+                        </option>
+                        <option value="SqlConnectionString">
+                          SqlConnectionString
+                        </option>
+                      </select>{" "}
+                    </div>{" "}
+                    <div class="flex flex-col sm:flex-row items-center">
+                      {" "}
+                      <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                        Level 4 Query
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          data-tip
+                          data-for="level4tip"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-alert-octagon w-6 h-6 mr-2 warningIconPos"
+                        >
+                          <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                          <line x1="12" y1="8" x2="12" y2="12"></line>
+                          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <ReactTooltip id="level4tip" place="top" effect="solid">
+                          Place holder format should be @ColumnName@ in where
+                          condition -
+                        </ReactTooltip>
+                      </label>{" "}
+                      <textarea
+                        class="input w-full border mt-2 flex-1"
+                        placeholder="Select statement"
+                        name="widgetQueryLevel4"
+                        value={this.state.widgetQueryLevel4}
+                        onChange={(e) => this.handleChange(e)}
+                        style={{ height: "120px" }}
+                      />{" "}
+                    </div>{" "}
+                    <div
+                      class="sm:ml-20 sm:pl-5 mt-5"
+                      style={{ padding: "20px 0" }}
+                    >
+                      {" "}
+                      <button
+                        type="button"
+                        class="button bg-theme-1 text-white"
+                        style={{ float: "right" }}
+                        onClick={() => this.addWidget()}
+                      >
+                        {this.state.widgetId == -1 ? "Add" : "Update"}
+                      </button>{" "}
+                      <button
+                        type="button"
+                        class="button bg-theme-1 text-white"
+                        style={{ float: "right", marginRight: "10px" }}
+                        onClick={() => this.showAddWidget(false, {})}
+                      >
+                        Cancel
+                      </button>{" "}
+                    </div>
+                  </div>{" "}
                 </div>
               </div>
-              <div class="flex flex-col sm:flex-row items-center">
-                {" "}
-                <label class="w-full sm:w-20 sm:text-right sm:mr-5">
-                  Name
-                </label>{" "}
-                <input
-                  type="text"
-                  class="input w-full border mt-2 flex-1"
-                  name="widgetName"
-                  placeholder="Widget Name"
-                  required
-                  value={this.state.widgetName}
-                  onChange={(e) => this.handleChange(e)}
-                />{" "}
-              </div>{" "}
-              <div class="flex flex-col sm:flex-row items-center mt-3">
-                {" "}
-                <label class="w-full sm:w-20 sm:text-right sm:mr-5">
-                  Widget Type
-                </label>{" "}
-                <select
-                  class="select2 w-full input w-full border mt-2 flex-1"
-                  name="widgetType"
-                  value={this.state.widgetType}
-                  onChange={(e) => this.handleChange(e)}
-                >
-                  <option value="Pie Chart">Pie Chart</option>
-                  <option value="Bar Chart">Bar Chart</option>
-                  <option value="Line Chart">Line Chart</option>
-                </select>{" "}
-              </div>{" "}
-              <div class="flex flex-col sm:flex-row items-center">
-                {" "}
-                <label class="w-full sm:w-20 sm:text-right sm:mr-5">
-                  Query
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    title="basic tool"
-                    width="24"
-                    height="24"
-                    data-tip
-                    data-for="level0tip"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="tooltip feather feather-alert-octagon w-6 h-6 mr-2 warningIconPos"
-                  >
-                    <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                  </svg>
-                  <ReactTooltip id="level0tip" place="top" effect="solid">
-                   <table>
-                     <thead>
-                       <th>Name</th>
-                       <th>Count</th>
-                     </thead>
-                     <tbody>
-                       <tr><td>Unauthorised</td><td>3</td></tr>
-                       <tr><td>Authorised</td><td>2</td></tr>
-                     </tbody>
-                   </table>
-                  </ReactTooltip>
-                </label>{" "}
-                <textarea
-                  class="input w-full border mt-2 flex-1"
-                  placeholder="Select statement"
-                  name="widgetQuery"
-                  value={this.state.widgetQuery}
-                  onChange={(e) => this.handleChange(e)}
-                  required
-                  style={{ height: "120px" }}
-                />{" "}
-              </div>{" "}
-              <div class="flex flex-col sm:flex-row items-center">
-                {" "}
-                <label class="w-full sm:w-20 sm:text-right sm:mr-5">
-                  Level 1 Query
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    data-tip
-                    data-for="level1tip"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="feather feather-alert-octagon w-6 h-6 mr-2 warningIconPos"
-                  >
-                    <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                  </svg>
-                  <ReactTooltip id="level1tip" place="top" effect="solid">
-                  Place holder format should be @ColumnName@ in where condition -
-                  </ReactTooltip>
-                </label>{" "}
-                <textarea
-                  class="input w-full border mt-2 flex-1"
-                  placeholder="Select statement"
-                  name="widgetQueryLevel1"
-                  value={this.state.widgetQueryLevel1}
-                  onChange={(e) => this.handleChange(e)}
-                  style={{ height: "120px" }}
-                />{" "}
-              </div>{" "}
-              <div class="flex flex-col sm:flex-row items-center">
-                {" "}
-                <label class="w-full sm:w-20 sm:text-right sm:mr-5">
-                  Level 2 Query
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    data-tip
-                    data-for="level2tip"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="feather feather-alert-octagon w-6 h-6 mr-2 warningIconPos"
-                  >
-                    <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                  </svg>
-                  <ReactTooltip id="level2tip" place="top" effect="solid">
-                  Place holder format should be @ColumnName@ in where condition -
-                  </ReactTooltip>
-                </label>{" "}
-                <textarea
-                  class="input w-full border mt-2 flex-1"
-                  placeholder="Select statement"
-                  name="widgetQueryLevel2"
-                  value={this.state.widgetQueryLevel2}
-                  onChange={(e) => this.handleChange(e)}
-                  style={{ height: "120px" }}
-                />{" "}
-              </div>{" "}
-              <div class="flex flex-col sm:flex-row items-center">
-                {" "}
-                <label class="w-full sm:w-20 sm:text-right sm:mr-5">
-                  Level 3 Query
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    data-tip
-                    data-for="level3tip"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="feather feather-alert-octagon w-6 h-6 mr-2 warningIconPos"
-                  >
-                    <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                  </svg>
-                  <ReactTooltip id="level3tip" place="top" effect="solid">
-                  Place holder format should be @ColumnName@ in where condition -
-                  </ReactTooltip>
-                </label>{" "}
-                <textarea
-                  class="input w-full border mt-2 flex-1"
-                  placeholder="Select statement"
-                  name="widgetQueryLevel3"
-                  value={this.state.widgetQueryLevel3}
-                  onChange={(e) => this.handleChange(e)}
-                  style={{ height: "120px" }}
-                />{" "}
-              </div>{" "}
-              <div class="sm:ml-20 sm:pl-5 mt-5" style={{ padding: "20px 0" }}>
-                {" "}
-                <button
-                  type="button"
-                  class="button bg-theme-1 text-white"
-                  style={{ float: "right" }}
-                  onClick={() => this.addWidget()}
-                >
-                  {this.state.widgetId == -1 ? "Add" : "Update"}
-                </button>{" "}
-                <button
-                  type="button"
-                  class="button bg-theme-1 text-white"
-                  style={{ float: "right", marginRight: "10px" }}
-                  onClick={() => this.showAddWidget(false, {})}
-                >
-                  Cancel
-                </button>{" "}
-              </div>
-            </div>{" "}
+            </div>
           </div>
 
           <div
@@ -797,6 +978,7 @@ class Dashboard extends React.Component {
 const mapProperties = (state) => {
   return {
     widget_data: state.dashboardReducer.widgetData,
+    loginstatus: state.dashboardReducer.loginstatus,
   };
 };
 const dispatch_action = (dispatch) => {
@@ -808,6 +990,7 @@ const dispatch_action = (dispatch) => {
       dispatch(action_type._post_dashboardWidget(_state)),
     DELETE_DASHBOARD_WIDGETS: (_id) =>
       dispatch(action_type._delete_dashboardWidget(_id)),
+    USER_LOGOUT: () => dispatch(action_type._user_logout()),
   };
 };
 

@@ -14,6 +14,9 @@ namespace ASNRTech.CoreService.Reports
         [Column("rc_name")]
         public string ReportName { get; set; }
 
+        [Column("rc_connectionstring")]
+        public string ReportConnectionString { get; set; }
+
         [Column("rc_query")]
         public string ReportQuery { get; set; }
 
@@ -39,6 +42,7 @@ namespace ASNRTech.CoreService.Reports
 
     public class ReportConfigAddEdit : ReportList
     {
+        public string ReportConnectionString { get; set; }
         public string ReportQuery { get; set; }
         public string ReportEmail { get; set; }
         public string ReportFormat { get; set; }

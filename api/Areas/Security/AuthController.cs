@@ -18,17 +18,16 @@ namespace ASNRTech.CoreService.Security
         }
 
         [HttpPost]
-        [Route("v1/auth/logout")]
-        [TeamAuthorize(AccessType.Admin | AccessType.Client, false)]
-        public async Task<ResponseBase> Logout()
+        [Route("v1/auth/logout/userId/{userId}")]
+        public async Task<ResponseBase> Logout(string userId)
         {
-            return await AuthService.LogoutAsync(new TeamHttpContext(HttpContext)).ConfigureAwait(false);
+            return await AuthService.LogoutAsync(new TeamHttpContext(HttpContext), userId).ConfigureAwait(false);
         }
 
         [HttpGet]
         [Route("v1/auth/viewallusers/{userId}")]
         //[TeamAuthorize(AccessType.Admin | AccessType.Client, false)]
-        //[TeamAuthorize(AccessType.Client, false)]
+        [TeamAuthorize(AccessType.Client, true)]
         public async Task<ResponseBase<List<AddEditNewUser>>> viewallusers()
         {
             return await AuthService.ViewAllUser(new TeamHttpContext(HttpContext)).ConfigureAwait(false);
@@ -37,7 +36,7 @@ namespace ASNRTech.CoreService.Security
         [HttpPost]
         [Route("v1/auth/userconfig/{userId}")]
         //[TeamAuthorize(AccessType.Admin | AccessType.Client, false)]
-        //[TeamAuthorize(AccessType.Client, false)]
+        [TeamAuthorize(AccessType.Client, true)]
         public async Task<ResponseBase<List<AddEditNewUser>>> addeditnewuser([FromBody]List<AddEditNewUser> adduser)
         {
             return await AuthService.AddEditNewUser(new TeamHttpContext(HttpContext), adduser).ConfigureAwait(false);

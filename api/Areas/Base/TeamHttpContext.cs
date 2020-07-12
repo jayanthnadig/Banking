@@ -37,23 +37,13 @@ namespace ASNRTech.CoreService.Core {
       }
     }
 
-    internal string ContextClientId {
-      get {
-        return (string) httpContext.GetValue(Constants.CONTEXT_CLIENT_ID);
-      }
-    }
-
-    internal User CurrentUser {
-      get {
-        object user = httpContext.GetValue(Constants.CONTEXT_USER);
-
-        if (user == null) {
-          throw new ApplicationException("User not found in context");
+        internal string ContextUserId
+        {
+            get
+            {
+                return (string) httpContext.GetValue(Constants.CONTEXT_USER_ID);
+            }
         }
-
-        return (User) user;
-      }
-    }
 
     internal string RequestId {
       get {

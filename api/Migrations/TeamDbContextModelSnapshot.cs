@@ -56,34 +56,30 @@ namespace TeamLease.CssService.Migrations
 
             modelBuilder.Entity("ASNRTech.CoreService.Dashboard.ChartType", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
                     b.Property<int>("ChartId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnName("chart_id");
 
                     b.Property<string>("ChartName")
                         .HasColumnName("chart_name");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnName("created_date");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnName("deleted");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnName("modified_by");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnName("modified_date");
-
-                    b.HasKey("Id");
+                    b.HasKey("ChartId");
 
                     b.ToTable("Chart_Type","public");
+                });
+
+            modelBuilder.Entity("ASNRTech.CoreService.Dashboard.DBConnection", b =>
+                {
+                    b.Property<int>("DBConnectionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("dbconnection_id");
+
+                    b.Property<string>("DBConnectionName")
+                        .HasColumnName("dbconnection_name");
+
+                    b.HasKey("DBConnectionId");
+
+                    b.ToTable("DBConnections","public");
                 });
 
             modelBuilder.Entity("ASNRTech.CoreService.Dashboard.Transactions", b =>
@@ -158,7 +154,7 @@ namespace TeamLease.CssService.Migrations
                         .HasColumnName("ud_modifiedon");
 
                     b.Property<string>("DashbaordQuery")
-                        .HasColumnName("ud_query");
+                        .HasColumnName("ud_widgetquery");
 
                     b.Property<string>("DashbaordQueryL1")
                         .HasColumnName("ud_querylevel1");
@@ -169,8 +165,14 @@ namespace TeamLease.CssService.Migrations
                     b.Property<string>("DashbaordQueryL3")
                         .HasColumnName("ud_querylevel3");
 
+                    b.Property<string>("DashbaordQueryL4")
+                        .HasColumnName("ud_querylevel4");
+
                     b.Property<string>("DashboardChartType")
                         .HasColumnName("ud_charttype");
+
+                    b.Property<string>("DashboardConnectionString")
+                        .HasColumnName("ud_dashboardconnectionstring");
 
                     b.Property<string>("DashboardUserId")
                         .HasColumnName("ud_userid");
@@ -180,6 +182,18 @@ namespace TeamLease.CssService.Migrations
 
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
+
+                    b.Property<string>("Level1ConnectionString")
+                        .HasColumnName("ud_l1connectionstring");
+
+                    b.Property<string>("Level2ConnectionString")
+                        .HasColumnName("ud_l2connectionstring");
+
+                    b.Property<string>("Level3ConnectionString")
+                        .HasColumnName("ud_l3connectionstring");
+
+                    b.Property<string>("Level4ConnectionString")
+                        .HasColumnName("ud_l4connectionstring");
 
                     b.Property<string>("ModifiedBy")
                         .HasColumnName("modified_by");
@@ -387,6 +401,9 @@ namespace TeamLease.CssService.Migrations
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnName("modified_date");
 
+                    b.Property<string>("ReportConnectionString")
+                        .HasColumnName("rc_connectionstring");
+
                     b.Property<string>("ReportEmail")
                         .HasColumnName("rc_email");
 
@@ -474,6 +491,15 @@ namespace TeamLease.CssService.Migrations
 
                     b.Property<string>("Email")
                         .HasColumnName("email");
+
+                    b.Property<bool>("IsAdd")
+                        .HasColumnName("add_permission");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnName("delete_permission");
+
+                    b.Property<bool>("IsEdit")
+                        .HasColumnName("edit_permission");
 
                     b.Property<DateTime?>("LastLoggedIn")
                         .HasColumnName("last_logged_in");

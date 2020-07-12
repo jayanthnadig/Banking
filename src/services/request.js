@@ -1,5 +1,8 @@
 import * as qs from "query-string";
+import lookupUtility from "../Common/Utility/LookUpDataMapping";
+let _userDetails=lookupUtility.LoginDetails();
 function filterJSON(res) {
+  console.log("response");
   return res.json();
 }
 function filterStatus(res) {
@@ -14,7 +17,7 @@ function filterStatus(res) {
 export function get(urlString, params) {
   let url = urlString;
   if (params) {
-    url = `${urlString}/${qs.stringify(params)}`;
+    url = `${urlString}/${params}`;
   }
   return fetch(url, {
     headers: {
@@ -23,7 +26,8 @@ export function get(urlString, params) {
       "Cache-control": "no-store",
       Pragma: "no-cache",
       Expires: "0",
-     'Access-Control-Allow-Origin':'*'
+     'Access-Control-Allow-Origin':'*',
+     'x-client-token':_userDetails.token
     },
     //credentials: "include",
   })
@@ -34,7 +38,7 @@ export function get(urlString, params) {
 export function put(url, body) {
   return fetch(url, {
     method: "PUT",
-    headers: { Accept: "application/json", "Content-Type": "application/json" },
+    headers: { Accept: "application/json", "Content-Type": "application/json", 'x-client-token':_userDetails.token },
     credentials: "include",
     body: JSON.stringify(body),
   })
@@ -46,9 +50,9 @@ export function post(url, body) {
 
   return fetch(url, {
     method: "POST",
-    headers: { Accept: "application/json", "Content-Type": "application/json",'Access-Control-Allow-Origin':'*' },
+    headers: { Accept: "application/json", "Content-Type": "application/json",'Access-Control-Allow-Origin':'*', 'x-client-token':_userDetails.token },
     //credentials: "include",
-    body: JSON.stringify(body),
+    body: (body)?JSON.stringify(body):"",
   })
     .then(filterStatus)
     .then(filterJSON);
@@ -57,7 +61,7 @@ export function post(url, body) {
 export function postquery(urlString,body,params) {
   let url = urlString;
   if (params) {
-    url = `${urlString}/${qs.stringify(params)}`;
+    url = `${urlString}/${params}`;
   }
   return fetch(url, {
     method: "POST",
@@ -69,6 +73,7 @@ export function postquery(urlString,body,params) {
       Expires: "0",
      'Access-Control-Allow-Origin':'*',
      'Content-Type':'application/json',
+     'x-client-token':_userDetails.token
     },
     body: JSON.stringify(body),
     //credentials: "include",
@@ -80,7 +85,7 @@ export function postquery(urlString,body,params) {
 export function deleteQuery(urlString,params,_id) {
   let url = urlString;
   if (params) {
-    url = `${urlString}/${qs.stringify(params)}/widgetId/${_id}`;
+    url = `${urlString}/${params}/widgetId/${_id}`;
   }
   return fetch(url, {
     method: "DELETE",
@@ -92,6 +97,7 @@ export function deleteQuery(urlString,params,_id) {
       Expires: "0",
      'Access-Control-Allow-Origin':'*',
      'Content-Type':'application/json',
+     'x-client-token':_userDetails.token
     },
    // body: JSON.stringify(body),
     //credentials: "include",
@@ -103,7 +109,7 @@ export function deleteQuery(urlString,params,_id) {
 export function getQuery(urlString,params,_id) {
   let url = urlString;
   if (params) {
-    url = `${urlString}/${qs.stringify(params)}/reportId${_id}`;
+    url = `${urlString}/${params}/reportId/${_id}`;
   }
   return fetch(url, {
     method: "GET",
@@ -115,10 +121,41 @@ export function getQuery(urlString,params,_id) {
       Expires: "0",
      'Access-Control-Allow-Origin':'*',
      'Content-Type':'application/json',
+     'x-client-token':_userDetails.token
     },
    // body: JSON.stringify(body),
     //credentials: "include",
   })
     .then(filterStatus)
     .then(filterJSON);
+}
+
+
+export function getFiles(urlString,params,_id) {
+  let url = urlString;
+  if (params) {
+    url = `${urlString}/${params}/reportId/${_id}`;
+  }
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      //"Cookie": key
+      "Accept": "text/csv",
+      "Cache-control": " no-cache",
+      "Cache-control": "no-store",
+      Pragma: "no-cache",
+      Expires: "0",
+     'Access-Control-Allow-Origin':'*',
+     'Content-Type':'text/csv ',
+     'x-client-token':_userDetails.token
+    },
+   // body: JSON.stringify(body),
+    //credentials: "include",
+  })
+  .then((response) => response.text())
+  .then((responseText) => responseText)
+  .catch((error) => {
+     // this.setState({downloadingCSV: false})
+      console.error("CSV handleDownloadClick:", error)
+  })
 }

@@ -50,9 +50,9 @@ namespace ASNRTech.CoreService.Reports
         {
             try
             {
-                string connString = Utility.GetConnectionString("DefaultConnection");
-                //string userid = httpContext.CurrentUser.UserId;
-                string userid = "Admin";
+                //string connString = Utility.GetConnectionString("PgAdmin4ConnectionString");
+                string userid = teamHttpContext.ContextUserId;
+                //string userid = "Admin";
                 List<ReportGrid> returnValue = new List<ReportGrid>();
                 PostgresService postgresService = new PostgresService();
                 List<ReportConfig> objReportConfig = new List<ReportConfig>();
@@ -67,6 +67,7 @@ namespace ASNRTech.CoreService.Reports
                 {
                     foreach (var item in objReportConfig)
                     {
+                        string connString = Utility.GetConnectionString(item.ReportConnectionString);
                         NpgsqlDataReader dr = postgresService.ExecuteSqlReturnReader(connString, item.ReportQuery);
                         DataTable dtSchema = dr.GetSchemaTable();
                         DataTable dt = new DataTable();
@@ -134,6 +135,7 @@ namespace ASNRTech.CoreService.Reports
                     {
                         ReportId = item.Id,
                         ReportName = item.ReportName,
+                        ReportConnectionString = item.ReportConnectionString,
                         ReportQuery = item.ReportQuery,
                         ReportEmail = item.ReportEmail,
                         ReportFormat = item.ReportFileFormat,
@@ -175,15 +177,16 @@ namespace ASNRTech.CoreService.Reports
             {
                 AddReport(new ReportConfig
                 {
-                    //ReportReqUserId = httpContext.CurrentUser.UserId,
-                    ReportReqUserId = "Admin",
+                    ReportReqUserId = httpContext.ContextUserId,
+                    //ReportReqUserId = "Admin",
                     ReportName = report.ReportName,
+                    ReportConnectionString = report.ReportConnectionString,
                     ReportQuery = report.ReportQuery,
                     ReportEmail = report.ReportEmail,
                     ReportFileFormat = report.ReportFormat,
                     ReportSchedule = report.ReportInterval,
-                    //CreatedBy = httpContext.CurrentUser.UserId,
-                    CreatedBy = "Admin",
+                    CreatedBy = httpContext.ContextUserId,
+                    //CreatedBy = "Admin",
                     CreatedOn = DateTime.Now,
                     Deleted = !(report.IsActive)
                 });
@@ -225,17 +228,18 @@ namespace ASNRTech.CoreService.Reports
                     EditReport(new ReportConfig
                     {
                         Id = report.ReportId,
-                        //ReportReqUserId = httpContext.CurrentUser.UserId,
-                        ReportReqUserId = "Admin",
+                        ReportReqUserId = httpContext.ContextUserId,
+                        //ReportReqUserId = "Admin",
                         ReportName = report.ReportName,
+                        ReportConnectionString = report.ReportConnectionString,
                         ReportQuery = report.ReportQuery,
                         ReportEmail = report.ReportEmail,
                         ReportFileFormat = report.ReportFormat,
                         ReportSchedule = report.ReportInterval,
                         CreatedBy = objReportConfig[0].CreatedBy,
                         CreatedOn = objReportConfig[0].CreatedOn,
-                        //ModifiedBy = httpContext.CurrentUser.UserId,
-                        ModifiedBy = "Admin",
+                        ModifiedBy = httpContext.ContextUserId,
+                        //ModifiedBy = "Admin",
                         ModifiedOn = DateTime.Now,
                         ReportModifiedOn = DateTime.Now,
                         Deleted = !(report.IsActive)

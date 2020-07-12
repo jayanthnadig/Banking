@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using ASNRTech.CoreService.Core.Models;
 using ASNRTech.CoreService.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace ASNRTech.CoreService.Dashboard
 {
@@ -13,20 +14,40 @@ namespace ASNRTech.CoreService.Dashboard
         public string WidgetName { get; set; }
         public int WidgetId { get; set; }
         public string WidgetType { get; set; }
+        public string WidgetConnectionString { get; set; }
         public string WidgetQuery { get; set; }
+        public string L1ConnectionString { get; set; }
         public string WidgetQueryLevel1 { get; set; }
+        public string L2ConnectionString { get; set; }
         public string WidgetQueryLevel2 { get; set; }
+        public string L3ConnectionString { get; set; }
         public string WidgetQueryLevel3 { get; set; }
+        public string L4ConnectionString { get; set; }
+        public string WidgetQueryLevel4 { get; set; }
     }
 
     [Table("Chart_Type", Schema = "public")]
-    public class ChartType : BaseModel
+    public class ChartType
     {
+        [Key]
         [Column("chart_id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ChartId { get; set; }
 
         [Column("chart_name")]
         public string ChartName { get; set; }
+    }
+
+    [Table("DBConnections", Schema = "public")]
+    public class DBConnection
+    {
+        [Key]
+        [Column("dbconnection_id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int DBConnectionId { get; set; }
+
+        [Column("dbconnection_name")]
+        public string DBConnectionName { get; set; }
     }
 
     [Table("User_Dashboard", Schema = "public")]
@@ -41,17 +62,35 @@ namespace ASNRTech.CoreService.Dashboard
         [Column("ud_widgetname")]
         public string DashboardWidgetName { get; set; }
 
-        [Column("ud_query")]
+        [Column("ud_dashboardconnectionstring")]
+        public string DashboardConnectionString { get; set; }
+
+        [Column("ud_widgetquery")]
         public string DashbaordQuery { get; set; }
+
+        [Column("ud_l1connectionstring")]
+        public string Level1ConnectionString { get; set; }
 
         [Column("ud_querylevel1")]
         public string DashbaordQueryL1 { get; set; }
 
+        [Column("ud_l2connectionstring")]
+        public string Level2ConnectionString { get; set; }
+
         [Column("ud_querylevel2")]
         public string DashbaordQueryL2 { get; set; }
 
+        [Column("ud_l3connectionstring")]
+        public string Level3ConnectionString { get; set; }
+
         [Column("ud_querylevel3")]
         public string DashbaordQueryL3 { get; set; }
+
+        [Column("ud_l4connectionstring")]
+        public string Level4ConnectionString { get; set; }
+
+        [Column("ud_querylevel4")]
+        public string DashbaordQueryL4 { get; set; }
 
         [Column("ud_modifiedon")]
         public DateTime? DashbaordModifiedOn { get; set; }
@@ -126,5 +165,23 @@ namespace ASNRTech.CoreService.Dashboard
     {
         public string Name { get; set; }
         public string Value { get; set; }
+    }
+
+    public class ChartTypes
+    {
+        public int ChartId { get; set; }
+        public string ChartName { get; set; }
+    }
+
+    public class DBConnectionStrings
+    {
+        public int DBConnectionId { get; set; }
+        public string DBConnectionName { get; set; }
+    }
+
+    public class ChartTypeandDBConnectionString
+    {
+        public List<ChartTypes> Charts { get; set; }
+        public List<DBConnectionStrings> ConnectionStrings { get; set; }
     }
 }

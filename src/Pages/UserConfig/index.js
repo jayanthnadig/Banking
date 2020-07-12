@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import Validation from "../../Common/Utility/Validation";
+import LookUpUtilities from "../../Common/Utility/LookUpDataMapping";
 import * as action_type from "../../actions/users/userManagement";
 import logo from "../../dist/images/logo.png";
 
@@ -9,15 +10,20 @@ class UserConfig extends React.Component {
     super(props);
     this.state = {
       modal: false,
-      userId: { type: "userId", value: "", error: false, errmsg: "" },
-      password: { type: "password", value: "", error: false, errmsg: "" },
+      userDetails: {},
+      userId: { type: "userId", value: "", error: false,required:true, errmsg: "" },
+      password: { type: "password", value: "", error: false, required:true,errmsg: "" },
       userEmail: {
         type: "userEmail",
         value: "",
         error: false,
         regex: "email",
+        required:true,
         errmsg: "",
       },
+      isAddPermission:{ type: "checkbox", value: false, error: false,required:false, errmsg: "" },
+      isEditPermission:{ type: "checkbox", value: false, error: false,required:false, errmsg: "" },
+      isDeletePermission:{ type: "checkbox", value: false, error: false,required:false, errmsg: "" },
       isActive: true,
       tableId: -1,
       userList: [],
@@ -29,7 +35,14 @@ class UserConfig extends React.Component {
     };
   }
   componentDidMount() {
-    this.props.GET_USER_DETAILS("Admin");
+    let _userDetails = LookUpUtilities.LoginDetails();
+    this.setState({
+      userDetails: _userDetails,
+    });
+    if(_userDetails.type===1)
+       this.props.GET_USER_DETAILS(_userDetails.userid);
+    else 
+      this.logout();  
   }
 
   componentWillUnmount() {}
@@ -83,12 +96,18 @@ class UserConfig extends React.Component {
     _userobj.userId = this.state.userId;
     _userobj.password = this.state.password;
     _userobj.userEmail = this.state.userEmail;
+    _userobj.isAddPermission = this.state.isAddPermission;
+    _userobj.isEditPermission = this.state.isEditPermission;
+    _userobj.isDeletePermission = this.state.isDeletePermission;
     let _state = Validation.LoginValidate(_userobj);
     this.setState((prevState) => {
       let _tempField = Object.assign({}, prevState);
       _tempField.userId = _state.userId;
       _tempField.password = _state.password;
       _tempField.userEmail = _state.userEmail;
+      _tempField.isAddPermission = _state.isAddPermission;
+      _tempField.isEditPermission = _state.isEditPermission;
+      _tempField.isDeletePermission = _state.isDeletePermission;
       return _tempField;
     });
     let _len = Object.values(_state).filter((xx) => xx.error === true);
@@ -198,6 +217,36 @@ class UserConfig extends React.Component {
             <td class="border">
               <input
                 type="checkbox"
+                checked={_user.isAddPermission}
+                name="isAddPermission"
+                onChange={(e) => this.handleGridChange(e, _index)}
+                class="input border mr-2"
+                id="vertical-remember-me"
+              />
+            </td>{" "}
+            <td class="border">
+              <input
+                type="checkbox"
+                checked={_user.isEditPermission}
+                name="isEditPermission"
+                onChange={(e) => this.handleGridChange(e, _index)}
+                class="input border mr-2"
+                id="vertical-remember-me"
+              />
+            </td>{" "}
+            <td class="border">
+              <input
+                type="checkbox"
+                checked={_user.isDeletePermission}
+                name="isDeletePermission"
+                onChange={(e) => this.handleGridChange(e, _index)}
+                class="input border mr-2"
+                id="vertical-remember-me"
+              />
+            </td>{" "}
+            <td class="border">
+              <input
+                type="checkbox"
                 checked={_user.isActive}
                 name="isActive"
                 onChange={(e) => this.handleGridChange(e, _index)}
@@ -215,7 +264,9 @@ class UserConfig extends React.Component {
   }
   handleChange = (e) => {
     let _name = e.target.name;
-    let _value = e.target.value;
+    let _value="";
+    if (e.target.type == "checkbox") _value = e.target.checked;
+    else _value = e.target.value;    
     this.setState((prevState) => {
       let _tempField = Object.assign({}, prevState);
       _tempField[_name].value = _value;
@@ -276,10 +327,13 @@ class UserConfig extends React.Component {
             </div>
           </div>
           <div class="flex">
-            <nav class="side-nav">
+          <nav class="side-nav">
               <ul>
                 <li>
-                  <a href="/dashboard" class="side-menu ">
+                  <a
+                    href="/dashboard"
+                    class="side-menu"
+                  >
                     <div class="side-menu__icon">
                       {" "}
                       <svg
@@ -301,9 +355,48 @@ class UserConfig extends React.Component {
                     <div class="side-menu__title"> Dashboard </div>
                   </a>
                 </li>
+                <li className={`${
+                      !this.state.userDetails.isAddRights ? "hidden" : ""
+                    }`}>
+                  <a
+                    href="#"
+                    className={`side-menu ${
+                      this.state.modal ? "side-menu--active" : ""
+                    }`}
+                    onClick={() => this.showAddWidget(true, {})}
+                  >
+                    <div class="side-menu__icon">
+                      {" "}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="feather feather-plus-square mx-auto"
+                      >
+                        <rect
+                          x="3"
+                          y="3"
+                          width="18"
+                          height="18"
+                          rx="2"
+                          ry="2"
+                        ></rect>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                      </svg>{" "}
+                    </div>
+                    <div class="side-menu__title"> Add Widgets </div>
+                  </a>
+                </li>
 
                 <li>
-                  <a href="/reportconfig" class="side-menu ">
+                  <a href="/reportconfig" class="side-menu">
                     <div class="side-menu__icon">
                       {" "}
                       <svg
@@ -332,9 +425,10 @@ class UserConfig extends React.Component {
                     </div>
                   </a>
                 </li>
-
-                <li>
-                  <a href="#" class="side-menu side-menu--active">
+                <li className={`${
+                      (this.state.userDetails.type!==1) ? "hidden" : ""
+                    }`}>
+                  <a href="/userConfig" class="side-menu side-menu--active">
                     <div class="side-menu__icon">
                       {" "}
                       <svg
@@ -460,6 +554,48 @@ class UserConfig extends React.Component {
                             onChange={(e) => this.handleChange(e)}
                           />{" "}
                         </div>{" "}
+                        <div class="flex flex-col sm:flex-row items-center">
+                          {" "}
+                          <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                            Add Permission
+                          </label>{" "}
+                          <input
+                            type="checkbox"
+                            checked={this.state.isAddPermission.value}
+                            name="isAddPermission"
+                            onChange={(e) => this.handleChange(e)}
+                            class="input border mr-2"
+                            id="vertical-remember-me"
+                          />{" "}
+                        </div>{" "}
+                        <div class="flex flex-col sm:flex-row items-center">
+                          {" "}
+                          <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                            Edit Permission
+                          </label>{" "}
+                          <input
+                            type="checkbox"
+                            checked={this.state.isEditPermission.value}
+                            name="isEditPermission"
+                            onChange={(e) => this.handleChange(e)}
+                            class="input border mr-2"
+                            id="vertical-remember-me"
+                          />{" "}
+                        </div>{" "}
+                        <div class="flex flex-col sm:flex-row items-center">
+                          {" "}
+                          <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                            Delete Permission
+                          </label>{" "}
+                          <input
+                            type="checkbox"
+                            checked={this.state.isDeletePermission.value}
+                            name="isDeletePermission"
+                            onChange={(e) => this.handleChange(e)}
+                            class="input border mr-2"
+                            id="vertical-remember-me"
+                          />{" "}
+                        </div>{" "}
                         <div class="sm:ml-20 sm:pl-5 mt-5">
                           {" "}
                           <button
@@ -503,6 +639,15 @@ class UserConfig extends React.Component {
                                 </th>{" "}
                                 <th class="border border-b-2 whitespace-no-wrap">
                                   Email
+                                </th>{" "}
+                                <th class="border border-b-2 whitespace-no-wrap">
+                                  Add Permission
+                                </th>{" "}
+                                <th class="border border-b-2 whitespace-no-wrap">
+                                Edit Permission
+                                </th>{" "}
+                                <th class="border border-b-2 whitespace-no-wrap">
+                                Delete Permission
                                 </th>{" "}
                                 <th class="border border-b-2 whitespace-no-wrap">
                                   IsActive

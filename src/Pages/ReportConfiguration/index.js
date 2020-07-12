@@ -29,7 +29,7 @@ class ReportConfiguration extends React.Component {
     if (nextProps.report_dbStatus) {
       this.clear();
     }
-    if(Object.keys(nextProps.report_object).length){
+    if (Object.keys(nextProps.report_object).length) {
       this.setState({
         reportQuery: nextProps.report_object.reportQuery,
         reportEmail: nextProps.report_object.reportEmail,
@@ -37,7 +37,7 @@ class ReportConfiguration extends React.Component {
         reportInterval: nextProps.report_object.reportInterval,
         reportId: nextProps.report_object.reportId,
         reportName: nextProps.report_object.reportName,
-      })
+      });
     }
   }
   showAddWidget(flag) {
@@ -115,8 +115,38 @@ class ReportConfiguration extends React.Component {
     }
   }
   editReport() {
-    this.showAddWidget(true);
-    this.props.EDIT_REPORT_DETAILS(this.state.reportId)
+    if (this.state.reportId !== -1) {
+      this.props.EDIT_REPORT_DETAILS(this.state.reportId);
+      this.showAddWidget(true);
+    }
+  }
+  downloadReport() {
+    if (this.state.reportId !== -1) {
+      //this.props.DOWNLOAD_REPORT_DETAILS(this.state.reportId);
+      if (this.props.report_details.length) {
+        let _col =
+          this.props.report_details[0].gridColumns.map((e) => e).join(",") +
+          "\n";
+        let csvContent =
+          "data:text/csv;charset=utf-8," +
+          _col +
+          this.props.report_details[0].gridData
+            .map((e) => e.join(","))
+            .join("\n");
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute(
+          "download",
+          this.props.report_name.filter(
+            (xx) => xx.reportId === this.state.reportId
+          )[0].reportName + ".csv"
+        );
+        document.body.appendChild(link); // Required for FF
+
+        link.click();
+      }
+    }
   }
   render() {
     return (
@@ -373,7 +403,9 @@ class ReportConfiguration extends React.Component {
                         >
                           Edit
                         </button>
-                        <button>Download </button>
+                        <button onClick={() => this.downloadReport()}>
+                          Download{" "}
+                        </button>
                       </div>
                       <div
                         className={`preview ${
@@ -590,6 +622,8 @@ const dispatch_action = (dispatch) => {
       dispatch(action_type._view_ReportDetails(_state)),
     EDIT_REPORT_DETAILS: (_id) =>
       dispatch(action_type._edit_ReportDetails(_id)),
+    DOWNLOAD_REPORT_DETAILS: (_id) =>
+      dispatch(action_type._download_ReportDetails(_id)),
     /*POST_DASHBOARD_WIDGETS: (_state) =>
     
       dispatch(action_type._post_dashboardWidget(_state)),

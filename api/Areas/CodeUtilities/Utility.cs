@@ -34,7 +34,7 @@ namespace ASNRTech.CoreService.Utilities
         {
             get
             {
-                return Program.Configuration.GetConnectionString("DefaultConnection");
+                return Program.Configuration.GetConnectionString("PgAdmin4ConnectionString");
             }
         }
 

@@ -23,6 +23,8 @@ namespace ASNRTech.CoreService.Core
                     //AddUsersAndClients();
                     //AddNewTransactions();
                     //AddNewUserDashboard();
+                    //AddChartType();
+                    //AddDBConnection();
                 }
             }
             catch (Exception ex)
@@ -63,6 +65,24 @@ namespace ASNRTech.CoreService.Core
             }
         }
 
+        private static void AddChart(ChartType charttype)
+        {
+            using (TeamDbContext dbContext = new TeamDbContext())
+            {
+                dbContext.ChartTypes.Add(charttype);
+                dbContext.SaveChanges();
+            }
+        }
+
+        private static void AddConnection(DBConnection dbconnection)
+        {
+            using (TeamDbContext dbContext = new TeamDbContext())
+            {
+                dbContext.DBConnections.Add(dbconnection);
+                dbContext.SaveChanges();
+            }
+        }
+
         private static void AddUsersAndClients()
         {
             AddUser(new User
@@ -71,6 +91,9 @@ namespace ASNRTech.CoreService.Core
                 Email = "admin@asnrtech.com",
                 UserType = UserType.Admin,
                 Password = Utility.GetMd5Hash("testing_1"),
+                IsAdd = true,
+                IsEdit = true,
+                IsDelete = true,
                 Status = UserStatus.Active
             });
 
@@ -80,6 +103,9 @@ namespace ASNRTech.CoreService.Core
                 Email = "client@asnrtech.com",
                 UserType = UserType.Client,
                 Password = Utility.GetMd5Hash("testing_1"),
+                IsAdd = false,
+                IsEdit = false,
+                IsDelete = false,
                 Status = UserStatus.Active
             });
         }
@@ -161,26 +187,72 @@ namespace ASNRTech.CoreService.Core
         {
             AddUserDashboard(new UserDashboard
             {
-                DashboardUserId = "Admin",
+                DashboardUserId = "ADMIN",
                 DashboardChartType = "Bar Chart",
                 DashboardWidgetName = "My Bar Chart",
+                DashboardConnectionString = "PgAdmin4ConnectionString",
                 DashbaordQuery = "select t1.status as Name, COUNT(t1.status) as Count from public.\"Transactions\" t1 join public.\"Transactions\"  t2 on t1.Id = t2.Id group by t1.status",
+                Level1ConnectionString = "SqlConnectionString",
                 DashbaordQueryL1 = "select * from public.\"Transactions\" where status='@status@'",
-                DashbaordQueryL2 = "select * from public.\"Transactions\" where assignedto='@assignedto@' and transaction_status='@transaction_status@'",
-                DashbaordQueryL3 = "select * from public.\"Transactions\" where branchname='@branchname@' and makerid='@makerid@' and functionid='@functionid@'",
+                Level2ConnectionString = "OracleConnectionString",
+                DashbaordQueryL2 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@'",
+                Level3ConnectionString = "PgAdmin4ConnectionString",
+                DashbaordQueryL3 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@ and branchname='@branchname@' and makerid='@makerid@' and functionid='@functionid@'",
+                Level4ConnectionString = "OracleConnectionString",
+                DashbaordQueryL4 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@ and branchname='@branchname@' and makerid='@makerid@' and functionid='@functionid@'",
                 DashbaordModifiedOn = null
             });
 
             AddUserDashboard(new UserDashboard
             {
-                DashboardUserId = "Admin",
+                DashboardUserId = "ADMIN",
                 DashboardChartType = "Pie Chart",
                 DashboardWidgetName = "My Pie Chart",
+                DashboardConnectionString = "PgAdmin4ConnectionString",
                 DashbaordQuery = "select t1.status as Name, COUNT(t1.status) as Count from public.\"Transactions\" t1 join public.\"Transactions\"  t2 on t1.Id = t2.Id group by t1.status",
+                Level1ConnectionString = "SqlConnectionString",
                 DashbaordQueryL1 = "select * from public.\"Transactions\" where status='@status@'",
-                DashbaordQueryL2 = "select * from public.\"Transactions\" where assignedto='@assignedto@' and transaction_status='@transaction_status@'",
-                DashbaordQueryL3 = "select * from public.\"Transactions\" where branchname='@branchname@' and makerid='@makerid@' and functionid='@functionid@'",
+                Level2ConnectionString = "OracleConnectionString",
+                DashbaordQueryL2 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@'",
+                Level3ConnectionString = "PgAdmin4ConnectionString",
+                DashbaordQueryL3 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@ and branchname='@branchname@' and makerid='@makerid@' and functionid='@functionid@'",
+                Level4ConnectionString = "OracleConnectionString",
+                DashbaordQueryL4 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@ and branchname='@branchname@' and makerid='@makerid@' and functionid='@functionid@'",
                 DashbaordModifiedOn = null
+            });
+        }
+
+        private static void AddChartType()
+        {
+            AddChart(new ChartType
+            {
+                ChartName = "Bar Chart"
+            });
+
+            AddChart(new ChartType
+            {
+                ChartName = "Pie Chart"
+            });
+        }
+
+        private static void AddDBConnection()
+        {
+            AddConnection(new DBConnection
+            {
+                DBConnectionId = 1,
+                DBConnectionName = "PgAdmin4ConnectionString"
+            });
+
+            AddConnection(new DBConnection
+            {
+                DBConnectionId = 2,
+                DBConnectionName = "OracleConnectionString"
+            });
+
+            AddConnection(new DBConnection
+            {
+                DBConnectionId = 3,
+                DBConnectionName = "SqlConnectionString"
             });
         }
     }

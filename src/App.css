@@ -65,6 +65,9 @@
   width: calc(100% - 30%)!important;
   padding: 0 30px 30px 30px;
 }
+.widget_model_content{
+  padding: 0 30px 30px 30px;
+}
 .custom_anchor{
   text-decoration: underline;
   cursor: pointer;
@@ -129,6 +132,20 @@
 }
 .txtwhite{
   color:#fff
+}
+.report_btn{
+  padding: 0 1.2em;
+  font-size: 16px;
+  font-weight: bold;
+}
+.report_btn svg{
+  padding-right: 5px;
+    float: left;
+    right: 4px;
+    position: relative;
+}
+.td_highlight{
+  background: #eee;
 }
 @keyframes App-logo-spin {
   from {

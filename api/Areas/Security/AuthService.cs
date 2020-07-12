@@ -43,7 +43,7 @@ namespace ASNRTech.CoreService.Security
                 {
                     if (user.UserId != null)
                     {
-                        teamHttpContext.SetValue(Constants.CONTEXT_USER, user.UserId);
+                        teamHttpContext.SetValue(Constants.CONTEXT_USER_ID, user.UserId);
                         loginResponse.Status = LoginStatus.LoggedIn;
                     }
                     else
@@ -74,6 +74,9 @@ namespace ASNRTech.CoreService.Security
                 loginResponse.Type = user.UserType;
                 loginResponse.SessionId = sessionId;
                 loginResponse.ExpiryTimestamp = validUntil;
+                loginResponse.IsAddRights = user.IsAdd;
+                loginResponse.IsEditRights = user.IsEdit;
+                loginResponse.IsDeleteRights = user.IsDelete;
 
                 return GetTypedResponse<LoginResponseModel>(teamHttpContext, loginResponse);
             }
@@ -103,14 +106,14 @@ namespace ASNRTech.CoreService.Security
             }
         }
 
-        public static async Task<ResponseBase> LogoutAsync(TeamHttpContext teamHttpContext)
+        public static async Task<ResponseBase> LogoutAsync(TeamHttpContext teamHttpContext, string LogoutuserId)
         {
             if (teamHttpContext == null)
             {
                 throw new ArgumentNullException(nameof(teamHttpContext));
             }
 
-            string userId = teamHttpContext.CurrentUser.UserId.ToUpper(CultureInfo.InvariantCulture);
+            string userId = LogoutuserId.ToUpper(CultureInfo.InvariantCulture);
 
             using (TeamDbContext dbContext = new TeamDbContext())
             {
@@ -122,7 +125,7 @@ namespace ASNRTech.CoreService.Security
                 }
                 await dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
-            await CacheService.RemoveUserAsync(teamHttpContext, teamHttpContext.CurrentUser).ConfigureAwait(false);
+            await CacheService.RemoveUserAsync(teamHttpContext, LogoutuserId).ConfigureAwait(false);
 
             return GetResponse(teamHttpContext);
         }
@@ -182,8 +185,8 @@ namespace ASNRTech.CoreService.Security
                     if (user.Code == HttpStatusCode.OK)
                     {
                         int.TryParse(details[i].TableId.ToString(), out int userid);
-                        List<AddEditNewUser> NewUser = await GetUserAsync(teamHttpContext, userid).ConfigureAwait(false);
-                        AllEditedUser.Add(NewUser[0]);
+                        List<AddEditNewUser> EditUser = await GetUserAsync(teamHttpContext, userid).ConfigureAwait(false);
+                        AllEditedUser.Add(EditUser[0]);
                     }
                 }
             }
@@ -200,10 +203,13 @@ namespace ASNRTech.CoreService.Security
                     Password = Utility.GetMd5Hash(details.Password),
                     UserType = UserType.Client,
                     Email = details.UserEmail,
-                    //CreatedBy = teamHttpContext.CurrentUser.UserId,
-                    CreatedBy = "Admin",
+                    CreatedBy = teamHttpContext.ContextUserId,
+                    //CreatedBy = "Admin",
                     CreatedOn = DateTime.Now,
                     Status = UserStatus.Active,
+                    IsAdd = details.IsAddPermission,
+                    IsEdit = details.IsEditPermission,
+                    IsDelete = details.IsDeletePermission
                 });
                 return GetResponse(teamHttpContext, HttpStatusCode.OK, "Available");
             }
@@ -239,7 +245,7 @@ namespace ASNRTech.CoreService.Security
 
         internal static async Task<List<AddEditNewUser>> GetUserAsync(TeamHttpContext httpContext, int userid)
         {
-            string connString = Utility.GetConnectionString("DefaultConnection");
+            string connString = Utility.GetConnectionString("PgAdmin4ConnectionString");
             List<AddEditNewUser> returnValue = new List<AddEditNewUser>();
             PostgresService postgresService = new PostgresService();
             List<User> objUser = new List<User>();
@@ -264,7 +270,10 @@ namespace ASNRTech.CoreService.Security
                         Password = "*******",
                         UserEmail = item.Email,
                         TableId = item.Id,
-                        IsActive = userstatus
+                        IsActive = userstatus,
+                        IsAddPermission = item.IsAdd,
+                        IsEditPermission = item.IsEdit,
+                        IsDeletePermission = item.IsDelete
                     };
                     returnValue.Add(newItem);
                 }
@@ -298,13 +307,16 @@ namespace ASNRTech.CoreService.Security
                         UserId = details.UserId.ToUpper(CultureInfo.InvariantCulture),
                         Password = (details.Password.Contains("*******")) ? objUser[0].Password : Utility.GetMd5Hash(details.Password),
                         Email = details.UserEmail,
-                        //ModifiedBy = teamHttpContext.CurrentUser.UserId,
-                        ModifiedBy = "Admin",
+                        ModifiedBy = httpContext.ContextUserId,
+                        //ModifiedBy = "Admin",
                         ModifiedOn = DateTime.Now,
                         UserType = UserType.Client,
                         CreatedBy = objUser[0].CreatedBy,
                         CreatedOn = objUser[0].CreatedOn,
                         Status = (UserStatus) userstatus,
+                        IsAdd = details.IsAddPermission,
+                        IsEdit = details.IsEditPermission,
+                        IsDelete = details.IsDeletePermission,
                     });
                     return GetResponse(httpContext, HttpStatusCode.OK, "Available");
                 }

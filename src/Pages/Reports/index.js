@@ -19,7 +19,10 @@ class Report extends React.Component {
     _obj.clickedWidgetId = parseInt(_params[_params.length - 3]);
     _obj.clickedOnValue = _params[_params.length - 2];
     _obj.gridColumns = [];
-    _obj.gridInput = _params[_params.length - 1] === "null" ? [] : JSON.parse(window.atob(_params[_params.length - 1]));
+    _obj.gridInput =
+      _params[_params.length - 1] === "null"
+        ? []
+        : JSON.parse(window.atob(_params[_params.length - 1]));
     _obj.gridData = [];
     this.setState({
       header: _obj.clickedOnValue,
@@ -45,13 +48,14 @@ class Report extends React.Component {
     _obj.clickLevel = parseInt(_params[_params.length - 4]) + 1;
     _obj.clickedWidgetId = parseInt(_params[_params.length - 3]);
     _obj.clickedOnValue = _params[_params.length - 2];
-  
-    window.open(
-      `/report/${_obj.clickLevel}/${_obj.clickedWidgetId}/${_obj.clickedOnValue}/${window.btoa(JSON.stringify(
-        _list
-      ))}`,
-      "_blank"
-    );
+    if (parseInt(_params[_params.length - 4]) <= 4) {
+      window.open(
+        `/report/${_obj.clickLevel}/${_obj.clickedWidgetId}/${
+          _obj.clickedOnValue
+        }/${window.btoa(JSON.stringify(_list))}`,
+        "_blank"
+      );
+    }
   }
   bindTableHeader() {
     if (this.props.drilldown_data.length) {
@@ -64,13 +68,36 @@ class Report extends React.Component {
     if (this.props.drilldown_data.length) {
       return this.props.drilldown_data[0].gridData.map((_head, _index) => {
         return (
-          <tr onClick={() => this.drillDown({ _head })}>
+          <tr className={`td_highlight`} onClick={() => this.drillDown({ _head })}>
             {_head.map((_body) => {
               return <td class="border">{_body}</td>;
             })}
           </tr>
         );
       });
+    }
+  }
+  downloadReport() {
+    //this.props.DOWNLOAD_REPORT_DETAILS(this.state.reportId);
+    if (this.props.drilldown_data.length) {
+      let _col =
+        this.props.drilldown_data[0].gridColumns.map((e) => e).join(",") + "\n";
+      let csvContent =
+        "data:text/csv;charset=utf-8," +
+        _col +
+        this.props.drilldown_data[0].gridData
+          .map((e) => e.join(","))
+          .join("\n");
+      var encodedUri = encodeURI(csvContent);
+      var link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute(
+        "download",
+        "myReport.csv"
+      );
+      document.body.appendChild(link); // Required for FF
+
+      link.click();
     }
   }
   logout() {
@@ -106,6 +133,45 @@ class Report extends React.Component {
                     >
                       {this.state.header} Transactions
                     </h1>
+                    <button className="report_btn btn_mail">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="feather feather-mail mx-auto"
+                      >
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                      </svg>
+                      Send Mail
+                    </button>
+                    <button className="report_btn btn_download" onClick={()=>this.downloadReport()}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="feather feather-file-text mx-auto"
+                      >
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                      </svg>
+                      Download
+                    </button>
                   </div>
                   <div className="p-5" id="vertical-bar-chart">
                     <div className="preview">

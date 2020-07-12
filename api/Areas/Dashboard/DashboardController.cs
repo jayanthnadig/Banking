@@ -10,7 +10,7 @@ using ASNRTech.CoreService.Security;
 namespace ASNRTech.CoreService.Dashboard
 {
     [ApiController]
-    //[TeamAuthorize(AccessType.Admin | AccessType.Client, true)]
+    [TeamAuthorize(AccessType.Client, false)]
     public class DashboardController : TeamControllerBase
     {
         [HttpGet]
@@ -18,6 +18,13 @@ namespace ASNRTech.CoreService.Dashboard
         public async Task<ResponseBase<List<LoadWidgets>>> GetAllWidgetAsync()
         {
             return await DashboardService.GetAllWidgetAsync(new TeamHttpContext(HttpContext)).ConfigureAwait(false);
+        }
+
+        [HttpGet]
+        [Route("v1/dashboard/chartsandconnstring/{userId}")]
+        public async Task<ResponseBase<List<ChartTypeandDBConnectionString>>> DashboardDropdowns()
+        {
+            return await DashboardService.ChartTypeandDBConnectionString(new TeamHttpContext(HttpContext)).ConfigureAwait(false);
         }
 
         [HttpPost]

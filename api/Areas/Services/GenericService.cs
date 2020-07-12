@@ -20,15 +20,16 @@ namespace ASNRTech.CoreService.Alcs
     {
         internal static async Task<List<LoadWidgets>> GetAllWidgetAsync(TeamHttpContext httpContext)
         {
-            string connString = Utility.GetConnectionString("DefaultConnection");
-            //string userid = httpContext.CurrentUser.UserId;
-            string userid = "Admin";
+            //string connString = Utility.GetConnectionString("PgAdmin4ConnectionString");
+            string userid = httpContext.ContextUserId;
+            //string userid = "Admin";
             List<LoadWidgets> returnValue = new List<LoadWidgets>();
             PostgresService postgresService = new PostgresService();
             List<UserDashboard> objUserDashboard = new List<UserDashboard>();
             using (TeamDbContext dbContext = new TeamDbContext())
             {
-                objUserDashboard = dbContext.UserDashboards.Where(x => x.DashboardUserId == userid && x.Deleted == false).ToList();
+                //objUserDashboard = dbContext.UserDashboards.Where(x => x.DashboardUserId == userid && x.Deleted == false).ToList(); //user specific
+                objUserDashboard = dbContext.UserDashboards.Where(x => x.Deleted == false).ToList(); // For all users
             }
 
             if (objUserDashboard.Count != 0)
@@ -36,6 +37,7 @@ namespace ASNRTech.CoreService.Alcs
                 foreach (var item in objUserDashboard)
                 {
                     List<WidgetRead> objWidgetRead = new List<WidgetRead>();
+                    string connString = Utility.GetConnectionString(item.DashboardConnectionString);
                     using (NpgsqlDataReader sqlData = postgresService.ExecuteSqlReturnReader(connString, item.DashbaordQuery))
                     {
                         while (sqlData.Read())
@@ -53,10 +55,16 @@ namespace ASNRTech.CoreService.Alcs
                         WidgetId = item.Id,
                         WidgetType = item.DashboardChartType,
                         WidgetData = objWidgetRead.ToArray(),
+                        WidgetConnectionString = item.DashboardConnectionString,
                         WidgetQuery = item.DashbaordQuery,
+                        L1ConnectionString = item.Level1ConnectionString,
                         WidgetQueryLevel1 = item.DashbaordQueryL1,
+                        L2ConnectionString = item.Level2ConnectionString,
                         WidgetQueryLevel2 = item.DashbaordQueryL2,
-                        WidgetQueryLevel3 = item.DashbaordQueryL3
+                        L3ConnectionString = item.Level3ConnectionString,
+                        WidgetQueryLevel3 = item.DashbaordQueryL3,
+                        L4ConnectionString = item.Level4ConnectionString,
+                        WidgetQueryLevel4 = item.DashbaordQueryL4
                     };
                     returnValue.Add(newItem);
                 }
@@ -65,11 +73,64 @@ namespace ASNRTech.CoreService.Alcs
             return returnValue;
         }
 
-        internal static async Task<List<LoadWidgets>> GetWidgetAsync(TeamHttpContext httpContext, string widgettype, string widgetname, string widgetquery, string widgetquerylevel1, string widgetquerylevel2, string widgetquerylevel3)
+        public static async Task<ResponseBase<List<ChartTypeandDBConnectionString>>> ChartTypeandDBConnectionString(TeamHttpContext teamHttpContext)
         {
-            string connString = Utility.GetConnectionString("DefaultConnection");
-            //string userid = httpContext.CurrentUser.UserId;
-            string userid = "Admin";
+            List<ChartTypes> objChartTypes = new List<ChartTypes>();
+            List<DBConnectionStrings> objDBConnectionStrings = new List<DBConnectionStrings>();
+            List<ChartTypeandDBConnectionString> objChartTypeandDBConnectionString = new List<ChartTypeandDBConnectionString>();
+            using (TeamDbContext dbContext = new TeamDbContext())
+            {
+                var charttypes = from ct in dbContext.ChartTypes
+                                 select new
+                                 {
+                                     ChartId = ct.ChartId,
+                                     ChartName = ct.ChartName
+                                 };
+                foreach (var item in charttypes)
+                {
+                    ChartTypes chartList = new ChartTypes
+                    {
+                        ChartId = item.ChartId,
+                        ChartName = item.ChartName
+                    };
+
+                    objChartTypes.Add(chartList);
+                }
+
+                var dbconnectionstrings = from dbcs in dbContext.DBConnections
+                                          select new
+                                          {
+                                              DBConnectionId = dbcs.DBConnectionId,
+                                              DBConnectionName = dbcs.DBConnectionName
+                                          };
+                foreach (var item in dbconnectionstrings)
+                {
+                    DBConnectionStrings connectionList = new DBConnectionStrings
+                    {
+                        DBConnectionId = item.DBConnectionId,
+                        DBConnectionName = item.DBConnectionName
+                    };
+
+                    objDBConnectionStrings.Add(connectionList);
+                }
+            }
+
+            ChartTypeandDBConnectionString finallist = new ChartTypeandDBConnectionString
+            {
+                Charts = objChartTypes,
+                ConnectionStrings = objDBConnectionStrings
+            };
+
+            objChartTypeandDBConnectionString.Add(finallist);
+
+            return GetTypedResponse(teamHttpContext, objChartTypeandDBConnectionString);
+        }
+
+        internal static async Task<List<LoadWidgets>> GetWidgetAsync(TeamHttpContext httpContext, string widgettype, string widgetname)//, string widgetquery, string widgetquerylevel1, string widgetquerylevel2, string widgetquerylevel3, string widgetquerylevel4)
+        {
+            //string connString = Utility.GetConnectionString("PgAdmin4ConnectionString");
+            string userid = httpContext.ContextUserId;
+            //string userid = "Admin";
             List<LoadWidgets> returnValue = new List<LoadWidgets>();
             PostgresService postgresService = new PostgresService();
             List<UserDashboard> objUserDashboard = new List<UserDashboard>();
@@ -83,6 +144,7 @@ namespace ASNRTech.CoreService.Alcs
                 foreach (var item in objUserDashboard)
                 {
                     List<WidgetRead> objWidgetRead = new List<WidgetRead>();
+                    string connString = Utility.GetConnectionString(item.DashboardConnectionString);
                     using (NpgsqlDataReader sqlData = postgresService.ExecuteSqlReturnReader(connString, item.DashbaordQuery))
                     {
                         while (sqlData.Read())
@@ -101,10 +163,16 @@ namespace ASNRTech.CoreService.Alcs
                         WidgetId = item.Id,
                         WidgetType = item.DashboardChartType,
                         WidgetData = objWidgetRead.ToArray(),
+                        WidgetConnectionString = item.DashboardConnectionString,
                         WidgetQuery = item.DashbaordQuery,
+                        L1ConnectionString = item.Level1ConnectionString,
                         WidgetQueryLevel1 = item.DashbaordQueryL1,
+                        L2ConnectionString = item.Level2ConnectionString,
                         WidgetQueryLevel2 = item.DashbaordQueryL2,
-                        WidgetQueryLevel3 = item.DashbaordQueryL3
+                        L3ConnectionString = item.Level3ConnectionString,
+                        WidgetQueryLevel3 = item.DashbaordQueryL3,
+                        L4ConnectionString = item.Level4ConnectionString,
+                        WidgetQueryLevel4 = item.DashbaordQueryL4
                     };
                     returnValue.Add(newItem);
                 }
@@ -142,16 +210,22 @@ namespace ASNRTech.CoreService.Alcs
             {
                 AddUserDashboard(new UserDashboard
                 {
-                    //DashboardUserId = httpContext.CurrentUser.UserId,
-                    DashboardUserId = "Admin",
+                    DashboardUserId = httpContext.ContextUserId,
+                    //DashboardUserId = "Admin",
                     DashboardChartType = widgetdata.WidgetType,
                     DashboardWidgetName = widgetdata.WidgetName,
+                    DashboardConnectionString = widgetdata.WidgetConnectionString,
                     DashbaordQuery = widgetdata.WidgetQuery,
-                    //CreatedBy = httpContext.CurrentUser.UserId,
-                    CreatedBy = "Admin",
+                    CreatedBy = httpContext.ContextUserId,
+                    //CreatedBy = "Admin",
+                    Level1ConnectionString = widgetdata.L1ConnectionString,
                     DashbaordQueryL1 = widgetdata.WidgetQueryLevel1,
+                    Level2ConnectionString = widgetdata.L2ConnectionString,
                     DashbaordQueryL2 = widgetdata.WidgetQueryLevel2,
+                    Level3ConnectionString = widgetdata.L3ConnectionString,
                     DashbaordQueryL3 = widgetdata.WidgetQueryLevel3,
+                    Level4ConnectionString = widgetdata.L4ConnectionString,
+                    DashbaordQueryL4 = widgetdata.WidgetQueryLevel4,
                     CreatedOn = DateTime.Now,
                     DashbaordModifiedOn = null,
                 });
@@ -181,18 +255,24 @@ namespace ASNRTech.CoreService.Alcs
                     EditUserDashboard(new UserDashboard
                     {
                         Id = widgetdata.WidgetId,
-                        //DashboardUserId = httpContext.CurrentUser.UserId,
-                        DashboardUserId = "Admin",
+                        DashboardUserId = httpContext.ContextUserId,
+                        //DashboardUserId = "Admin",
                         DashboardChartType = widgetdata.WidgetType,
                         DashboardWidgetName = widgetdata.WidgetName,
+                        DashboardConnectionString = widgetdata.WidgetConnectionString,
                         DashbaordQuery = widgetdata.WidgetQuery,
+                        Level1ConnectionString = widgetdata.L1ConnectionString,
                         DashbaordQueryL1 = widgetdata.WidgetQueryLevel1,
+                        Level2ConnectionString = widgetdata.L2ConnectionString,
                         DashbaordQueryL2 = widgetdata.WidgetQueryLevel2,
+                        Level3ConnectionString = widgetdata.L3ConnectionString,
                         DashbaordQueryL3 = widgetdata.WidgetQueryLevel3,
+                        Level4ConnectionString = widgetdata.L4ConnectionString,
+                        DashbaordQueryL4 = widgetdata.WidgetQueryLevel4,
                         CreatedBy = objUserDashboard[0].CreatedBy,
                         CreatedOn = objUserDashboard[0].CreatedOn,
-                        //ModifiedBy = httpContext.CurrentUser.UserId,
-                        ModifiedBy = "Admin",
+                        ModifiedBy = httpContext.ContextUserId,
+                        //ModifiedBy = "Admin",
                         ModifiedOn = DateTime.Now,
                         DashbaordModifiedOn = DateTime.Now,
                     });
@@ -208,9 +288,10 @@ namespace ASNRTech.CoreService.Alcs
 
         internal static async Task<List<OnScreenClick>> GetGridDataAsync(TeamHttpContext httpContext, OnScreenClick details)
         {
-            string connString = Utility.GetConnectionString("DefaultConnection");
-            //string userid = httpContext.CurrentUser.UserId;
-            string userid = "Admin";
+            //string connString = Utility.GetConnectionString("PgAdmin4ConnectionString");
+            string connString = string.Empty;
+            string userid = httpContext.ContextUserId;
+            //string userid = "Admin";
             List<OnScreenClick> returnValue = new List<OnScreenClick>();
             PostgresService postgresService = new PostgresService();
             List<UserDashboard> objUserDashboard = new List<UserDashboard>();
@@ -231,6 +312,7 @@ namespace ASNRTech.CoreService.Alcs
                     switch (details.ClickLevel)
                     {
                         case "L1":
+                            connString = Utility.GetConnectionString(item.Level1ConnectionString);
                             querylevel = item.DashbaordQueryL1;
                             allMatchResults = regex.Matches(querylevel);
                             if (allMatchResults.Count > 0)
@@ -238,11 +320,18 @@ namespace ASNRTech.CoreService.Alcs
                             break;
 
                         case "L2":
+                            connString = Utility.GetConnectionString(item.Level2ConnectionString);
                             querylevel = item.DashbaordQueryL2;
                             break;
 
                         case "L3":
+                            connString = Utility.GetConnectionString(item.Level3ConnectionString);
                             querylevel = item.DashbaordQueryL3;
+                            break;
+
+                        case "L4":
+                            connString = Utility.GetConnectionString(item.Level4ConnectionString);
+                            querylevel = item.DashbaordQueryL4;
                             break;
                     }
 

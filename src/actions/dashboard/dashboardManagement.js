@@ -15,10 +15,10 @@ let _delete_dashboard_widget = (_res) => {
 let _drilldown_dashboard_widget = (_res) => {
   return { type: actionTypes.DRILLDOWN_DASHBOARD_WIDGET, payload: _res };
 };
-/*let _getuserprofile_data = (_res) => {
-  return { type: actionTypes.GET_USER_DETAILS, payload: _res };
+let _logout_user = (_res) => {
+  return { type: actionTypes.USER_LOGOUT, payload: _res };
 };
-let _formprofile_object = (_res) => {
+/*let _formprofile_object = (_res) => {
   return { type: actionTypes.PUT_USER_DETAILS, payload: _res };
 };
 let _insertformprofile_object = (_res) => {
@@ -27,30 +27,32 @@ let _insertformprofile_object = (_res) => {
 let _change_statusobject = () => {
   return { type: actionTypes.CHANGE_STATUS, payload: "new" };
 };*/
+let _userDetails = lookupUtility.LoginDetails();
 export const _getDashboardWidgets = () => {
-    try {
-        return (dispatch) => {
-          //let _res = lookupUtility.LoginObject();
-          requestServices
-            .get(API.loadDashboard,"Admin")
-            .then((res) => {
-              console.log("Response", res);
-              dispatch(_dashboard_data(res));
-            })
-            .catch((err) => {
-              console.log("Error", err);
-            });
-        };
-      } catch (e) {
-        console.log("actionType-->_getDashboardWidgets", e);
-      }
+  try {
+    let _userDetails = lookupUtility.LoginDetails();
+    return (dispatch) => {
+      //let _res = lookupUtility.LoginObject();
+      requestServices
+        .get(API.loadDashboard, _userDetails.userid)
+        .then((res) => {
+          console.log("Response", res);
+          dispatch(_dashboard_data(res));
+        })
+        .catch((err) => {
+          console.log("Error", err);
+        });
+    };
+  } catch (e) {
+    console.log("actionType-->_getDashboardWidgets", e);
+  }
 };
 export const _post_dashboardWidget = (_obj) => {
   try {
     return (dispatch) => {
       let _res = lookupUtility.PostDashboard(_obj);
       requestServices
-        .postquery(API.postDashboard, _res,"Admin")
+        .postquery(API.postDashboard, _res, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_new_dashboard_widget(res));
@@ -64,17 +66,15 @@ export const _post_dashboardWidget = (_obj) => {
   }
 };
 
-
-
 export const _delete_dashboardWidget = (_id) => {
   try {
     return (dispatch) => {
-     // let _res = lookupUtility.PostDashboard(_obj);
+      // let _res = lookupUtility.PostDashboard(_obj);
       requestServices
-        .deleteQuery(API.deleteDashboard,"Admin",_id)
+        .deleteQuery(API.deleteDashboard, _userDetails.userid, _id)
         .then((res) => {
           console.log("Response", res);
-          res.widgetId=_id;
+          res.widgetId = _id;
           dispatch(_delete_dashboard_widget(res));
         })
         .catch((err) => {
@@ -91,10 +91,28 @@ export const _post_drilldowndashboardWidget = (_obj) => {
     return (dispatch) => {
       //let _res = lookupUtility.PostDashboard(_obj);
       requestServices
-        .postquery(API.drilldownDashboard, _obj,"Admin")
+        .postquery(API.drilldownDashboard, _obj, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_drilldown_dashboard_widget(res));
+        })
+        .catch((err) => {
+          console.log("Error", err);
+        });
+    };
+  } catch (e) {
+    console.log("actionType-->_post_userdata", e);
+  }
+};
+
+export const _user_logout = () => {
+  try {
+    return (dispatch) => {      
+      requestServices
+        .postquery(API.logoutUser,"",_userDetails.userid)
+        .then((res) => {
+          console.log("Response", res);
+          dispatch(_logout_user(res));
         })
         .catch((err) => {
           console.log("Error", err);

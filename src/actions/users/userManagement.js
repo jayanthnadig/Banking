@@ -21,6 +21,7 @@ let _insertformprofile_object = (_res) => {
 let _change_statusobject = () => {
   return { type: actionTypes.CHANGE_STATUS, payload: "new" };
 };*/
+let _userDetails = lookupUtility.LoginDetails();
 export const _userLogin = (_obj) => {
     try {
         return (dispatch) => {
@@ -44,7 +45,7 @@ export const _post_userdata = (_obj, ) => {
     return (dispatch) => {
       let _res = lookupUtility.UserInsertObject(_obj);
       requestServices
-        .postquery(API.postuserDetails, _res,"Admin")
+        .postquery(API.postuserDetails, _res,_userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_insertformprofile_object(res));

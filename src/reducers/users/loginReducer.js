@@ -15,6 +15,9 @@ const loginReducer = (state = initstate, action) => {
         _login.type = _res.data.type;
         _login.sessionId = _res.data.sessionId;
         _login.expiryTimestamp = _res.data.expiryTimestamp;
+        _login.isAddRights = _res.data.isAddRights;
+        _login.isDeleteRights = _res.data.isDeleteRights;
+        _login.isEditRights = _res.data.isEditRights;
         window.localStorage.setItem(
           "userDetails",
           window.btoa(JSON.stringify(_login))

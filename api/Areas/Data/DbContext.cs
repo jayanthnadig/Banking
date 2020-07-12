@@ -12,28 +12,35 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ASNRTech.CoreService.Data {
-    public class TeamDbContext : DbContext {
+namespace ASNRTech.CoreService.Data
+{
+    public class TeamDbContext : DbContext
+    {
         private TeamHttpContext httpContext;
 
         /// <summary>
         /// use this when using DbContext in Async mode with multiple iterations
         /// </summary>
         /// <param name="httpContext"></param>
-        public TeamDbContext(TeamHttpContext httpContext) {
+        public TeamDbContext(TeamHttpContext httpContext)
+        {
             this.httpContext = httpContext;
         }
 
-        public TeamDbContext() {
+        public TeamDbContext()
+        {
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-            if (!optionsBuilder.IsConfigured) {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
                 optionsBuilder.UseNpgsql(Utility.ConnString);
             }
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder) {
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
             modelBuilder.HasDefaultSchema("public");
 
             // ensure property g/setters are used
@@ -57,49 +64,61 @@ namespace ASNRTech.CoreService.Data {
         public DbSet<Transactions> Transactions { get; set; }
         public DbSet<UserDashboard> UserDashboards { get; set; }
         public DbSet<ChartType> ChartTypes { get; set; }
+        public DbSet<DBConnection> DBConnections { get; set; }
         public DbSet<ReportConfig> ReportConfigs { get; set; }
 
-        public override int SaveChanges() {
+        public override int SaveChanges()
+        {
             SetAuditFields();
 
             return base.SaveChanges();
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
             SetAuditFields();
 
             return base.SaveChangesAsync(cancellationToken);
         }
 
-        private void SetAuditFields() {
+        private void SetAuditFields()
+        {
             string userName = Thread.CurrentPrincipal?.Identity?.Name;
-            if (string.IsNullOrWhiteSpace(userName) && this.httpContext?.CurrentUser != null) {
-                userName = this.httpContext.CurrentUser.UserId;
+            if (string.IsNullOrWhiteSpace(userName) && this.httpContext?.ContextUserId != null)
+            {
+                userName = this.httpContext.ContextUserId;
             }
 
-            if (string.IsNullOrWhiteSpace(userName)) {
+            if (string.IsNullOrWhiteSpace(userName))
+            {
                 userName = string.Empty;
             }
 
-            foreach (EntityEntry ent in this.ChangeTracker.Entries()) {
-                if (ent.Entity is BaseModel baseEntry) {
-                    switch (ent.State) {
+            foreach (EntityEntry ent in this.ChangeTracker.Entries())
+            {
+                if (ent.Entity is BaseModel baseEntry)
+                {
+                    switch (ent.State)
+                    {
                         case EntityState.Added:
                             baseEntry.ModifiedOn = baseEntry.CreatedOn = DateTime.Now;
-                            if (string.IsNullOrWhiteSpace(baseEntry.CreatedBy)) {
+                            if (string.IsNullOrWhiteSpace(baseEntry.CreatedBy))
+                            {
                                 baseEntry.ModifiedBy = baseEntry.CreatedBy = userName;
                             }
                             baseEntry.Deleted = false;
                             break;
 
                         case EntityState.Deleted:
-                            if (baseEntry.LogicalDelete) {
+                            if (baseEntry.LogicalDelete)
+                            {
                                 // when deleted, do a soft-delete
                                 // set the deleted flag and change the state to modified
                                 ent.State = EntityState.Modified;
                                 baseEntry.Deleted = true;
                                 baseEntry.ModifiedOn = DateTime.Now;
-                                if (string.IsNullOrWhiteSpace(baseEntry.ModifiedBy)) {
+                                if (string.IsNullOrWhiteSpace(baseEntry.ModifiedBy))
+                                {
                                     baseEntry.ModifiedBy = userName;
                                 }
                             }
@@ -107,7 +126,8 @@ namespace ASNRTech.CoreService.Data {
 
                         case EntityState.Modified:
                             baseEntry.ModifiedOn = DateTime.Now;
-                            if (string.IsNullOrWhiteSpace(baseEntry.ModifiedBy)) {
+                            if (string.IsNullOrWhiteSpace(baseEntry.ModifiedBy))
+                            {
                                 baseEntry.ModifiedBy = userName;
                             }
                             break;

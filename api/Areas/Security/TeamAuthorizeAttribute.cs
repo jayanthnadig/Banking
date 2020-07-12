@@ -65,17 +65,7 @@ namespace ASNRTech.CoreService.Security
 
             IHeaderDictionary headers = context.HttpContext.Request.Headers;
             string clientId = string.Empty;
-
-            if (clientScoped)
-            {
-                clientId = GetClientIdFromRoute(context);
-
-                if (clientId == null)
-                {
-                    context.Result = new NotFoundResult();
-                    return;
-                }
-            }
+            string userId = GetUserIdFromRoute(context);
 
             KeyValuePair<JwtTokenValidationStatus, LoginResponseModel> validationStatus = ValidateJwt(context.HttpContext);
 
@@ -93,47 +83,26 @@ namespace ASNRTech.CoreService.Security
                 return;
             }
 
-            //if (clientScoped && !user.Clients.Any(e => e.ClientId == clientId)) {
-            //    // client scoped and user does not have access to the this client
-            //    context.Result = new UnauthorizedResult();
-            //    return;
-            //}
-
-            if (user == null)
-            {
-                return;
-            }
-
             if (user.UserType == UserType.Client)
             {
                 // check clients have access to this route
-                if ((accessType & AccessType.Client) != AccessType.Client)
+                if (clientScoped)
                 {
                     context.Result = new UnauthorizedResult();
                     return;
                 }
             }
-            //else if (user.UserType == UserType.Anchor)
-            //{
-            //    // check anchors have access to this route
-            //    if ((accessType & AccessType.Anchor) != AccessType.Anchor)
-            //    {
-            //        context.Result = new UnauthorizedResult();
-            //        return;
-            //    }
-
-            //    // check anchor has access to this client
-            //}
 
             context.HttpContext.SetValue(Constants.CONTEXT_USER, user);
 
             GenericPrincipal genericPrincipal = new GenericPrincipal(new GenericIdentity(user.UserId), Array.Empty<string>());
+            //GenericPrincipal genericPrincipal = new GenericPrincipal(new GenericIdentity(userId), Array.Empty<string>());
             context.HttpContext.User = genericPrincipal;
             Thread.CurrentPrincipal = genericPrincipal;
 
-            if (!string.IsNullOrWhiteSpace(clientId))
+            if (!string.IsNullOrWhiteSpace(userId))
             {
-                context.HttpContext.SetValue(Constants.CONTEXT_CLIENT_ID, clientId);
+                context.HttpContext.SetValue(Constants.CONTEXT_USER_ID, userId);
             }
         }
 
@@ -157,6 +126,11 @@ namespace ASNRTech.CoreService.Security
         private string GetClientIdFromRoute(AuthorizationFilterContext context)
         {
             return GetParamFromRoute(context, Constants.ROUTE_PARAM_CLIENT_ID, true);
+        }
+
+        private string GetUserIdFromRoute(AuthorizationFilterContext context)
+        {
+            return GetParamFromRoute(context, Constants.ROUTE_PARAM_USER_ID, true);
         }
 
         private string GetParamFromRoute(AuthorizationFilterContext context, string param, bool logMissingParam)

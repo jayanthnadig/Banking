@@ -40,6 +40,18 @@ namespace ASNRTech.CoreService.Security
         [Required]
         public UserStatus Status { get; set; }
 
+        [Column("add_permission")]
+        [Required]
+        public bool IsAdd { get; set; }
+
+        [Column("edit_permission")]
+        [Required]
+        public bool IsEdit { get; set; }
+
+        [Column("delete_permission")]
+        [Required]
+        public bool IsDelete { get; set; }
+
         //[Column("phonenumber")]
         //public string PhoneNumber { get; set; }
 
@@ -89,6 +101,9 @@ namespace ASNRTech.CoreService.Security
         public string SessionId { get; set; }
         public long ExpiryTimestamp { get; set; }
         public LoginStatus Status { get; set; }
+        public bool IsAddRights { get; set; }
+        public bool IsEditRights { get; set; }
+        public bool IsDeleteRights { get; set; }
     }
 
     [Table("upload_log", Schema = "public")]
@@ -117,6 +132,9 @@ namespace ASNRTech.CoreService.Security
     {
         public int TableId { get; set; }
         public bool IsActive { get; set; }
+        public bool IsAddPermission { get; set; }
+        public bool IsEditPermission { get; set; }
+        public bool IsDeletePermission { get; set; }
         public string UserEmail { get; set; }
     }
 }

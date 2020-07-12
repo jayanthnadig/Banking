@@ -22,6 +22,9 @@ const LookUpUtilities = (() => {
     _obj.userId = _state.userId.value;
     _obj.password = _state.password.value;
     _obj.userEmail = _state.userEmail.value;
+    _obj.isAddPermission = _state.isAddPermission.value;
+    _obj.isEditPermission = _state.isEditPermission.value;
+    _obj.isDeletePermission = _state.isDeletePermission.value;
     _obj.tableId = -1;
     _obj.isActive = true;
     var _finalusers=[];

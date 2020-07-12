@@ -24,6 +24,15 @@ namespace ASNRTech.CoreService.Dashboard
             return GetTypedResponse(teamHttpContext, Widgets);
         }
 
+        internal static async Task<ResponseBase<List<ChartTypeandDBConnectionString>>> ChartTypeandDBConnectionString(TeamHttpContext teamHttpContext)
+        {
+            if (teamHttpContext == null)
+            {
+                throw new ArgumentNullException(nameof(teamHttpContext));
+            }
+            return await GenericService.ChartTypeandDBConnectionString(teamHttpContext).ConfigureAwait(false);
+        }
+
         internal static async Task<ResponseBase<List<LoadWidgets>>> AddorEditWidgetAsync(TeamHttpContext teamHttpContext, DashboardWidget details)
         {
             if (teamHttpContext == null)
@@ -35,7 +44,7 @@ namespace ASNRTech.CoreService.Dashboard
                 ResponseBase response = await GenericService.createWidget(teamHttpContext, details).ConfigureAwait(false);
                 if (response.Code == HttpStatusCode.OK)
                 {
-                    List<LoadWidgets> Widgets = await GenericService.GetWidgetAsync(teamHttpContext, details.WidgetType, details.WidgetName, details.WidgetQuery, details.WidgetQueryLevel1, details.WidgetQueryLevel2, details.WidgetQueryLevel3).ConfigureAwait(false);
+                    List<LoadWidgets> Widgets = await GenericService.GetWidgetAsync(teamHttpContext, details.WidgetType, details.WidgetName);//, details.WidgetQuery,details.L1ConnectionString, details.WidgetQueryLevel1, details.L2ConnectionString, details.WidgetQueryLevel2, details.WidgetQueryLevel3, details.WidgetQueryLevel4).ConfigureAwait(false);
                     return GetTypedResponse(teamHttpContext, Widgets);
                 }
             }
@@ -46,7 +55,7 @@ namespace ASNRTech.CoreService.Dashboard
                     ResponseBase response = await GenericService.editWidget(teamHttpContext, details).ConfigureAwait(false);
                     if (response.Code == HttpStatusCode.OK)
                     {
-                        List<LoadWidgets> Widgets = await GenericService.GetWidgetAsync(teamHttpContext, details.WidgetType, details.WidgetName, details.WidgetQuery, details.WidgetQueryLevel1, details.WidgetQueryLevel2, details.WidgetQueryLevel3).ConfigureAwait(false);
+                        List<LoadWidgets> Widgets = await GenericService.GetWidgetAsync(teamHttpContext, details.WidgetType, details.WidgetName);//, details.WidgetQuery, details.WidgetQueryLevel1, details.WidgetQueryLevel2, details.WidgetQueryLevel3, details.WidgetQueryLevel4).ConfigureAwait(false);
                         return GetTypedResponse(teamHttpContext, Widgets);
                     }
                 }

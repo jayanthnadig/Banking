@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Xml;
 
-namespace ASNRTech.CoreService.Utilities {
-    public static class Constants {
+namespace ASNRTech.CoreService.Utilities
+{
+    public static class Constants
+    {
         internal const string DB_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
         internal const string SYSTEM_USER_ID = "system";
         internal static DateTime DefaultDate = XmlConvert.ToDateTime("1900-01-01", "yyyy-MM-dd");
@@ -20,6 +22,7 @@ namespace ASNRTech.CoreService.Utilities {
         internal const string CONTEXT_CORRELATION_ID = "correlationId";
         internal const string CONTEXT_USER = "user";
         internal const string CONTEXT_CLIENT_ID = "clientId";
+        internal const string CONTEXT_USER_ID = "userId";
         internal const string CONTEXT_INVOICE_ID = "invoiceId";
 
         internal const string HEADER_CONTENT_TYPE = "Content-Type";
@@ -35,6 +38,7 @@ namespace ASNRTech.CoreService.Utilities {
         internal const string DUMMY_FILE = "DUMMY_FILE_DATA";
 
         internal const string ROUTE_PARAM_CLIENT_ID = "clientId";
+        internal const string ROUTE_PARAM_USER_ID = "userId";
         internal const string ROUTE_PARAM_INVOICE_ID = "invoiceId";
         internal const string ROUTE_PARAM_ASSOCIATE_ID = "empId";
         internal const string QUERY_PARAM_JWT = "access_token";

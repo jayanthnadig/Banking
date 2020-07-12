@@ -15,6 +15,9 @@ let _view_report_details = (_res) => {
   let _edit_report_details = (_res) => {
     return { type: actionTypes.EDIT_REPORT_DETAILS, payload: _res };
   };
+let _download_report_details = (_res) => {
+    return { type: actionTypes.DOWNLOAD_REPORT_DETAILS, payload: _res };
+  };  
 let _delete_dashboard_widget = (_res) => {
   return { type: actionTypes.DELETE_DASHBOARD_WIDGET, payload: _res };
 };
@@ -33,12 +36,13 @@ let _insertformprofile_object = (_res) => {
 let _change_statusobject = () => {
   return { type: actionTypes.CHANGE_STATUS, payload: "new" };
 };*/
+let _userDetails = lookupUtility.LoginDetails();
 export const _getReportNames = () => {
     try {
         return (dispatch) => {
           //let _res = lookupUtility.LoginObject();
           requestServices
-            .get(API.getReportName,"Admin")
+            .get(API.getReportName,_userDetails.userid)
             .then((res) => {
               console.log("Response", res);
               dispatch(_report_names(res));
@@ -56,7 +60,7 @@ export const _post_ReportDetails = (_obj) => {
     return (dispatch) => {
      // let _res = lookupUtility.PostDashboard(_obj);
       requestServices
-        .postquery(API.postReportName, _obj,"Admin")
+        .postquery(API.postReportName, _obj,_userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_new_report_details(res));
@@ -75,7 +79,7 @@ export const _view_ReportDetails = (_obj) => {
       return (dispatch) => {
        // let _res = lookupUtility.PostDashboard(_obj);
         requestServices
-          .getQuery(API.viewReportName, "Admin",_obj)
+          .getQuery(API.viewReportName, _userDetails.userid,_obj)
           .then((res) => {
             console.log("Response", res);
             dispatch(_view_report_details(res));
@@ -94,7 +98,7 @@ export const _view_ReportDetails = (_obj) => {
       return (dispatch) => {
        // let _res = lookupUtility.PostDashboard(_obj);
         requestServices
-          .getQuery(API.editReportName, "Admin",_obj)
+          .getQuery(API.editReportName, _userDetails.userid,_obj)
           .then((res) => {
             console.log("Response", res);
             dispatch(_edit_report_details(res));
@@ -107,7 +111,24 @@ export const _view_ReportDetails = (_obj) => {
       console.log("actionType-->_post_userdata", e);
     }
   };
-
+  export const _download_ReportDetails = (_obj) => {
+    try {
+      return (dispatch) => {
+       // let _res = lookupUtility.PostDashboard(_obj);
+        requestServices
+          .getFiles(API.downloadReportName, _userDetails.userid,_obj)
+          .then((res) => {
+            console.log("Response", res);
+            dispatch(_download_report_details(res));
+          })
+          .catch((err) => {
+            console.log("Error", err);
+          });
+      };
+    } catch (e) {
+      console.log("actionType-->_post_userdata", e);
+    }
+  };
 
 
 
@@ -116,7 +137,7 @@ export const _delete_dashboardWidget = (_id) => {
     return (dispatch) => {
      // let _res = lookupUtility.PostDashboard(_obj);
       requestServices
-        .deleteQuery(API.deleteDashboard,"Admin",_id)
+        .deleteQuery(API.deleteDashboard,_userDetails.userid,_id)
         .then((res) => {
           console.log("Response", res);
           res.widgetId=_id;
@@ -136,7 +157,7 @@ export const _post_drilldowndashboardWidget = (_obj) => {
     return (dispatch) => {
       //let _res = lookupUtility.PostDashboard(_obj);
       requestServices
-        .postquery(API.drilldownDashboard, _obj,"Admin")
+        .postquery(API.drilldownDashboard, _obj,_userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_drilldown_dashboard_widget(res));
