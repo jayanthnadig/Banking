@@ -3,6 +3,7 @@ import { connectRouter } from "connected-react-router";
 import loginReducer from "./users/loginReducer";
 import dashboardReducer from "./dashboard/dashboardReducer";
 import reportReducer from "./reportConfig/reportReducer";
+import notificationReducer from "./notification/notificationReducer";
 import { reducer as formReducer } from 'redux-form';
 import notifyReducer from 'react-redux-notify';
 
@@ -12,7 +13,8 @@ const createRouteReducer = (history) => combineReducers({
     form: formReducer,
     loginReducer,
     dashboardReducer,
-    reportReducer
+    reportReducer,
+    notificationReducer
 });
 
 export default createRouteReducer;

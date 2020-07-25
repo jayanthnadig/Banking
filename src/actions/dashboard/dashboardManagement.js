@@ -18,6 +18,12 @@ let _drilldown_dashboard_widget = (_res) => {
 let _logout_user = (_res) => {
   return { type: actionTypes.USER_LOGOUT, payload: _res };
 };
+let _send_mail = (_res) => {
+  return { type: actionTypes.SEND_EMAIL, payload: _res };
+};
+let _set_notification = (_res) => {
+  return { type: actionTypes.SET_NOTIFICATION, payload: _res };
+};
 /*let _formprofile_object = (_res) => {
   return { type: actionTypes.PUT_USER_DETAILS, payload: _res };
 };
@@ -55,7 +61,8 @@ export const _post_dashboardWidget = (_obj) => {
         .postquery(API.postDashboard, _res, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
-          dispatch(_new_dashboard_widget(res));
+          dispatch(_new_dashboard_widget(res));        
+          dispatch(_set_notification({}));
         })
         .catch((err) => {
           console.log("Error", err);
@@ -76,6 +83,7 @@ export const _delete_dashboardWidget = (_id) => {
           console.log("Response", res);
           res.widgetId = _id;
           dispatch(_delete_dashboard_widget(res));
+          dispatch(_set_notification({}));
         })
         .catch((err) => {
           console.log("Error", err);
@@ -102,6 +110,25 @@ export const _post_drilldowndashboardWidget = (_obj) => {
     };
   } catch (e) {
     console.log("actionType-->_post_userdata", e);
+  }
+};
+
+export const _sendmail_drilldowndashboardWidget = (_obj) => {
+  try {
+    return (dispatch) => {
+      //let _res = lookupUtility.PostDashboard(_obj);
+      requestServices
+        .postquery(API.gridEmailSend, _obj,_userDetails.userid)
+        .then((res) => {
+          console.log("Response", res);
+          dispatch(_send_mail(res));
+        })
+        .catch((err) => {
+          console.log("Error", err);
+        });
+    };
+  } catch (e) {
+    console.log("actionType-->_sendmail_drilldowndashboardWidget", e);
   }
 };
 

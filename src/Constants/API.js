@@ -15,5 +15,6 @@ export default {
   editReportName: `${domain}/reports/editreport`,
   postReportName: `${domain}/reports/addeditreport`,
   downloadReportName: `${domain}/reports/downloadreport`,
+  gridEmailSend: `${domain}/dashboard/gridsendemail`,
   //loadDashboard:`${domain}/dashboard`,
 };

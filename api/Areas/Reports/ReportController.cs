@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace ASNRTech.CoreService.Reports
 {
     [ApiController]
-    [TeamAuthorize(AccessType.Client, true)]
+    [TeamAuthorize(AccessType.Client, false)]
     public class ReportController : TeamControllerBase
     {
         [HttpGet]

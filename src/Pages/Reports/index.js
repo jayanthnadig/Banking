@@ -10,7 +10,9 @@ class Report extends React.Component {
     this.state = {
       modal: false,
       header: "",
+      level: 0,
     };
+    this.mailobj=new Object();
   }
   componentDidMount() {
     let _params = window.location.pathname.split("/");
@@ -26,20 +28,29 @@ class Report extends React.Component {
     _obj.gridData = [];
     this.setState({
       header: _obj.clickedOnValue,
+      level: _params[_params.length - 4],
     });
+    this.mailobj=_obj;
     this.props.GET_DASHBOARD_DRILLDOWN(_obj);
   }
 
   componentWillUnmount() {}
   componentWillReceiveProps(nextProps) {
     console.log(nextProps);
+    if(nextProps.drilldown_data.length){
+      this.props.SEND_DASHBOARD_MAIL(this.mailobj)
+    }
   }
-  drillDown(_data) {
+  drillDown(e, _data) {
     var _list = [];
+    document
+      .querySelectorAll("#vertical-bar-chart table tr")
+      .forEach((xx) => xx.removeAttribute("class"));
+    e.currentTarget.setAttribute("class", "td_highlight");
     this.props.drilldown_data[0].gridColumns.map((xx, ii) => {
       var _obj = new Object();
       _obj.name = xx;
-      _obj.value = _data._head[ii];
+      _obj.value = _data[ii];
       _list.push(_obj);
     });
 
@@ -57,6 +68,11 @@ class Report extends React.Component {
       );
     }
   }
+  checkNoData() {
+    if (!this.props.drilldown_data.length) {
+      return <h2 className="h2nodata">No Data to display</h2>;
+    }
+  }
   bindTableHeader() {
     if (this.props.drilldown_data.length) {
       return this.props.drilldown_data[0].gridColumns.map((_head, _index) => {
@@ -68,7 +84,7 @@ class Report extends React.Component {
     if (this.props.drilldown_data.length) {
       return this.props.drilldown_data[0].gridData.map((_head, _index) => {
         return (
-          <tr className={`td_highlight`} onClick={() => this.drillDown({ _head })}>
+          <tr onClick={(e) => this.drillDown(e, _head)}>
             {_head.map((_body) => {
               return <td class="border">{_body}</td>;
             })}
@@ -84,6 +100,10 @@ class Report extends React.Component {
         this.props.drilldown_data[0].gridColumns.map((e) => e).join(",") + "\n";
       let csvContent =
         "data:text/csv;charset=utf-8," +
+        this.state.header +
+        " Transactions - Level " +
+        this.state.level +
+        "\n\n" +
         _col +
         this.props.drilldown_data[0].gridData
           .map((e) => e.join(","))
@@ -93,7 +113,12 @@ class Report extends React.Component {
       link.setAttribute("href", encodedUri);
       link.setAttribute(
         "download",
-        "myReport.csv"
+        `${
+          this.props.drilldown_data[0].clickedOnValue +
+          "_Level_" +
+          this.state.level +
+          new Date().getTime()
+        }.csv`
       );
       document.body.appendChild(link); // Required for FF
 
@@ -131,7 +156,8 @@ class Report extends React.Component {
                       className="font-medium text-base mr-auto text-4xl "
                       style={{ color: "#1C3FAA" }}
                     >
-                      {this.state.header} Transactions
+                      {this.state.header} Transactions - Level{" "}
+                      {this.state.level}
                     </h1>
                     <button className="report_btn btn_mail">
                       <svg
@@ -151,7 +177,10 @@ class Report extends React.Component {
                       </svg>
                       Send Mail
                     </button>
-                    <button className="report_btn btn_download" onClick={()=>this.downloadReport()}>
+                    <button
+                      className="report_btn btn_download"
+                      onClick={() => this.downloadReport()}
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
@@ -177,6 +206,7 @@ class Report extends React.Component {
                     <div className="preview">
                       <div class="overflow-x-auto">
                         {" "}
+                        {this.checkNoData()}
                         <table class="table">
                           {" "}
                           <thead>
@@ -238,6 +268,8 @@ const dispatch_action = (dispatch) => {
   return {
     GET_DASHBOARD_DRILLDOWN: (_state) =>
       dispatch(action_type._post_drilldowndashboardWidget(_state)),
+    SEND_DASHBOARD_MAIL: (_state) =>
+      dispatch(action_type._sendmail_drilldowndashboardWidget(_state)),
   };
 };
 

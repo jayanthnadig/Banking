@@ -2,78 +2,65 @@ import React from "react";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import Validation from "../../Common/Utility/Validation";
-import * as action_type from "../../actions/users/userManagement"
+import * as action_type from "../../actions/users/userManagement";
 import logo from "../../dist/images/logo.png";
 class Login extends React.Component {
   constructor(props) {
     super(props);
-    this.state={
-        userId:{type:"userId",value:"",error:false},
-        password:{type:"password",value:"",error:false},
-        loginstatus:false
-    }
+    this.state = {
+      userId: { type: "userId", value: "", error: false, required: true },
+      password: { type: "password", value: "", error: false, required: true },
+      loginstatus: false,
+    };
   }
-  handleChange=(e)=>{
+  handleChange = (e) => {
     let _name = e.target.name;
     let _value = e.target.value;
-    this.setState(prevState=>{
-        let _tempField= Object.assign({},prevState);
-        _tempField[_name].value=_value;
-        return _tempField;
-    })
-  }
-  Login=()=>{
-    let _state=Validation.LoginValidate(this.state);    
-    this.setState(prevState=>{
-        let _tempField= Object.assign({},prevState);
-        _tempField=_state;
-        return _tempField;
+    this.setState((prevState) => {
+      let _tempField = Object.assign({}, prevState);
+      _tempField[_name].value = _value;
+      return _tempField;
     });
-   let _len= Object.values(_state).filter(xx=>xx.error===true);
-   if(!_len.length)
-    this.props.USER_LOGIN(_state);
-      
-      
+  };
+  Login = () => {
+    let _state = Validation.LoginValidate(this.state);
+    this.setState((prevState) => {
+      let _tempField = Object.assign({}, prevState);
+      _tempField = _state;
+      return _tempField;
+    });
+    let _len = Object.values(_state).filter((xx) => xx.error === true);
+    if (!_len.length) this.props.USER_LOGIN(_state);
+  };
+  componentDidMount() {}
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.login_status) window.location.href = "/dashboard";
+    else
+      this.setState({
+        loginstatus: true,
+      });
   }
-  componentDidMount(){
-
-  }
-  componentWillReceiveProps(nextProps){
-        if(nextProps.login_status)
-             window.location.href="/dashboard";
-             else
-             this.setState({
-                loginstatus:true
-             })     
-
+  keyPress(e){
+    if(e.which===13)
+      this.Login();
   }
   render() {
     return (
-      <div className="login validate-form">
+      <div className="login validate-form" onKeyPress={(e)=>this.keyPress(e)}>
         <div className="container sm:px-10">
           <div className="block xl:grid grid-cols-2 gap-4">
             <div className="hidden xl:flex flex-col min-h-screen">
               <a href="" className="-intro-x flex items-center pt-5">
-                <img
-                  alt="Pro Line"   
-                  className="w-6"              
-                  src={logo}
-                />
-                <span className="text-white text-lg ml-3">
-                  {" "}
-               
-                </span>
+                <img alt="Pro Line" className="w-6" src={logo} />
+                <span className="text-white text-lg ml-3"> </span>
               </a>
               <div className="my-auto">
-               
                 <div className="-intro-x text-white font-medium text-4xl leading-tight minus-mt-10">
-                    Alleviate the monitoring of technical
+                  Alleviate the monitoring of technical
                   <br />
                   and functional process.
                 </div>
-                <div className="-intro-x mt-5 text-lg text-white">
-                
-                </div>
+                <div className="-intro-x mt-5 text-lg text-white"></div>
               </div>
             </div>
 
@@ -89,23 +76,27 @@ class Login extends React.Component {
                 <div className="intro-x mt-8">
                   <input
                     type="text"
-                    className={`intro-x login__input input input--lg border border-gray-300 block ${(this.state.userId.error)?"error":""}`}
+                    className={`intro-x login__input input input--lg border border-gray-300 block ${
+                      this.state.userId.error ? "error" : ""
+                    }`}
                     required
                     id="txtemail"
                     placeholder="User Name"
                     name="userId"
                     value={this.state.userId.value}
-                    onChange={e => this.handleChange(e)}
+                    onChange={(e) => this.handleChange(e)}
                   />
                   <input
                     type="password"
-                    className={`intro-x login__input input input--lg border border-gray-300 block mt-4 ${(this.state.password.error)?"error":""}`}
+                    className={`intro-x login__input input input--lg border border-gray-300 block mt-4 ${
+                      this.state.password.error ? "error" : ""
+                    }`}
                     required
                     id="txtpass"
                     name="password"
                     placeholder="Password"
                     value={this.state.password.value}
-                    onChange={e => this.handleChange(e)}
+                    onChange={(e) => this.handleChange(e)}
                   />
                 </div>
                 {/* <div className="intro-x flex text-gray-700 text-xs sm:text-sm mt-4">
@@ -125,7 +116,7 @@ class Login extends React.Component {
                   <button
                     className="button button--lg w-full xl:w-32 text-white bg-theme-1 xl:mr-3"
                     id="btnLogin"
-                    onClick={()=>this.Login()}
+                    onClick={() => this.Login()}
                   >
                     Login
                   </button>
@@ -134,7 +125,13 @@ class Login extends React.Component {
                   </button> */}
                 </div>
                 <div className="intro-x mt-10 xl:mt-24 text-gray-700 text-center xl:text-left">
-                   <span className={`errorLogin ${(!this.state.loginstatus)?"hide":""}`}>Invalid Credentials</span>
+                  <span
+                    className={`errorLogin ${
+                      !this.state.loginstatus ? "hide" : ""
+                    }`}
+                  >
+                    Invalid Credentials
+                  </span>
                   <br /> <br /> <br />
                   <a className="text-theme-1" href="">
                     Terms and Conditions
@@ -154,8 +151,8 @@ class Login extends React.Component {
 }
 const mapProperties = (state) => {
   return {
-      login_status:state.loginReducer.loginstatus
-   /* profile_lookup: state.createUserReducer.userProfileLook,
+    login_status: state.loginReducer.loginstatus,
+    /* profile_lookup: state.createUserReducer.userProfileLook,
     user_details: state.createUserReducer.userData,
     db_status: state.createUserReducer.insertstatus,
     categories: state.allCategories.activeCategories,*/
@@ -163,15 +160,15 @@ const mapProperties = (state) => {
 };
 const dispatch_action = (dispatch) => {
   //console.log("userDetails.UserContext.firmId", userDetails.UserContext.firmId)
-  
+
   return {
     USER_LOGIN: (state) => dispatch(action_type._userLogin(state)),
-   /* GET_USER_DETAILS: (_id) => dispatch(action_type._get_userdetails(_id)),
+    /* GET_USER_DETAILS: (_id) => dispatch(action_type._get_userdetails(_id)),
     POST_USER_DETAILS: (_state, _props) =>
       dispatch(action_type._post_userdata(_state, _props)),
     PUT_USER_DETAILS: (_state, _props) =>
       dispatch(action_type._update_userdata(_state, _props)),
-    CHANGE_STATUS: () => dispatch(action_type._change_status()), */    
+    CHANGE_STATUS: () => dispatch(action_type._change_status()), */
   };
 };
 

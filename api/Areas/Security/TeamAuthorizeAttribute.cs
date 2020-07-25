@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ASNRTech.CoreService.Data;
+using ASNRTech.CoreService.Enums;
+using ASNRTech.CoreService.Logging;
+using ASNRTech.CoreService.Services;
+using ASNRTech.CoreService.Utilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
@@ -8,11 +13,6 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading;
-using ASNRTech.CoreService.Data;
-using ASNRTech.CoreService.Enums;
-using ASNRTech.CoreService.Logging;
-using ASNRTech.CoreService.Services;
-using ASNRTech.CoreService.Utilities;
 
 namespace ASNRTech.CoreService.Security
 {

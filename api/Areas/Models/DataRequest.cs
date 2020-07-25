@@ -1,8 +1,10 @@
-﻿using System;
-using ASNRTech.CoreService.Utilities;
+﻿using ASNRTech.CoreService.Utilities;
+using System;
 
-namespace ASNRTech.CoreService.Core.Models {
-    public class DataRequest {
+namespace ASNRTech.CoreService.Core.Models
+{
+    public class DataRequest
+    {
         private string _sortBy;
         private string _sortOrder;
         private DateTime? _from;
@@ -74,16 +76,20 @@ namespace ASNRTech.CoreService.Core.Models {
 
         public bool HasDateFiltering { get; set; }
 
-        public DataRequest() {
+        public DataRequest()
+        {
             this.HasDateFiltering = true;
             this.FilterByQuery = false;
         }
 
-        public DataRequest(int year, int month, int offset, int limit) {
-            if (year == 0) {
+        public DataRequest(int year, int month, int offset, int limit)
+        {
+            if (year == 0)
+            {
                 year = DateTime.Today.Year;
             }
-            if (month == 0) {
+            if (month == 0)
+            {
                 month = DateTime.Today.Month;
             }
             this.dateRange = DateUtility.GetMonthDateRange(year, month);

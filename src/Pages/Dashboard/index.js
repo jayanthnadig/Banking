@@ -2,10 +2,14 @@ import React from "react";
 import { connect } from "react-redux";
 import ReactTooltip from "react-tooltip";
 import LookUpUtilities from "../../Common/Utility/LookUpDataMapping";
+import Notification from "../Notification";
+import * as notify_action_type from "../../actions/notification/notifiyaction";
+import Spinner from "../Notification/Spinner";
 import * as action_type from "../../actions/dashboard/dashboardManagement";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import logo from "../../dist/images/logo.png";
+import user_logout from "../../dist/images/user_mark.svg";
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -27,6 +31,13 @@ class Dashboard extends React.Component {
       l3ConnectionString: "",
       l4ConnectionString: "",
       widgetConnectionString: "",
+      widgetNameError: false,
+      widgetQueryError: false,
+      widgetError: false,
+      l1error:false,
+      l2error:false,
+      l3error:false,
+      l4error:false,
     };
   }
   componentDidMount() {
@@ -87,6 +98,9 @@ class Dashboard extends React.Component {
         _tempField.l3ConnectionString = "PgAdmin4ConnectionString";
         _tempField.l4ConnectionString = "PgAdmin4ConnectionString";
         _tempField.widgetConnectionString = "PgAdmin4ConnectionString";
+        _tempField.widgetNameError = false;
+        _tempField.widgetQueryError = false;
+        _tempField.widgetError = false;
       }
       return _tempField;
     });
@@ -122,69 +136,89 @@ class Dashboard extends React.Component {
   };
   addWidget = () => {
     console.log(this.state.widgetName);
-    this.props.POST_DASHBOARD_WIDGETS(JSON.parse(JSON.stringify(this.state)));
+    if (
+      this.state.widgetName.trim() === "" ||
+      this.state.widgetQuery.trim() === ""
+    ) {
+      this.setState({
+        widgetNameError: this.state.widgetName.trim() === "" ? true : false,
+        widgetQueryError: this.state.widgetQuery.trim() === "" ? true : false,
+        widgetError: true,
+      });
+      LookUpUtilities.SetNotification(true, "Please fill the required fields", 2);
+      this.props.SET_NOTIFICATION();
+    } else {
+      this.setState({
+        widgetError: false,
+      });
+      this.props.POST_DASHBOARD_WIDGETS(JSON.parse(JSON.stringify(this.state)));
+    }
   };
   bindDatatoChart() {
     if (this.props.widget_data.length) {
       return this.props.widget_data.map((_chartData, index) => {
-        if (_chartData.widgetType == "Pie Chart") {
-          let chart = am4core.create(
-            "chartdiv" + index + "",
-            am4charts.PieChart
-          );
-          chart.data = _chartData.widgetData;
+        if (_chartData.widgetData.length) {
+          if (_chartData.widgetType == "Pie Chart") {
+            let chart = am4core.create(
+              "chartdiv" + index + "",
+              am4charts.PieChart
+            );
+            chart.data = _chartData.widgetData;
 
-          this.chart = chart;
+            this.chart = chart;
 
-          let pieSeries = chart.series.push(new am4charts.PieSeries());
-          pieSeries.dataFields.value = "count";
-          pieSeries.dataFields.category = "name";
+            let pieSeries = chart.series.push(new am4charts.PieSeries());
+            pieSeries.dataFields.value = "count";
+            pieSeries.dataFields.category = "name";
 
-          pieSeries.slices.template.events.on(
-            "hit",
-            function (ev) {
-              //console.log(ev.target.dataItem.dataContext.name);
-              window.open(
-                `/report/${1}/${_chartData.widgetId}/${
-                  ev.target.dataItem.dataContext.name
-                }/null`,
-                "_blank"
-              );
-            },
-            this
-          );
-        } else if (_chartData.widgetType == "Bar Chart") {
-          let chart = am4core.create(
-            "chartdiv" + index + "",
-            am4charts.XYChart
-          );
-          chart.data = _chartData.widgetData;
+            pieSeries.slices.template.events.on(
+              "hit",
+              function (ev) {
+                //console.log(ev.target.dataItem.dataContext.name);
+                window.open(
+                  `/report/${1}/${_chartData.widgetId}/${
+                    ev.target.dataItem.dataContext.name
+                  }/null`,
+                  "_blank"
+                );
+              },
+              this
+            );
+          } else if (_chartData.widgetType == "Bar Chart") {
+            let chart = am4core.create(
+              "chartdiv" + index + "",
+              am4charts.XYChart
+            );
+            chart.data = _chartData.widgetData;
 
-          this.chart = chart;
-          let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-          categoryAxis.dataFields.category = "name";
-          categoryAxis.title.text = "name";
+            this.chart = chart;
+            let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+            categoryAxis.dataFields.category = "name";
+            categoryAxis.title.text = "name";
 
-          let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-          valueAxis.title.text = "";
+            let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+            valueAxis.title.text = "";
 
-          let series = chart.series.push(new am4charts.ColumnSeries());
-          series.dataFields.valueY = "count";
-          series.dataFields.categoryX = "name";
+            let series = chart.series.push(new am4charts.ColumnSeries());
+            series.dataFields.valueY = "count";
+            series.dataFields.categoryX = "name";
 
-          series.columns.template.events.on(
-            "hit",
-            function (ev) {
-              console.log(ev.target.dataItem.dataContext.name);
-              window.open(
-                `/report/${1}/${_chartData.widgetId}/${
-                  ev.target.dataItem.dataContext.name
-                }/null`,
-                "_blank"
-              );
-            },
-            this
-          );
+            series.columns.template.events.on(
+              "hit",
+              function (ev) {
+                console.log(ev.target.dataItem.dataContext.name);
+                window.open(
+                  `/report/${1}/${_chartData.widgetId}/${
+                    ev.target.dataItem.dataContext.name
+                  }/null`,
+                  "_blank"
+                );
+              },
+              this
+            );
+          }
+        } else {
+          return <h2>No Data to display</h2>;
         }
       });
     }
@@ -292,6 +326,7 @@ class Dashboard extends React.Component {
   render() {
     return (
       <>
+      {/* <Spinner></Spinner> */}
         <div className="app">
           <div className="border-b border-theme-24 -mt-10 md:-mt-5 -mx-3 sm:-mx-8 px-3 sm:px-8 pt-3 md:pt-0 mb-10">
             <div className="top-bar-boxed flex items-center">
@@ -331,24 +366,8 @@ class Dashboard extends React.Component {
                 class="intro-x dropdown relative mr-4 sm:mr-6"
                 style={{ width: "100%" }}
               >
-                <span className="custom_logout">Logout</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#000"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  className="feather feather-log-out mx-auto custom_logout"
-                  onClick={() => this.logout()}
-                >
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                  <polyline points="16 17 21 12 16 7"></polyline>
-                  <line x1="21" y1="12" x2="9" y2="12"></line>
-                </svg>
+                <span className="custom_logout" onClick={() => this.logout()}><img src={user_logout} className="custom_logout" /></span>
+               
                 <span className="userwelcome">
                   Welcome {this.state.userDetails.userid}
                 </span>
@@ -386,15 +405,18 @@ class Dashboard extends React.Component {
                     <div class="side-menu__title"> Dashboard </div>
                   </a>
                 </li>
-                <li className={`${
-                      !this.state.userDetails.isAddRights ? "hidden" : ""
-                    }`}>
+                <li
+                  className={`${
+                    !this.state.userDetails.isAddRights ? "hidden" : ""
+                  }`}
+                  onClick={() => this.showAddWidget(true, {})}
+                >
                   <a
-                    href="#"
+                   
                     className={`side-menu ${
                       this.state.modal ? "side-menu--active" : ""
                     }`}
-                    onClick={() => this.showAddWidget(true, {})}
+                    
                   >
                     <div class="side-menu__icon">
                       {" "}
@@ -422,7 +444,7 @@ class Dashboard extends React.Component {
                         <line x1="8" y1="12" x2="16" y2="12"></line>
                       </svg>{" "}
                     </div>
-                    <div class="side-menu__title"> Add Widgets </div>
+                    <div class="side-menu__title"> Add Widget </div>
                   </a>
                 </li>
 
@@ -456,9 +478,11 @@ class Dashboard extends React.Component {
                     </div>
                   </a>
                 </li>
-                <li className={`${
-                      (this.state.userDetails.type!==1) ? "hidden" : ""
-                    }`}>
+                <li
+                  className={`${
+                    this.state.userDetails.type !== 1 ? "hidden" : ""
+                  }`}
+                >
                   <a href="/userConfig" class="side-menu">
                     <div class="side-menu__icon">
                       {" "}
@@ -545,6 +569,7 @@ class Dashboard extends React.Component {
                       <h2 class="font-medium text-base mr-auto">
                         {this.state.widgetId == -1 ? "Add" : "Edit"} Widget
                       </h2>
+                     
                       <div class="w-full sm:w-auto flex items-center sm:ml-auto mt-3 sm:mt-0">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -571,7 +596,9 @@ class Dashboard extends React.Component {
                       </label>{" "}
                       <input
                         type="text"
-                        class="input w-full border mt-2 flex-1"
+                        className={`input w-full border mt-2 flex-1 ${
+                          this.state.widgetNameError ? "error" : ""
+                        }`}
                         name="widgetName"
                         placeholder="Widget Name"
                         required
@@ -660,7 +687,9 @@ class Dashboard extends React.Component {
                         </ReactTooltip>
                       </label>{" "}
                       <textarea
-                        class="input w-full border mt-2 flex-1"
+                        className={`input w-full border mt-2 flex-1 ${
+                          this.state.widgetQueryError ? "error" : ""
+                        }`}
                         placeholder="Select statement"
                         name="widgetQuery"
                         value={this.state.widgetQuery}
@@ -971,6 +1000,7 @@ class Dashboard extends React.Component {
             </div>{" "}
           </div>
         </div>
+        <Notification></Notification>
       </>
     );
   }
@@ -991,6 +1021,7 @@ const dispatch_action = (dispatch) => {
     DELETE_DASHBOARD_WIDGETS: (_id) =>
       dispatch(action_type._delete_dashboardWidget(_id)),
     USER_LOGOUT: () => dispatch(action_type._user_logout()),
+    SET_NOTIFICATION: () => dispatch(notify_action_type._setNotify()),
   };
 };
 

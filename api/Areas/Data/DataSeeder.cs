@@ -29,7 +29,6 @@ namespace ASNRTech.CoreService.Core
             }
             catch (Exception ex)
             {
-                int i = 0;
                 throw;
             }
         }
@@ -88,7 +87,7 @@ namespace ASNRTech.CoreService.Core
             AddUser(new User
             {
                 UserId = "Admin",
-                Email = "admin@asnrtech.com",
+                Email = "jayanthnadig@gmail.com",
                 UserType = UserType.Admin,
                 Password = Utility.GetMd5Hash("testing_1"),
                 IsAdd = true,
@@ -100,7 +99,7 @@ namespace ASNRTech.CoreService.Core
             AddUser(new User
             {
                 UserId = "client",
-                Email = "client@asnrtech.com",
+                Email = "santhuanandmca@gmail.com",
                 UserType = UserType.Client,
                 Password = Utility.GetMd5Hash("testing_1"),
                 IsAdd = false,
@@ -114,6 +113,7 @@ namespace ASNRTech.CoreService.Core
         {
             AddTransactions(new Transactions
             {
+                CreatedBy = "ADMIN",
                 TransactionId = 1,
                 BranchCode = "221",
                 BranchName = "East Branch",
@@ -128,6 +128,7 @@ namespace ASNRTech.CoreService.Core
 
             AddTransactions(new Transactions
             {
+                CreatedBy = "ADMIN",
                 TransactionId = 2,
                 BranchCode = "222",
                 BranchName = "West Branch",
@@ -142,6 +143,7 @@ namespace ASNRTech.CoreService.Core
 
             AddTransactions(new Transactions
             {
+                CreatedBy = "CLIENT",
                 TransactionId = 3,
                 BranchCode = "223",
                 BranchName = "South Branch",
@@ -156,6 +158,7 @@ namespace ASNRTech.CoreService.Core
 
             AddTransactions(new Transactions
             {
+                CreatedBy = "CLIENT",
                 TransactionId = 4,
                 BranchCode = "224",
                 BranchName = "North Branch",
@@ -170,6 +173,7 @@ namespace ASNRTech.CoreService.Core
 
             AddTransactions(new Transactions
             {
+                CreatedBy = "ADMIN",
                 TransactionId = 5,
                 BranchCode = "221",
                 BranchName = "East Branch",

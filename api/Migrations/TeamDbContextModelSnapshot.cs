@@ -404,11 +404,23 @@ namespace TeamLease.CssService.Migrations
                     b.Property<string>("ReportConnectionString")
                         .HasColumnName("rc_connectionstring");
 
+                    b.Property<string>("ReportDefaultSMSMsg")
+                        .HasColumnName("rc_SMSmsg");
+
+                    b.Property<string>("ReportDeliveryOption")
+                        .HasColumnName("rc_deliveryoption");
+
                     b.Property<string>("ReportEmail")
                         .HasColumnName("rc_email");
 
                     b.Property<string>("ReportFileFormat")
                         .HasColumnName("rc_fileformat");
+
+                    b.Property<string>("ReportFrequecy")
+                        .HasColumnName("rc_frequency");
+
+                    b.Property<string>("ReportFrequecyValue")
+                        .HasColumnName("rc_frequencyvalue");
 
                     b.Property<DateTime?>("ReportModifiedOn")
                         .HasColumnName("rc_modifiedon");
@@ -422,8 +434,17 @@ namespace TeamLease.CssService.Migrations
                     b.Property<string>("ReportReqUserId")
                         .HasColumnName("rc_userid");
 
-                    b.Property<string>("ReportSchedule")
-                        .HasColumnName("rc_schedule");
+                    b.Property<string>("ReportSMSPhNo")
+                        .HasColumnName("rc_SMSphno");
+
+                    b.Property<string>("ReportSendTime")
+                        .HasColumnName("rc_sendtime");
+
+                    b.Property<string>("ReportWorkEndTime")
+                        .HasColumnName("rc_workendtime");
+
+                    b.Property<string>("ReportWorkStartTime")
+                        .HasColumnName("rc_workstarttime");
 
                     b.HasKey("Id");
 

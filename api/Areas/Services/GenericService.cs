@@ -302,7 +302,8 @@ namespace ASNRTech.CoreService.Alcs
 
             using (TeamDbContext dbContext = new TeamDbContext())
             {
-                objUserDashboard = dbContext.UserDashboards.Where(x => x.DashboardUserId == userid && x.Deleted == false && x.Id == details.ClickedWidgetId).ToList();
+                //objUserDashboard = dbContext.UserDashboards.Where(x => x.DashboardUserId == userid && x.Deleted == false && x.Id == details.ClickedWidgetId).ToList(); // For specific user
+                objUserDashboard = dbContext.UserDashboards.Where(x => x.Deleted == false && x.Id == details.ClickedWidgetId).ToList(); // for all users
             }
 
             if (objUserDashboard.Count != 0)

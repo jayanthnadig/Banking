@@ -2,8 +2,11 @@ import React from "react";
 import { connect } from "react-redux";
 import Validation from "../../Common/Utility/Validation";
 import LookUpUtilities from "../../Common/Utility/LookUpDataMapping";
+import Notification from "../Notification";
 import * as action_type from "../../actions/users/userManagement";
+import * as notify_action_type from "../../actions/notification/notifiyaction";
 import logo from "../../dist/images/logo.png";
+import user_logout from "../../dist/images/user_mark.svg";
 
 class UserConfig extends React.Component {
   constructor(props) {
@@ -11,19 +14,51 @@ class UserConfig extends React.Component {
     this.state = {
       modal: false,
       userDetails: {},
-      userId: { type: "userId", value: "", error: false,required:true, errmsg: "" },
-      password: { type: "password", value: "", error: false, required:true,errmsg: "" },
+      isuserEdited: false,
+      isbulkuserEdited: false,
+      userId: {
+        type: "userId",
+        value: "",
+        error: false,
+        required: true,
+        errmsg: "",
+      },
+      password: {
+        type: "password",
+        value: "",
+        error: false,
+        required: true,
+        errmsg: "",
+      },
       userEmail: {
         type: "userEmail",
         value: "",
         error: false,
         regex: "email",
-        required:true,
+        required: true,
         errmsg: "",
       },
-      isAddPermission:{ type: "checkbox", value: false, error: false,required:false, errmsg: "" },
-      isEditPermission:{ type: "checkbox", value: false, error: false,required:false, errmsg: "" },
-      isDeletePermission:{ type: "checkbox", value: false, error: false,required:false, errmsg: "" },
+      isAddPermission: {
+        type: "checkbox",
+        value: false,
+        error: false,
+        required: false,
+        errmsg: "",
+      },
+      isEditPermission: {
+        type: "checkbox",
+        value: false,
+        error: false,
+        required: false,
+        errmsg: "",
+      },
+      isDeletePermission: {
+        type: "checkbox",
+        value: false,
+        error: false,
+        required: false,
+        errmsg: "",
+      },
       isActive: true,
       tableId: -1,
       userList: [],
@@ -39,10 +74,9 @@ class UserConfig extends React.Component {
     this.setState({
       userDetails: _userDetails,
     });
-    if(_userDetails.type===1)
-       this.props.GET_USER_DETAILS(_userDetails.userid);
-    else 
-      this.logout();  
+    if (_userDetails.type === 1)
+      this.props.GET_USER_DETAILS(_userDetails.userid);
+    else this.logout();
   }
 
   componentWillUnmount() {}
@@ -76,16 +110,52 @@ class UserConfig extends React.Component {
   }
   clear() {
     this.setState({
-      userId: { type: "userId", value: "", error: false, errmsg: "" },
-      password: { type: "password", value: "", error: false, errmsg: "" },
+      userId: {
+        type: "userId",
+        value: "",
+        error: false,
+        errmsg: "",
+        required: true,
+      },
+      password: {
+        type: "password",
+        value: "",
+        error: false,
+        errmsg: "",
+        required: true,
+      },
       userEmail: {
         type: "userEmail",
         value: "",
         error: false,
         errmsg: "",
         regex: "email",
+        required: true,
+      },
+      isAddPermission: {
+        type: "checkbox",
+        value: false,
+        error: false,
+        required: false,
+        errmsg: "",
+      },
+      isEditPermission: {
+        type: "checkbox",
+        value: false,
+        error: false,
+        required: false,
+        errmsg: "",
+      },
+      isDeletePermission: {
+        type: "checkbox",
+        value: false,
+        error: false,
+        required: false,
+        errmsg: "",
       },
       duplicate_flag: false,
+      isuserEdited: false,
+      isbulkuserEdited: false,
     });
   }
   Focus(e) {
@@ -117,12 +187,14 @@ class UserConfig extends React.Component {
           (xx) =>
             xx.userId.toLowerCase() === this.state.userId.value.toLowerCase()
         ).length
-      )
+      ) {
         this.setState({
           duplicate_flag: true,
           errmsg: "User Already exists",
         });
-      else {
+        LookUpUtilities.SetNotification(true, "User Already exists", 2);
+        this.props.SET_NOTIFICATION();
+      } else {
         this.setState({
           duplicate_flag: false,
           errmsg: "",
@@ -134,6 +206,8 @@ class UserConfig extends React.Component {
         duplicate_flag: true,
         errmsg: _len[0].errmsg ? _len[0].errmsg : "Please fill required field",
       });
+      LookUpUtilities.SetNotification(true, "Please fill required field", 2);
+      this.props.SET_NOTIFICATION();
     }
   }
   bulkUpdateData() {
@@ -166,12 +240,17 @@ class UserConfig extends React.Component {
           }
         });
         if (_finalList.length) this.props.POST_USER_DETAILS(_finalList);
+      } else {
+        LookUpUtilities.SetNotification(true, "Please fill valid Details", 2);
+        this.props.SET_NOTIFICATION();
       }
     } else {
       this.setState({
         duplicate_flag: true,
         errmsg: "User Already exists",
       });
+      LookUpUtilities.SetNotification(true, "User Already exists", 2);
+      this.props.SET_NOTIFICATION();
     }
   }
   bindUserData() {
@@ -264,12 +343,13 @@ class UserConfig extends React.Component {
   }
   handleChange = (e) => {
     let _name = e.target.name;
-    let _value="";
+    let _value = "";
     if (e.target.type == "checkbox") _value = e.target.checked;
-    else _value = e.target.value;    
+    else _value = e.target.value;
     this.setState((prevState) => {
       let _tempField = Object.assign({}, prevState);
       _tempField[_name].value = _value;
+      _tempField.isuserEdited = true;
       return _tempField;
     });
   };
@@ -282,6 +362,7 @@ class UserConfig extends React.Component {
       let _tempField = Object.assign({}, prevState);
       _tempField.userList[_index][_name] = _value;
       _tempField.userListEdited[_index] = true;
+      _tempField.isbulkuserEdited = true;
       return _tempField;
     });
   };
@@ -291,7 +372,7 @@ class UserConfig extends React.Component {
         <div className="app">
           <div className="border-b border-theme-24 -mt-10 md:-mt-5 -mx-3 sm:-mx-8 px-3 sm:px-8 pt-3 md:pt-0 mb-10">
             <div className="top-bar-boxed flex items-center">
-              <a href="" className="-intro-x hidden md:flex">
+              <a className="-intro-x hidden md:flex">
                 <img
                   alt="Midone Tailwind HTML Admin Template"
                   className="w-6"
@@ -304,36 +385,19 @@ class UserConfig extends React.Component {
                 class="intro-x dropdown relative mr-4 sm:mr-6"
                 style={{ width: "100%" }}
               >
-                <span className="custom_logout">Logout</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#000"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  className="feather feather-log-out mx-auto custom_logout"
-                  onClick={() => this.logout()}
-                >
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                  <polyline points="16 17 21 12 16 7"></polyline>
-                  <line x1="21" y1="12" x2="9" y2="12"></line>
-                </svg>
-                <span className="userwelcome">Welcome ADMIN</span>
+                 <span className="custom_logout" onClick={() => this.logout()}><img src={user_logout} className="custom_logout" /></span>
+               
+               <span className="userwelcome">
+                 Welcome {this.state.userDetails.userid}
+               </span>
               </div>
             </div>
           </div>
           <div class="flex">
-          <nav class="side-nav">
+            <nav class="side-nav">
               <ul>
                 <li>
-                  <a
-                    href="/dashboard"
-                    class="side-menu"
-                  >
+                  <a href="/dashboard" class="side-menu">
                     <div class="side-menu__icon">
                       {" "}
                       <svg
@@ -355,9 +419,7 @@ class UserConfig extends React.Component {
                     <div class="side-menu__title"> Dashboard </div>
                   </a>
                 </li>
-                <li className={`${
-                      !this.state.userDetails.isAddRights ? "hidden" : ""
-                    }`}>
+                <li className={"hidden"}>
                   <a
                     href="#"
                     className={`side-menu ${
@@ -425,9 +487,11 @@ class UserConfig extends React.Component {
                     </div>
                   </a>
                 </li>
-                <li className={`${
-                      (this.state.userDetails.type!==1) ? "hidden" : ""
-                    }`}>
+                <li
+                  className={`${
+                    this.state.userDetails.type !== 1 ? "hidden" : ""
+                  }`}
+                >
                   <a href="/userConfig" class="side-menu side-menu--active">
                     <div class="side-menu__icon">
                       {" "}
@@ -473,7 +537,7 @@ class UserConfig extends React.Component {
                     </div>
                     <div class="p-5" id="vertical-bar-chart">
                       <div class="modal__content relative custom_model_content validate-form">
-                        <div
+                        {/* <div
                           className={`rounded-md flex items-center px-5 py-4 mb-2 bg-theme-6 txtwhite ${
                             !this.state.duplicate_flag ? "hidden" : ""
                           }`}
@@ -495,14 +559,14 @@ class UserConfig extends React.Component {
                             <line x1="12" y1="16" x2="12.01" y2="16"></line>
                           </svg>{" "}
                           {this.state.errmsg}{" "}
-                        </div>
-                        <div
+                        </div> */}
+                        {/* <div
                           className={`rounded-md px-5 py-4 mb-2 bg-theme-9 text-white ${
                             !this.state.db_status ? "hidden" : ""
                           }`}
                         >
                           User added or modified successfully{" "}
-                        </div>
+                        </div> */}
                         <div class="flex flex-col sm:flex-row items-center">
                           {" "}
                           <label class="w-full sm:w-20 sm:text-right sm:mr-5">
@@ -554,53 +618,56 @@ class UserConfig extends React.Component {
                             onChange={(e) => this.handleChange(e)}
                           />{" "}
                         </div>{" "}
-                        <div class="flex flex-col sm:flex-row items-center">
-                          {" "}
-                          <label class="w-full sm:w-20 sm:text-right sm:mr-5">
-                            Add Permission
-                          </label>{" "}
-                          <input
-                            type="checkbox"
-                            checked={this.state.isAddPermission.value}
-                            name="isAddPermission"
-                            onChange={(e) => this.handleChange(e)}
-                            class="input border mr-2"
-                            id="vertical-remember-me"
-                          />{" "}
-                        </div>{" "}
-                        <div class="flex flex-col sm:flex-row items-center">
-                          {" "}
-                          <label class="w-full sm:w-20 sm:text-right sm:mr-5">
-                            Edit Permission
-                          </label>{" "}
-                          <input
-                            type="checkbox"
-                            checked={this.state.isEditPermission.value}
-                            name="isEditPermission"
-                            onChange={(e) => this.handleChange(e)}
-                            class="input border mr-2"
-                            id="vertical-remember-me"
-                          />{" "}
-                        </div>{" "}
-                        <div class="flex flex-col sm:flex-row items-center">
-                          {" "}
-                          <label class="w-full sm:w-20 sm:text-right sm:mr-5">
-                            Delete Permission
-                          </label>{" "}
-                          <input
-                            type="checkbox"
-                            checked={this.state.isDeletePermission.value}
-                            name="isDeletePermission"
-                            onChange={(e) => this.handleChange(e)}
-                            class="input border mr-2"
-                            id="vertical-remember-me"
-                          />{" "}
-                        </div>{" "}
+                        <div className="chk_box_holder">
+                          <div class="flex flex-col sm:flex-row items-center">
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Add Permission
+                            </label>{" "}
+                            <input
+                              type="checkbox"
+                              checked={this.state.isAddPermission.value}
+                              name="isAddPermission"
+                              onChange={(e) => this.handleChange(e)}
+                              class="input border mr-2"
+                              id="vertical-remember-me"
+                            />{" "}
+                          </div>{" "}
+                          <div class="flex flex-col sm:flex-row items-center">
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Edit Permission
+                            </label>{" "}
+                            <input
+                              type="checkbox"
+                              checked={this.state.isEditPermission.value}
+                              name="isEditPermission"
+                              onChange={(e) => this.handleChange(e)}
+                              class="input border mr-2"
+                              id="vertical-remember-me"
+                            />{" "}
+                          </div>{" "}
+                          <div class="flex flex-col sm:flex-row items-center">
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Delete Permission
+                            </label>{" "}
+                            <input
+                              type="checkbox"
+                              checked={this.state.isDeletePermission.value}
+                              name="isDeletePermission"
+                              onChange={(e) => this.handleChange(e)}
+                              class="input border mr-2"
+                              id="vertical-remember-me"
+                            />{" "}
+                          </div>{" "}
+                        </div>
                         <div class="sm:ml-20 sm:pl-5 mt-5">
                           {" "}
                           <button
                             type="button"
                             class="button bg-theme-1 text-white"
+                            disabled={!this.state.isuserEdited}
                             onClick={() => this.addUserData()}
                           >
                             Create
@@ -644,10 +711,10 @@ class UserConfig extends React.Component {
                                   Add Permission
                                 </th>{" "}
                                 <th class="border border-b-2 whitespace-no-wrap">
-                                Edit Permission
+                                  Edit Permission
                                 </th>{" "}
                                 <th class="border border-b-2 whitespace-no-wrap">
-                                Delete Permission
+                                  Delete Permission
                                 </th>{" "}
                                 <th class="border border-b-2 whitespace-no-wrap">
                                   IsActive
@@ -660,6 +727,7 @@ class UserConfig extends React.Component {
                             {" "}
                             <button
                               type="button"
+                              disabled={!this.state.isbulkuserEdited}
                               class="button bg-theme-1 text-white"
                               style={{ float: "right" }}
                               onClick={() => this.bulkUpdateData()}
@@ -676,6 +744,7 @@ class UserConfig extends React.Component {
             </div>
           </div>
         </div>
+        <Notification></Notification>
       </>
     );
   }
@@ -690,6 +759,7 @@ const dispatch_action = (dispatch) => {
   return {
     GET_USER_DETAILS: (_id) => dispatch(action_type._get_userdata(_id)),
     POST_USER_DETAILS: (state) => dispatch(action_type._post_userdata(state)),
+    SET_NOTIFICATION: () => dispatch(notify_action_type._setNotify()),
   };
 };
 

@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using ASNRTech.CoreService.Core;
+﻿using ASNRTech.CoreService.Core;
 using ASNRTech.CoreService.Core.Models;
 using ASNRTech.CoreService.Data;
 using ASNRTech.CoreService.Enums;
 using ASNRTech.CoreService.Services;
 using ASNRTech.CoreService.Utilities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace ASNRTech.CoreService.Security
 {

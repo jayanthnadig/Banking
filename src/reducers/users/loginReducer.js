@@ -1,5 +1,6 @@
 import initstate from "../initstate";
 import * as actionTypes from "../../Constants/actionType";
+import LookUpUtilities from "../../Common/Utility/LookUpDataMapping";
 const loginReducer = (state = initstate, action) => {
   switch (action.type) {
     case actionTypes.USER_LOGIN:
@@ -32,6 +33,7 @@ const loginReducer = (state = initstate, action) => {
     case actionTypes.POST_USER_DETAILS:
       let _userDetails = action.payload;
       let _users = Object.assign({}, state);
+      var _index = -1;
       if (_userDetails.code === 200) {
         _users.userDetails = JSON.parse(JSON.stringify(_users.userDetails));
         _userDetails.data.map((_data) => {
@@ -39,14 +41,18 @@ const loginReducer = (state = initstate, action) => {
             _users.userDetails.filter((xx) => xx.tableId == _data.tableId)
               .length
           ) {
-            var _index = -1;
+           
             _users.userDetails.map((yy, jj) => {
               if (yy.tableId == _data.tableId) _index = jj;
             });
             if (_index !== -1) _users.userDetails[_index] = _data;
           } else _users.userDetails.push(_data);
         });
-        _users.user_dbStatus=true;
+        let _msg =
+        (_index === -1)
+          ? "User Added Successfully"
+          : "User Updated Successfully";
+      LookUpUtilities.SetNotification(true, _msg, 1);        
       }
       state = _users;
       return state;

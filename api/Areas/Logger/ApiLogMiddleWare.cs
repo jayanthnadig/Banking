@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ASNRTech.CoreService.Logging;
+using ASNRTech.CoreService.Utilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using System;
 using System.Collections.Generic;
@@ -6,8 +8,6 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using ASNRTech.CoreService.Logging;
-using ASNRTech.CoreService.Utilities;
 
 namespace ASNRTech.CoreService.Core
 {

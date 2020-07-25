@@ -1,5 +1,6 @@
 import initstate from "../initstate";
 import * as actionTypes from "../../Constants/actionType";
+import LookUpUtilities from "../../Common/Utility/LookUpDataMapping";
 const dashboardReducer = (state = initstate, action) => {
   switch (action.type) {
     case actionTypes.GET_DASHBOARD_WIDGETS:
@@ -13,6 +14,7 @@ const dashboardReducer = (state = initstate, action) => {
     case actionTypes.POST_DASHBOARD_WIDGET:
       let _newwidget = action.payload;
       let _dashboard = Object.assign({}, state);
+      var _index = -1;
       if (_newwidget.data.length) {
         _dashboard.widgetData = JSON.parse(
           JSON.stringify(_dashboard.widgetData)
@@ -21,14 +23,19 @@ const dashboardReducer = (state = initstate, action) => {
           _dashboard.widgetData.filter(
             (xx) => xx.widgetId == _newwidget.data[0].widgetId
           ).length
-        ) {
-          var _index = -1;
+        ) {         
           _dashboard.widgetData.map((yy, jj) => {
             if (yy.widgetId == _newwidget.data[0].widgetId) _index = jj;
           });
           if (_index !== -1) _dashboard.widgetData[_index] = _newwidget.data[0];
         } else _dashboard.widgetData.push(_newwidget.data[0]);
       }
+      
+      let _msg =
+        (_index === -1)
+          ? "Widget Added Successfully"
+          : "Widget Updated Successfully";
+      LookUpUtilities.SetNotification(true, _msg, 1);
       state = _dashboard;
       return state;
 
@@ -44,6 +51,8 @@ const dashboardReducer = (state = initstate, action) => {
           if (yy.widgetId == _deletewidget.widgetId) _index = jj;
         });
         if (_index !== -1) _delete_dashboard.widgetData.splice(_index, 1);
+        
+        LookUpUtilities.SetNotification(true, "Widget Deleted Successfully", 1);
         state = _delete_dashboard;
       }
       return state;
@@ -62,10 +71,22 @@ const dashboardReducer = (state = initstate, action) => {
     case actionTypes.USER_LOGOUT:
       let _logout_status = action.payload;
       let _logout_object = Object.assign({}, state);
-      if (_logout_status.code == 200) {        
+      if (_logout_status.code == 200) {
         _logout_object.loginstatus = false;
         state = _logout_object;
       }
+      return state;
+
+    /*case actionTypes.SET_NOTIFICATION:
+      let _notify_status = action.payload;
+      let _notify_object = Object.assign({}, state);
+      if (!Object.keys(_notify_status).length) {
+        _notify_object.g_dbStatus = false;
+      }
+      state = _notify_object;
+      return state;*/
+
+    case actionTypes.SEND_EMAIL:
       return state;
   }
   return state;

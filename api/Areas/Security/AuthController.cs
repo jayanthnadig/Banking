@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using ASNRTech.CoreService.Core;
+﻿using ASNRTech.CoreService.Core;
 using ASNRTech.CoreService.Core.Models;
 using ASNRTech.CoreService.Enums;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ASNRTech.CoreService.Security
 {

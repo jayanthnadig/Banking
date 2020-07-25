@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using ASNRTech.CoreService.Core;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,20 +8,23 @@ using Microsoft.Extensions.DependencyInjection;
 using Npgsql.Logging;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
-using ASNRTech.CoreService.Core;
 
-namespace ASNRTech.CoreService.Config {
-    public class Startup {
+namespace ASNRTech.CoreService.Config
+{
+    public class Startup
+    {
         private const string API_VERSION = "v1.0";
 
-        public Startup(IConfiguration configuration) {
+        public Startup(IConfiguration configuration)
+        {
             this.Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services) {
+        public void ConfigureServices(IServiceCollection services)
+        {
             services
                .AddMvc(o => o.MaxModelValidationErrors = 20)
                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
@@ -42,11 +46,14 @@ namespace ASNRTech.CoreService.Config {
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime, IServiceProvider container) {
-            if (!Utilities.Utility.IsProduction) {
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime, IServiceProvider container)
+        {
+            if (!Utilities.Utility.IsProduction)
+            {
                 app.UseDeveloperExceptionPage();
             }
-            else {
+            else
+            {
                 app.UseHsts();
             }
 

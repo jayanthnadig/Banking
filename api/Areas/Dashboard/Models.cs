@@ -1,11 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using ASNRTech.CoreService.Core.Models;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using ASNRTech.CoreService.Core.Models;
-using ASNRTech.CoreService.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ASNRTech.CoreService.Dashboard
 {

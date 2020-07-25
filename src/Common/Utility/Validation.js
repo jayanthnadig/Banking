@@ -35,9 +35,14 @@ const Validation = (() => {
     });
     return _state;
   };
+
+  let _queryValidation = () => {
+    
+  };
   return {
     LoginValidate: _loginValidation,
     BulkValidation: _bulkValidation,
+    QueryValidation: _queryValidation,
   };
 })();
 export default Validation;

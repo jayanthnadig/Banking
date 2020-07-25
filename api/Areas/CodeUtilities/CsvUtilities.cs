@@ -1,19 +1,7 @@
 using CsvHelper;
-using CsvHelper.Configuration;
-using ICSharpCode.SharpZipLib.Core;
-using ICSharpCode.SharpZipLib.Zip;
-using Microsoft.AspNetCore.Mvc;
-using Spire.Pdf;
-using Spire.Pdf.Security;
-using Spire.Xls;
-using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using ASNRTech.CoreService.Utilities;
 
 namespace ASNRTech.CoreService.CsvUtilities
 {

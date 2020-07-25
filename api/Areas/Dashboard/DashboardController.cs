@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using ASNRTech.CoreService.Core;
+﻿using ASNRTech.CoreService.Core;
 using ASNRTech.CoreService.Core.Models;
 using ASNRTech.CoreService.Enums;
 using ASNRTech.CoreService.Security;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ASNRTech.CoreService.Dashboard
 {
@@ -43,9 +42,16 @@ namespace ASNRTech.CoreService.Dashboard
 
         [HttpPost]
         [Route("v1/dashboard/dashboardwidgetclick/{userId}")]
-        public async Task<ResponseBase<List<OnScreenClick>>> dashboardwidgetclick([FromBody]OnScreenClick widgetclick)
+        public async Task<ResponseBase<List<OnScreenClick>>> Dashboardwidgetclick([FromBody]OnScreenClick widgetclick)
         {
             return await DashboardService.DashboardWidgetClick(new TeamHttpContext(HttpContext), widgetclick).ConfigureAwait(false);
+        }
+
+        [HttpPost]
+        [Route("v1/dashboard/gridsendemail/{userId}")]
+        public async Task<ResponseBase> Gridsendemail([FromBody]OnScreenClick widgetclick)
+        {
+            return await DashboardService.GridSendEmail(new TeamHttpContext(HttpContext), widgetclick).ConfigureAwait(false);
         }
     }
 }

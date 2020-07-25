@@ -12,6 +12,9 @@ let _insertformprofile_object = (_res) => {
 let _getuserprofile_data = (_res) => {
   return { type: actionTypes.GET_USER_DETAILS, payload: _res };
 };
+let _set_notification = (_res) => {
+  return { type: actionTypes.SET_NOTIFICATION, payload: _res };
+};
 /*let _formprofile_object = (_res) => {
   return { type: actionTypes.PUT_USER_DETAILS, payload: _res };
 };
@@ -49,6 +52,7 @@ export const _post_userdata = (_obj, ) => {
         .then((res) => {
           console.log("Response", res);
           dispatch(_insertformprofile_object(res));
+          dispatch(_set_notification({}));
         })
         .catch((err) => {
           console.log("Error", err);

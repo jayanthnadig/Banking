@@ -1,4 +1,7 @@
 ﻿using Amazon.Runtime;
+using ASNRTech.CoreService.Config;
+using ASNRTech.CoreService.Core.Models;
+using ASNRTech.CoreService.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -16,11 +19,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
-using ASNRTech.CoreService.Config;
-using ASNRTech.CoreService.Core.Models;
-using ASNRTech.CoreService.Data;
-using System.Data;
-using System.Reflection;
 
 [assembly: InternalsVisibleTo("ASNRTech.CoreService.Tests")]
 
@@ -30,18 +28,14 @@ namespace ASNRTech.CoreService.Utilities
     {
         public const string SYSTEM_USER_ID = "system";
 
-        internal static string ConnString
-        {
-            get
-            {
+        internal static string ConnString {
+            get {
                 return Program.Configuration.GetConnectionString("PgAdmin4ConnectionString");
             }
         }
 
-        internal static string CurrentUserId
-        {
-            get
-            {
+        internal static string CurrentUserId {
+            get {
                 try
                 {
                     return Thread.CurrentPrincipal.Identity.Name.ToLowerInvariant();
@@ -53,10 +47,8 @@ namespace ASNRTech.CoreService.Utilities
             }
         }
 
-        internal static string Env
-        {
-            get
-            {
+        internal static string Env {
+            get {
                 switch (Environment)
                 {
                     case "DEV":
@@ -74,10 +66,8 @@ namespace ASNRTech.CoreService.Utilities
             }
         }
 
-        internal static string Environment
-        {
-            get
-            {
+        internal static string Environment {
+            get {
                 string returnValue = System.Environment.GetEnvironmentVariable("Environment");
                 if (string.IsNullOrWhiteSpace(returnValue))
                 {
@@ -87,50 +77,38 @@ namespace ASNRTech.CoreService.Utilities
             }
         }
 
-        internal static bool IsDeveloper
-        {
-            get
-            {
+        internal static bool IsDeveloper {
+            get {
                 return string.Compare(Utility.CurrentUserId, "admin", true, CultureInfo.InvariantCulture) == 0;
             }
         }
 
-        internal static bool IsDevelopment
-        {
-            get
-            {
+        internal static bool IsDevelopment {
+            get {
                 return string.Equals(Utility.Environment, "DEV", StringComparison.OrdinalIgnoreCase);
             }
         }
 
-        internal static bool IsProduction
-        {
-            get
-            {
+        internal static bool IsProduction {
+            get {
                 return string.Equals(Utility.Environment, "PROD", StringComparison.OrdinalIgnoreCase);
             }
         }
 
-        internal static bool IsTest
-        {
-            get
-            {
+        internal static bool IsTest {
+            get {
                 return string.Equals(Utility.Environment, "TEST", StringComparison.OrdinalIgnoreCase);
             }
         }
 
-        internal static bool IsUat
-        {
-            get
-            {
+        internal static bool IsUat {
+            get {
                 return string.Equals(Utility.Environment, "UAT", StringComparison.OrdinalIgnoreCase);
             }
         }
 
-        internal static bool NetworkAvailable
-        {
-            get
-            {
+        internal static bool NetworkAvailable {
+            get {
                 try
                 {
                     using (Ping ping = new Ping())
@@ -143,10 +121,8 @@ namespace ASNRTech.CoreService.Utilities
             }
         }
 
-        internal static string ServerUrl
-        {
-            get
-            {
+        internal static string ServerUrl {
+            get {
                 return Utility.GetConfigValue(Utility.IsProduction ? "URL_PROD" : "URL_TEST");
             }
         }

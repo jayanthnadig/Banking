@@ -50,7 +50,7 @@ export function post(url, body) {
 
   return fetch(url, {
     method: "POST",
-    headers: { Accept: "application/json", "Content-Type": "application/json",'Access-Control-Allow-Origin':'*', 'x-client-token':_userDetails.token },
+    headers: { Accept: "application/json", "Content-Type": "application/json",'Access-Control-Allow-Origin':'*', 'x-client-token':(_userDetails)?_userDetails.token:"" },
     //credentials: "include",
     body: (body)?JSON.stringify(body):"",
   })

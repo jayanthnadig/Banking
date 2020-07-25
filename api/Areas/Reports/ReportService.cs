@@ -29,15 +29,18 @@ namespace ASNRTech.CoreService.Reports
                                   {
                                       Id = rpt.Id,
                                       ReportName = rpt.ReportName,
-                                      Deleted = rpt.Deleted
+                                      Deleted = rpt.Deleted,
+                                      ReportReqUserId = rpt.ReportReqUserId
                                   };
-                foreach (var item in reportnames)
+
+                var userreportnames = reportnames.Where(x => x.ReportReqUserId == teamHttpContext.ContextUserId).ToList();
+                foreach (var item in userreportnames)
                 {
                     ReportList reportList = new ReportList
                     {
                         ReportId = item.Id,
                         ReportName = item.ReportName,
-                        IsActive = !(item.Deleted)
+                        IsActive = !(item.Deleted),
                     };
 
                     objReportList.Add(reportList);
@@ -139,8 +142,15 @@ namespace ASNRTech.CoreService.Reports
                         ReportQuery = item.ReportQuery,
                         ReportEmail = item.ReportEmail,
                         ReportFormat = item.ReportFileFormat,
-                        ReportInterval = item.ReportSchedule,
-                        IsActive = !(item.Deleted)
+                        IsActive = !(item.Deleted),
+                        ReportDeliveryMode = item.ReportDeliveryOption,
+                        ReportSMSPhoneNumber = item.ReportSMSPhNo,
+                        ReportDefaultSMSMSG = item.ReportDefaultSMSMsg,
+                        ReportWorkStartTime = item.ReportWorkStartTime,
+                        ReportWorkEndTime = item.ReportWorkEndTime,
+                        ReportSendFrequency = item.ReportFrequecy,
+                        ReportSendTime = item.ReportSendTime,
+                        ReportSendFrequencyValue = item.ReportFrequecyValue
                     };
 
                     return GetTypedResponse(teamHttpContext, objReportConfigAddEdit);
@@ -184,11 +194,18 @@ namespace ASNRTech.CoreService.Reports
                     ReportQuery = report.ReportQuery,
                     ReportEmail = report.ReportEmail,
                     ReportFileFormat = report.ReportFormat,
-                    ReportSchedule = report.ReportInterval,
                     CreatedBy = httpContext.ContextUserId,
                     //CreatedBy = "Admin",
                     CreatedOn = DateTime.Now,
-                    Deleted = !(report.IsActive)
+                    Deleted = !(report.IsActive),
+                    ReportDeliveryOption = report.ReportDeliveryMode,
+                    ReportSMSPhNo = report.ReportSMSPhoneNumber,
+                    ReportDefaultSMSMsg = report.ReportDefaultSMSMSG,
+                    ReportWorkStartTime = report.ReportWorkStartTime,
+                    ReportWorkEndTime = report.ReportWorkEndTime,
+                    ReportFrequecy = report.ReportSendFrequency,
+                    ReportSendTime = report.ReportSendTime,
+                    ReportFrequecyValue = report.ReportSendFrequencyValue
                 });
                 return GetResponse(httpContext, HttpStatusCode.OK, "Available");
             }
@@ -219,7 +236,7 @@ namespace ASNRTech.CoreService.Reports
                 {
                     if (dbContext.ReportConfigs.AsNoTracking().FirstOrDefault(e => e.Id == report.ReportId) != null)
                     {
-                        objReportConfig = dbContext.ReportConfigs.Where(x => x.Id == report.ReportId && x.Deleted == false).ToList();
+                        objReportConfig = dbContext.ReportConfigs.Where(x => x.Id == report.ReportId).ToList();
                     }
                 }
 
@@ -235,14 +252,21 @@ namespace ASNRTech.CoreService.Reports
                         ReportQuery = report.ReportQuery,
                         ReportEmail = report.ReportEmail,
                         ReportFileFormat = report.ReportFormat,
-                        ReportSchedule = report.ReportInterval,
                         CreatedBy = objReportConfig[0].CreatedBy,
                         CreatedOn = objReportConfig[0].CreatedOn,
                         ModifiedBy = httpContext.ContextUserId,
                         //ModifiedBy = "Admin",
                         ModifiedOn = DateTime.Now,
                         ReportModifiedOn = DateTime.Now,
-                        Deleted = !(report.IsActive)
+                        Deleted = !(report.IsActive),
+                        ReportDeliveryOption = report.ReportDeliveryMode,
+                        ReportSMSPhNo = report.ReportSMSPhoneNumber,
+                        ReportDefaultSMSMsg = report.ReportDefaultSMSMSG,
+                        ReportWorkStartTime = report.ReportWorkStartTime,
+                        ReportWorkEndTime = report.ReportWorkEndTime,
+                        ReportFrequecy = report.ReportSendFrequency,
+                        ReportSendTime = report.ReportSendTime,
+                        ReportFrequecyValue = report.ReportSendFrequencyValue
                     });
                     return GetResponse(httpContext, HttpStatusCode.OK, "Available");
                 }
