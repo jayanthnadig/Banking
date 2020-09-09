@@ -61,6 +61,7 @@ namespace ASNRTech.CoreService.Email
                 using (SmtpClient smtp = new SmtpClient(mail.From.ToString(), Convert.ToInt32(Utility.GetConfigValue("notifications:port"))))
                 {
                     smtp.UseDefaultCredentials = false;
+                    smtp.Host = Utility.GetConfigValue("notifications:smtpserver");
                     smtp.Credentials = new NetworkCredential(Utility.GetConfigValue("notifications:defaultFromAddress"), Utility.GetConfigValue("notifications:password"));
                     smtp.EnableSsl = true;
                     try
@@ -78,8 +79,6 @@ namespace ASNRTech.CoreService.Email
                 dbContext.Emails.Add(dto);
                 await dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
-
-            LoggerService.LogInfo(className, "LevelDetails", "Mail Sent to: {0} with subject: {1}", dto.To.ToString(), dto.Subject);
         }
 
         internal static async Task SendAsync(EmailDto email, StringBuilder sb)

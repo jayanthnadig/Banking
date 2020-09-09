@@ -6,23 +6,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ASNRTech.CoreService.Dashboard
 {
-    public class DashboardWidget
-    {
-        public string WidgetName { get; set; }
-        public int WidgetId { get; set; }
-        public string WidgetType { get; set; }
-        public string WidgetConnectionString { get; set; }
-        public string WidgetQuery { get; set; }
-        public string L1ConnectionString { get; set; }
-        public string WidgetQueryLevel1 { get; set; }
-        public string L2ConnectionString { get; set; }
-        public string WidgetQueryLevel2 { get; set; }
-        public string L3ConnectionString { get; set; }
-        public string WidgetQueryLevel3 { get; set; }
-        public string L4ConnectionString { get; set; }
-        public string WidgetQueryLevel4 { get; set; }
-    }
-
     [Table("Chart_Type", Schema = "public")]
     public class ChartType
     {
@@ -50,23 +33,38 @@ namespace ASNRTech.CoreService.Dashboard
     [Table("User_Dashboard", Schema = "public")]
     public class UserDashboard : BaseModel
     {
-        [Column("ud_userid")]
-        public string DashboardUserId { get; set; }
+        [Column("ud_widgetname")]
+        public string DashboardWidgetName { get; set; }
 
         [Column("ud_charttype")]
         public string DashboardChartType { get; set; }
 
-        [Column("ud_widgetname")]
-        public string DashboardWidgetName { get; set; }
+        [Column("ud_userpermission")]
+        public string DashboardUserPermission { get; set; }
 
-        [Column("ud_dashboardconnectionstring")]
-        public string DashboardConnectionString { get; set; }
+        [Column("ud_emailformat")]
+        public string DashboardEmailFormat { get; set; }
+
+        [Column("ud_widgetconnectionstring")]
+        public string WidgetConnectionString { get; set; }
+
+        [Column("ud_widgetschedulertype")]
+        public string WidgetSchedulerType { get; set; }
+
+        [Column("ud_widgetscheduleremailids")]
+        public string WidgetSchedulerEmailIDs { get; set; }
 
         [Column("ud_widgetquery")]
-        public string DashbaordQuery { get; set; }
+        public string WidgetQuery { get; set; }
 
         [Column("ud_l1connectionstring")]
         public string Level1ConnectionString { get; set; }
+
+        [Column("ud_l1schedulertype")]
+        public string Level1SchedulerType { get; set; }
+
+        [Column("ud_l1scheduleremailids")]
+        public string L1SchedulerEmailIDs { get; set; }
 
         [Column("ud_querylevel1")]
         public string DashbaordQueryL1 { get; set; }
@@ -74,11 +72,23 @@ namespace ASNRTech.CoreService.Dashboard
         [Column("ud_l2connectionstring")]
         public string Level2ConnectionString { get; set; }
 
+        [Column("ud_l2schedulertype")]
+        public string Level2SchedulerType { get; set; }
+
+        [Column("ud_l2scheduleremailids")]
+        public string L2SchedulerEmailIDs { get; set; }
+
         [Column("ud_querylevel2")]
         public string DashbaordQueryL2 { get; set; }
 
         [Column("ud_l3connectionstring")]
         public string Level3ConnectionString { get; set; }
+
+        [Column("ud_l3schedulertype")]
+        public string Level3SchedulerType { get; set; }
+
+        [Column("ud_l3scheduleremailids")]
+        public string L3SchedulerEmailIDs { get; set; }
 
         [Column("ud_querylevel3")]
         public string DashbaordQueryL3 { get; set; }
@@ -86,11 +96,17 @@ namespace ASNRTech.CoreService.Dashboard
         [Column("ud_l4connectionstring")]
         public string Level4ConnectionString { get; set; }
 
+        [Column("ud_l4schedulertype")]
+        public string Level4SchedulerType { get; set; }
+
+        [Column("ud_l4scheduleremailids")]
+        public string L4SchedulerEmailIDs { get; set; }
+
         [Column("ud_querylevel4")]
         public string DashbaordQueryL4 { get; set; }
 
-        [Column("ud_modifiedon")]
-        public DateTime? DashbaordModifiedOn { get; set; }
+        [Column("ud_sendemail")]
+        public bool WidgetSendEmail { get; set; }
     }
 
     [Table("Transactions", Schema = "public")]
@@ -104,9 +120,6 @@ namespace ASNRTech.CoreService.Dashboard
 
         [Column("branchcode")]
         public string BranchCode { get; set; }
-
-        //[Column("total_transactions")]
-        //public int TotalTransactions { get; set; }
 
         [Column("makerid")]
         public string MakerId { get; set; }
@@ -128,6 +141,39 @@ namespace ASNRTech.CoreService.Dashboard
 
         [Column("status")]
         public string Status { get; set; }
+
+        [Column("email")]
+        public string UserEmail { get; set; }
+    }
+
+    public class DashboardWidget
+    {
+        public string DashboardWidgetName { get; set; }
+        public int WidgetId { get; set; }
+        public string DashboardChartType { get; set; }
+        public string DashboardUserPermission { get; set; }
+        public string DashboardEmailFormat { get; set; }
+        public string WidgetConnectionString { get; set; }
+        public string WidgetSchedulerType { get; set; }
+        public string WidgetSchedulerEmailIDs { get; set; }
+        public string WidgetQuery { get; set; }
+        public string Level1ConnectionString { get; set; }
+        public string Level1SchedulerType { get; set; }
+        public string L1SchedulerEmailIDs { get; set; }
+        public string DashbaordQueryL1 { get; set; }
+        public string Level2ConnectionString { get; set; }
+        public string Level2SchedulerType { get; set; }
+        public string L2SchedulerEmailIDs { get; set; }
+        public string DashbaordQueryL2 { get; set; }
+        public string Level3ConnectionString { get; set; }
+        public string Level3SchedulerType { get; set; }
+        public string L3SchedulerEmailIDs { get; set; }
+        public string DashbaordQueryL3 { get; set; }
+        public string Level4ConnectionString { get; set; }
+        public string Level4SchedulerType { get; set; }
+        public string L4SchedulerEmailIDs { get; set; }
+        public string DashbaordQueryL4 { get; set; }
+        public bool WidgetSendEmail { get; set; }
     }
 
     public class Widgets : LoadWidgets
@@ -140,6 +186,14 @@ namespace ASNRTech.CoreService.Dashboard
     public class LoadWidgets : DashboardWidget
     {
         public WidgetRead[] WidgetData { get; set; }
+    }
+
+    public class LoadDashboard
+    {
+        public string DashboardWidgetName { get; set; }
+        public int DashboardWidgetId { get; set; }
+        public string DashboardWidgetType { get; set; }
+        public WidgetRead[] DashbaordWidgetData { get; set; }
     }
 
     public class OnScreenClick
@@ -170,15 +224,23 @@ namespace ASNRTech.CoreService.Dashboard
         public string ChartName { get; set; }
     }
 
+    public class SchedulerTypes
+    {
+        public int SchedulerId { get; set; }
+        public string SchedulerName { get; set; }
+    }
+
     public class DBConnectionStrings
     {
         public int DBConnectionId { get; set; }
         public string DBConnectionName { get; set; }
     }
 
-    public class ChartTypeandDBConnectionString
+    public class AllWidgetDropDowns
     {
         public List<ChartTypes> Charts { get; set; }
+        public List<string> Users { get; set; }
+        public List<SchedulerTypes> Schedulers { get; set; }
         public List<DBConnectionStrings> ConnectionStrings { get; set; }
     }
 }

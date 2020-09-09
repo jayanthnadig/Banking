@@ -38,20 +38,30 @@ namespace ASNRTech.CoreService.Reports
         [Column("rc_SMSmsg")]
         public string ReportDefaultSMSMsg { get; set; }
 
-        [Column("rc_workstarttime")]
-        public string ReportWorkStartTime { get; set; }
+        [Column("rc_schedulername")]
+        public string ReportSchedulerName { get; set; }
+    }
 
-        [Column("rc_workendtime")]
-        public string ReportWorkEndTime { get; set; }
+    [Table("Scheduler", Schema = "public")]
+    public class Scheduler : BaseModel
+    {
+        [Column("sd_name")]
+        public string SchedulerName { get; set; }
 
-        [Column("rc_frequency")]
-        public string ReportFrequecy { get; set; }
+        [Column("sd_workstarttime")]
+        public string SchedulerWorkStartTime { get; set; }
 
-        [Column("rc_sendtime")]
-        public string ReportSendTime { get; set; }
+        [Column("sd_workendtime")]
+        public string SchedulerWorkEndTime { get; set; }
 
-        [Column("rc_frequencyvalue")]
-        public string ReportFrequecyValue { get; set; }
+        [Column("sd_frequency")]
+        public string SchedulerFrequecy { get; set; }
+
+        [Column("sd_sendtime")]
+        public string SchedulerSendTime { get; set; }
+
+        [Column("sd_frequencyvalue")]
+        public string SchedulerFrequecyValue { get; set; }
     }
 
     public class ReportList
@@ -70,16 +80,27 @@ namespace ASNRTech.CoreService.Reports
         public string ReportDeliveryMode { get; set; }
         public string ReportSMSPhoneNumber { get; set; }
         public string ReportDefaultSMSMSG { get; set; }
-        public string ReportWorkStartTime { get; set; }
-        public string ReportWorkEndTime { get; set; }
-        public string ReportSendFrequency { get; set; }
-        public string ReportSendTime { get; set; }
-        public string ReportSendFrequencyValue { get; set; }
+        public string ReportSchedulerName { get; set; }
     }
 
     public class ReportGrid : ReportList
     {
         public string[] GridColumns { get; set; }
         public List<string[]> GridData { get; set; }
+    }
+
+    public class SchedulerList
+    {
+        public int SchedulerId { get; set; }
+        public string SchedulerName { get; set; }
+    }
+
+    public class SchedulerAddUpdate : SchedulerList
+    {
+        public string SchedulerWorkStartTime { get; set; }
+        public string SchedulerWorkEndTime { get; set; }
+        public string SchedulerSendFrequency { get; set; }
+        public string SchedulerSendTime { get; set; }
+        public string SchedulerSendFrequencyValue { get; set; }
     }
 }

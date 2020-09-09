@@ -43,7 +43,8 @@ class ReportConfiguration extends React.Component {
       22,
       23,
     ];
-    this.minute = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+    this.hour12 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    this.minute = [0, 15, 30, 45];
     this.month = [
       1,
       2,
@@ -78,10 +79,12 @@ class ReportConfiguration extends React.Component {
       31,
     ];
     this.state = {
-      modal: false,
+      modal: true,
+      scheduler: false,
       userDetails: {},
       reportQuery: "",
       reportEmail: "",
+      reportEmailDummy: "",
       reportFormat: "Excel",
       reportInterval: "1 Hour",
       reportId: -1,
@@ -103,8 +106,21 @@ class ReportConfiguration extends React.Component {
       reportConnectionString: "OracleConnectionString",
       reportNameError: false,
       reportQueryError: false,
+      reportSchedulerSelectError: false,
+      reportSMSPhoneNumberError: false,
       reportEmailError: false,
       reportError: false,
+      reportSchedulerName: "-1",
+
+      isAddScheduler: true,
+      schedulerName: "",
+      schedulerNameError: false,
+      schedulerIdError: false,
+      schedulerId: -1,
+      startIndex: 0,
+      endIndex: 11,
+      pagination: false,
+      gridlength: 0,
     };
   }
   componentDidMount() {
@@ -132,6 +148,34 @@ class ReportConfiguration extends React.Component {
       //this.props.GET_REPORT_NAMES();
       this.clear();
     }
+    if (Object.keys(nextProps.schedulerObject).length > 1) {
+      this.setState({
+        schedulerName: nextProps.schedulerObject.schedulerName,
+        schedulerId: nextProps.schedulerObject.schedulerId,
+        reportWorkStartTime: nextProps.schedulerObject.schedulerWorkStartTime,
+        reportWorkEndTime: nextProps.schedulerObject.schedulerWorkEndTime,
+        reportSendTime: nextProps.schedulerObject.schedulerSendTime,
+        reportSendFrequency: nextProps.schedulerObject.schedulerSendFrequency,
+        reportSendFrequencyValue:
+          nextProps.schedulerObject.schedulerSendFrequencyValue,
+        daily_option:
+          nextProps.schedulerObject.schedulerSendFrequency === "Daily"
+            ? nextProps.schedulerObject.schedulerSendFrequencyValue
+            : "",
+        selected_week:
+          nextProps.schedulerObject.schedulerSendFrequency === "Weekly"
+            ? nextProps.schedulerObject.schedulerSendFrequencyValue
+            : "",
+        selected_month:
+          nextProps.schedulerObject.schedulerSendFrequency === "Monthly"
+            ? nextProps.schedulerObject.schedulerSendFrequencyValue
+            : "",
+        selected_year:
+          nextProps.schedulerObject.schedulerSendFrequency === "Yearly"
+            ? nextProps.schedulerObject.schedulerSendFrequencyValue
+            : "",
+      });
+    }
     if (Object.keys(nextProps.report_object).length > 1) {
       this.setState({
         reportQuery: nextProps.report_object.reportQuery,
@@ -144,31 +188,16 @@ class ReportConfiguration extends React.Component {
         reportDeliveryMode: nextProps.report_object.reportDeliveryMode,
         reportSMSPhoneNumber: nextProps.report_object.reportSMSPhoneNumber,
         reportDefaultSMSMSG: nextProps.report_object.reportDefaultSMSMSG,
-        reportWorkStartTime: nextProps.report_object.reportWorkStartTime,
-        reportWorkEndTime: nextProps.report_object.reportWorkEndTime,
-        reportSendTime: nextProps.report_object.reportSendTime,
-        reportSendFrequency: nextProps.report_object.reportSendFrequency,
-        reportSendFrequencyValue:
-          nextProps.report_object.reportSendFrequencyValue,
-        daily_option:
-          nextProps.report_object.reportSendFrequency === "Daily"
-            ? nextProps.report_object.reportSendFrequencyValue
-            : "",
-        selected_week:
-          nextProps.report_object.reportSendFrequency === "Weekly"
-            ? nextProps.report_object.reportSendFrequencyValue
-            : "",
-        selected_month:
-          nextProps.report_object.reportSendFrequency === "Monthly"
-            ? nextProps.report_object.reportSendFrequencyValue
-            : "",
-        selected_year:
-          nextProps.report_object.reportSendFrequency === "Yearly"
-            ? nextProps.report_object.reportSendFrequencyValue
-            : "",
+        reportSchedulerName: nextProps.report_object.reportSchedulerName,
         isActive: nextProps.report_object.isActive,
       });
     }
+    if (nextProps.report_details.length)
+      if (nextProps.report_details[0].gridData.length > 20)
+        this.setState({
+          pagination: true,
+          gridlength: nextProps.report_details[0].gridData.length,
+        });
   }
 
   showAddWidget(flag) {
@@ -176,8 +205,18 @@ class ReportConfiguration extends React.Component {
     this.setState((prevState) => ({
       // prevState?
       modal: flag,
+      scheduler: false,
     }));
     if (!flag) this.props.GET_REPORT_NAMES();
+    else this.props.GET_SCHEDULER_NAMES();
+  }
+  showScheduler() {
+    this.clear();
+    this.setState((prevState) => ({
+      // prevState?
+      scheduler: true,
+      modal: false,
+    }));
   }
   logout() {
     window.location.href = "/";
@@ -186,6 +225,7 @@ class ReportConfiguration extends React.Component {
     this.setState({
       reportQuery: "",
       reportEmail: "",
+      reportEmailDummy: "",
       reportFormat: "Excel",
       reportInterval: "1 Hour",
       reportId: -1,
@@ -193,6 +233,8 @@ class ReportConfiguration extends React.Component {
       reportConnectionString: "OracleConnectionString",
       reportNameError: false,
       reportQueryError: false,
+      reportSchedulerSelectError: false,
+      reportSMSPhoneNumberError: false,
       reportEmailError: false,
       reportError: false,
       reportDeliveryMode: "email",
@@ -207,9 +249,17 @@ class ReportConfiguration extends React.Component {
       selected_week: "",
       selected_month: "",
       selected_year: "",
+      isAddScheduler: true,
+      schedulerName: "",
+      schedulerNameError: false,
+      schedulerIdError: false,
+      schedulerId: -1,
+      reportSchedulerName: "",
     });
+    if (this.state.scheduler) this.props.CLEAR_SCHEDULER();
   }
   handleChange = (e, _op) => {
+    const _emailreg = /^(\s?[^\s,]+@[^\s,]+\.[^\s,]+\s?,)*(\s?[^\s,]+@[^\s,]+\.[^\s,]+)$/;
     let _name = e.target.name;
     let _value = "";
     if (e.target.type == "checkbox" || e.target.type == "radio")
@@ -219,6 +269,19 @@ class ReportConfiguration extends React.Component {
       let _tempField = Object.assign({}, prevState);
       if (_name === "reportDeliveryMode") {
         _tempField[_name] = _tempField[_name] === "email" ? "sms" : "email";
+      } else if (_name === "isAddScheduler") {
+        _tempField[_name] = _tempField[_name] === true ? false : true;
+        if (!_tempField[_name]) {
+          _tempField.schedulerId = "-1";
+          this.props.GET_SCHEDULER_NAMES();
+          // this.clear();
+          //  _tempField[_name] = false;
+        } else {
+          this.clear();
+        }
+      } else if (_name === "schedulerId") {
+        _tempField.schedulerId = _value;
+        if (_value !== "-1") this.props.EDIT_SCHEDULER_NAME(_value);
       } else if (
         _name === "reportSendTime" ||
         _name === "reportWorkStartTime" ||
@@ -240,6 +303,19 @@ class ReportConfiguration extends React.Component {
           if (_in !== -1) _finalweek.splice(_in, 1);
         }
         _tempField[_name] = _finalweek.join(",");
+      } else if (_name === "reportEmailDummy") {
+        _tempField[_name] = _value;
+        if (_value.indexOf(";") !== -1) {
+          if (_emailreg.test(_value.trim())) {
+            _tempField["reportEmail"] = _tempField["reportEmail"].length
+              ? _tempField["reportEmail"] + ";" + _value.trim()
+              : _value.trim();
+            _tempField["reportEmailDummy"] = "";
+          } else {
+            LookUpUtilities.SetNotification(true, "Invalid EmailId", 2);
+            this.props.SET_NOTIFICATION();
+          }
+        }
       } else _tempField[_name] = _value;
       let _finalschdule = "";
       if (_tempField["reportSendFrequency"] === "Daily")
@@ -261,8 +337,38 @@ class ReportConfiguration extends React.Component {
       });
     }
   }
+  loadSchedulerNames() {
+    if (this.props.schedulerNames) {
+      if (this.props.schedulerNames.length) {
+        return this.props.schedulerNames.map((xx) => {
+          return <option value={xx.schedulerId}>{xx.schedulerName}</option>;
+        });
+      }
+    }
+  }
+  loadReportSchedulerNames() {
+    if (this.props.schedulerNames) {
+      if (this.props.schedulerNames.length) {
+        return this.props.schedulerNames.map((xx) => {
+          return <option value={xx.schedulerName}>{xx.schedulerName}</option>;
+        });
+      }
+    }
+  }
+  delEmail(_email) {
+    var _oriEmail = this.state.reportEmail;
+    let _index = -1;
+    _oriEmail.split(";").filter((xx, ii) => {
+      if (xx === _email) _index = ii;
+    });
+    if (_index !== -1) {
+      var _splitemail = _oriEmail.split(";");
+      _splitemail.splice(_index, 1);
+      this.setState({ reportEmail: _splitemail.join(";") });
+    }
+  }
   addReport() {
-    const _emailreg = /^(\s?[^\s,]+@[^\s,]+\.[^\s,]+\s?,)*(\s?[^\s,]+@[^\s,]+\.[^\s,]+)$/;
+    const _emailreg = /^(\s?[^\s,]+@[^\s,]+\.[^\s,]+\s?,)*(\s?[^\s,]+@[^\s,]+\.[^\s,]+)$/;    
     let _emailstatus = false;
     if (
       this.state.reportDeliveryMode === "email" &&
@@ -274,11 +380,26 @@ class ReportConfiguration extends React.Component {
     if (
       this.state.reportName.trim() === "" ||
       this.state.reportQuery.trim() === "" ||
+      this.state.reportSchedulerName === "" ||
+      this.state.reportSchedulerName === "-1" ||
+      (this.state.reportDeliveryMode !== "email" &&
+        this.state.reportSMSPhoneNumber === "") ||
       _emailstatus
     ) {
       this.setState({
         reportNameError: this.state.reportName.trim() === "" ? true : false,
         reportQueryError: this.state.reportQuery.trim() === "" ? true : false,
+        reportSchedulerSelectError:
+          this.state.reportSchedulerName === "" ||
+          this.state.reportSchedulerName === "-1"
+            ? true
+            : false,
+        reportSMSPhoneNumberError:
+          this.state.reportDeliveryMode !== "email"
+            ? this.state.reportSMSPhoneNumber === ""
+              ? true
+              : false
+            : false,
         reportEmailError: _emailstatus,
         reportError: true,
       });
@@ -304,6 +425,39 @@ class ReportConfiguration extends React.Component {
       }, 2000);
     }
   }
+  addscheduler() {
+    if (
+      this.state.schedulerName.trim() === "" ||
+      (!this.state.isAddScheduler && this.state.schedulerId === "-1")
+    ) {
+      this.setState({
+        schedulerNameError:
+          this.state.schedulerName.trim() === "" ? true : false,
+        schedulerIdError:
+          this.state.isAddScheduler === "" || this.state.schedulerId === "-1"
+            ? true
+            : false,
+      });
+      LookUpUtilities.SetNotification(
+        true,
+        "Please fill the required field",
+        2
+      );
+      this.props.SET_NOTIFICATION();
+    } else {
+      var _postScheduler = new Object();
+      _postScheduler.schedulerId = this.state.schedulerId;
+      _postScheduler.schedulerName = this.state.schedulerName;
+      _postScheduler.schedulerWorkStartTime = this.state.reportWorkStartTime;
+      _postScheduler.schedulerWorkEndTime = this.state.reportWorkEndTime;
+      _postScheduler.schedulerSendFrequency = this.state.reportSendFrequency;
+      _postScheduler.schedulerSendFrequencyValue = this.state.reportSendFrequencyValue;
+      _postScheduler.schedulerSendTime = this.state.reportSendTime;
+      this.props.POST_SCHEDULER_NAME(_postScheduler);
+      this.clear();
+    }
+  }
+
   loadReportDetails(e) {
     let _id = parseInt(e.target.value);
     this.setState((prevState) => {
@@ -337,6 +491,44 @@ class ReportConfiguration extends React.Component {
     if (this.state.reportId !== -1) {
       this.props.EDIT_REPORT_DETAILS(this.state.reportId);
       this.showAddWidget(true);
+    }
+  }
+  previous(_flag) {
+    if (!_flag) {
+      //single
+      if (this.state.startIndex <= 0) return;
+      else
+        this.setState({
+          startIndex: this.state.startIndex - 10,
+          endIndex: this.state.endIndex - 10,
+        });
+    } else {
+      if (this.state.startIndex <= 0) return;
+      else
+        this.setState({
+          startIndex: 0,
+          endIndex: 11,
+        });
+    }
+  }
+  next(_flag) {
+    if (!_flag) {
+      //single
+      if (this.state.endIndex >= this.props.report_details[0].gridData.length)
+        return;
+      else
+        this.setState({
+          startIndex: this.state.startIndex + 10,
+          endIndex: this.state.endIndex + 10,
+        });
+    } else {
+      if (this.state.endIndex >= this.props.report_details[0].gridData.length)
+        return;
+      else
+        this.setState({
+          startIndex: this.props.report_details[0].gridData.length - 10,
+          endIndex: this.props.report_details[0].gridData.length,
+        });
     }
   }
   downloadReport() {
@@ -381,12 +573,24 @@ class ReportConfiguration extends React.Component {
     this.setState((prevState) => {
       let _tempField = Object.assign({}, prevState);
       let _prevmonth = _tempField.selected_month;
-      _prevmonth = _prevmonth === "" ? [] : _prevmonth.split(",");
+      _prevmonth =
+        _prevmonth === ""
+          ? []
+          : _prevmonth.split(",").map((xx) => parseInt(xx, 10));
       let _monindex = -1;
-      _monindex = _prevmonth.indexOf(_month.toString());
-      if (_monindex === -1) _prevmonth.push(_month);
+      _monindex = _prevmonth.indexOf(parseInt(_month, 10));
+      if (_monindex === -1) _prevmonth.push(parseInt(_month, 10));
       else _prevmonth.splice(_monindex, 1);
-      _tempField.selected_month = _prevmonth.join(",");
+      _tempField.selected_month = _prevmonth
+        .sort(function (a, b) {
+          return a - b;
+        })
+        .join(",");
+      _tempField.reportSendFrequencyValue = _prevmonth
+        .sort(function (a, b) {
+          return a - b;
+        })
+        .join(",");
       return _tempField;
     });
   }
@@ -422,6 +626,20 @@ class ReportConfiguration extends React.Component {
     this.month_picker.current.style.left = e.pageX - 100 + "px";
     this.month_picker.current.style.display = "block";
   }
+  bindEnteredEmail(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    const _emailreg = /^(\s?[^\s,]+@[^\s,]+\.[^\s,]+\s?,)*(\s?[^\s,]+@[^\s,]+\.[^\s,]+)$/;
+    if (this.state.reportEmailDummy.trim().length) {
+      if (_emailreg.test(this.state.reportEmailDummy.trim())) {
+        var _combemail = this.state.reportEmail.length
+          ? this.state.reportEmail + ";" + this.state.reportEmailDummy.trim()
+          : this.state.reportEmailDummy.trim();
+        this.setState({ reportEmail: _combemail, reportEmailDummy: "" });
+      } else this.setState({ reportEmailDummy: "" });
+    }
+    return false;
+  }
   render() {
     return (
       <>
@@ -438,29 +656,6 @@ class ReportConfiguration extends React.Component {
                 <span className="text-white text-lg ml-3"> </span>
               </a>
 
-              {/* <div className="-intro-x breadcrumb breadcrumb--light mr-auto">
-                {" "}
-                <a href="" className="">
-                  Application
-                </a>{" "}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="feather feather-chevron-right breadcrumb__icon"
-                >
-                  <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>{" "}
-                <a href="" className="breadcrumb--active">
-                  Dashboard
-                </a>{" "}
-              </div> */}
               <div
                 class="intro-x dropdown relative mr-4 sm:mr-6"
                 style={{ width: "100%" }}
@@ -605,7 +800,9 @@ class ReportConfiguration extends React.Component {
                 <li onClick={() => this.showAddWidget(false)}>
                   <a
                     className={`top-menu ${
-                      !this.state.modal ? "top-menu--active" : ""
+                      !this.state.modal && !this.state.scheduler
+                        ? "top-menu--active"
+                        : ""
                     }`}
                   >
                     <div class="top-menu__icon">
@@ -656,6 +853,33 @@ class ReportConfiguration extends React.Component {
                     <div class="top-menu__title"> Config </div>
                   </a>
                 </li>
+                <li onClick={() => this.showScheduler(true)}>
+                  <a
+                    className={`top-menu ${
+                      this.state.scheduler ? "top-menu--active" : ""
+                    }`}
+                  >
+                    <div class="top-menu__icon">
+                      {" "}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="feather feather-settings mx-auto"
+                      >
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                      </svg>
+                    </div>
+                    <div class="top-menu__title"> Scheduler </div>
+                  </a>
+                </li>
               </ul>
             </nav>
             <div className="content report_content">
@@ -664,7 +888,9 @@ class ReportConfiguration extends React.Component {
               </div>
               <div
                 className={`intro-y grid grid-cols-12 ${
-                  this.state.modal ? "hidden" : ""
+                  (this.state.scheduler ? "hidden" : this.state.modal)
+                    ? "hidden"
+                    : ""
                 }`}
               >
                 <div class="col-span-12 lg:col-span-12">
@@ -691,7 +917,7 @@ class ReportConfiguration extends React.Component {
                           style={{ width: "50%" }}
                           onChange={(e) => this.loadReportDetails(e)}
                         >
-                          <option value="0">
+                          <option value="-1">
                             Select Report to View or Edit
                           </option>
                           {this.loadReportName()}
@@ -699,10 +925,18 @@ class ReportConfiguration extends React.Component {
                         <button
                           style={{ padding: "0 35px" }}
                           onClick={() => this.editReport()}
+                          className={`${
+                            this.state.reportId == -1 ? "hide" : "show"
+                          }`}
                         >
                           Edit
                         </button>
-                        <button onClick={() => this.downloadReport()}>
+                        <button
+                          className={`${
+                            this.state.reportId == -1 ? "hide" : "show"
+                          }`}
+                          onClick={() => this.downloadReport()}
+                        >
                           Download{" "}
                         </button>
                       </div>
@@ -730,6 +964,136 @@ class ReportConfiguration extends React.Component {
                             </thead>{" "}
                             <tbody> {this.bindTableBody()}</tbody>{" "}
                           </table>{" "}
+                          <div
+                            className={`dataTables_info ${
+                              this.state.pagination ? "show" : "hide"
+                            }`}
+                            id="DataTables_Table_0_info"
+                            role="status"
+                            aria-live="polite"
+                          >
+                            Showing {this.state.startIndex + 1} to{" "}
+                            {this.state.endIndex - 1} of {this.state.gridlength}{" "}
+                            entries
+                          </div>
+                          <div
+                            className={`dataTables_paginate paging_simple_numbers ${
+                              this.state.pagination ? "show" : "hide"
+                            }`}
+                            id="DataTables_Table_0_paginate"
+                          >
+                            <a
+                              class="paginate_button previous disabled"
+                              aria-controls="DataTables_Table_0"
+                              data-dt-idx="0"
+                              tabindex="-1"
+                              onClick={() => this.previous(true)}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="feather feather-skip-back mx-auto"
+                              >
+                                <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                                <line x1="5" y1="19" x2="5" y2="5"></line>
+                              </svg>
+                            </a>
+                            <a
+                              class="paginate_button next disabled"
+                              aria-controls="DataTables_Table_0"
+                              data-dt-idx="2"
+                              tabindex="-1"
+                              onClick={() => this.previous(false)}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="feather feather-play mx-auto"
+                                style={{ transform: "rotate(180deg)" }}
+                              >
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                              </svg>
+                            </a>
+                            <span>
+                              <a
+                                class="paginate_button current"
+                                aria-controls="DataTables_Table_0"
+                                data-dt-idx="1"
+                                tabindex="0"
+                              >
+                                {Math.round((this.state.endIndex - 1) / 10)}
+                              </a>
+                              <p>...</p>
+
+                              <a
+                                class="paginate_button current"
+                                aria-controls="DataTables_Table_0"
+                                data-dt-idx="1"
+                                tabindex="0"
+                              >
+                                {Math.round(this.state.gridlength / 10)}
+                              </a>
+                            </span>
+                            <a
+                              class="paginate_button next disabled"
+                              aria-controls="DataTables_Table_0"
+                              data-dt-idx="2"
+                              tabindex="-1"
+                              onClick={() => this.next(false)}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="feather feather-play mx-auto"
+                              >
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                              </svg>
+                            </a>
+                            <a
+                              class="paginate_button next disabled"
+                              aria-controls="DataTables_Table_0"
+                              data-dt-idx="2"
+                              tabindex="-1"
+                              onClick={() => this.next(true)}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="feather feather-skip-forward mx-auto"
+                              >
+                                <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                                <line x1="19" y1="5" x2="19" y2="19"></line>
+                              </svg>
+                            </a>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -739,7 +1103,11 @@ class ReportConfiguration extends React.Component {
 
               <div
                 className={`intro-y grid grid-cols-12 ${
-                  !this.state.modal ? "hidden" : ""
+                  this.state.scheduler
+                    ? "hidden"
+                    : !this.state.modal
+                    ? "hidden"
+                    : ""
                 }`}
               >
                 <div class="col-span-12 lg:col-span-12">
@@ -830,6 +1198,27 @@ class ReportConfiguration extends React.Component {
                                       onChange={(e) => this.handleChange(e)}
                                     />{" "}
                                   </div>{" "}
+                                  <div class="flex flex-col sm:flex-row items-center">
+                                    {" "}
+                                    <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                                      Schedule Name
+                                    </label>{" "}
+                                    <select
+                                      className={`select2 w-full input w-full border mt-2 flex-1 ${
+                                        this.state.reportSchedulerSelectError
+                                          ? "error"
+                                          : ""
+                                      }`}
+                                      name="reportSchedulerName"
+                                      value={this.state.reportSchedulerName}
+                                      onChange={(e) => this.handleChange(e)}
+                                    >
+                                      <option value="-1">
+                                        Select Schedule Type
+                                      </option>
+                                      {this.loadReportSchedulerNames()}
+                                    </select>{" "}
+                                  </div>{" "}
                                 </div>
                               </div>
                             </div>
@@ -889,74 +1278,43 @@ class ReportConfiguration extends React.Component {
                                     <label class="w-full sm:w-20 sm:text-right sm:mr-5">
                                       Email Id
                                     </label>{" "}
-                                    <input
-                                      type="text"
-                                      className={`input w-full border mt-2 flex-1 ${
-                                        this.state.reportEmailError
-                                          ? "error"
-                                          : ""
-                                      }`}
-                                      placeholder="Recipient Email Address"
-                                      name="reportEmail"
-                                      value={this.state.reportEmail}
-                                      onChange={(e) => this.handleChange(e)}
-                                    />{" "}
-                                    {/* <span
-                                      class="select2 select2-container select2-container--default select2-container--below select2-container--focus select2-container--open"
-                                      dir="ltr"
-                                      data-select2-id="8"
-                                      
-                                    >
-                                      <span class="selection">
-                                        <span
-                                          class="select2-selection select2-selection--multiple"
-                                          role="combobox"
-                                          aria-haspopup="true"
-                                          aria-expanded="true"
-                                          tabindex="-1"
-                                          aria-disabled="false"
-                                          aria-owns="select2-ou09-results"
-                                          aria-activedescendant="select2-ou09-result-toyz-5"
-                                        >
-                                          <ul class="select2-selection__rendered">
-                                            <li
-                                              class="select2-selection__choice"
-                                              title="Robert Downey, Jr"
-                                              data-select2-id="24"
-                                            >
-                                              <span
-                                                class="select2-selection__choice__remove"
-                                                role="presentation"
-                                              >
-                                                ×
-                                              </span>
-                                              Robert Downey, Jr
-                                            </li>
-                                          
-                                            <li class="select2-search select2-search--inline">
-                                              <input
-                                                class="select2-search__field"
-                                                type="search"
-                                                tabindex="0"
-                                                autocomplete="off"
-                                                autocorrect="off"
-                                                autocapitalize="none"
-                                                spellcheck="false"
-                                                role="searchbox"
-                                                aria-autocomplete="list"
-                                                placeholder=""                                               
-                                                aria-controls="select2-ou09-results"
-                                                aria-activedescendant="select2-ou09-result-toyz-5"
-                                              />
-                                            </li>
-                                          </ul>
-                                        </span>
-                                      </span>
-                                      <span
-                                        class="dropdown-wrapper"
-                                        aria-hidden="true"
-                                      ></span>
-                                    </span> */}
+                                    <div className="custom_emailboxholder">
+                                      <ul>
+                                        {this.state.reportEmail.length
+                                          ? this.state.reportEmail
+                                              .split(";")
+                                              .map((_email, _in) => {
+                                                if (_email.length)
+                                                  return (
+                                                    <li>
+                                                      {_email}{" "}
+                                                      <span
+                                                        onClick={() =>
+                                                          this.delEmail(_email)
+                                                        }
+                                                      >
+                                                        x
+                                                      </span>{" "}
+                                                    </li>
+                                                  );
+                                              })
+                                          : null}
+                                      </ul>
+                                      <input
+                                        type="text"
+                                        className={`input flex-1 ${
+                                          this.state.reportEmailError
+                                            ? "error"
+                                            : ""
+                                        }`}
+                                        placeholder="Recipient Email Address"
+                                        name="reportEmailDummy"
+                                        autocomplete="nope"
+                                        value={this.state.reportEmailDummy}
+                                        onChange={(e) => this.handleChange(e)}
+                                        onBlur={(e) => this.bindEnteredEmail(e)}
+                                      />{" "}
+                                    </div>
                                   </div>{" "}
                                   <div
                                     className={`flex flex-col sm:flex-row items-center ${
@@ -972,7 +1330,7 @@ class ReportConfiguration extends React.Component {
                                     <input
                                       type="text"
                                       className={`input w-full border mt-2 flex-1 ${
-                                        this.state.reportEmailError
+                                        this.state.reportSMSPhoneNumberError
                                           ? "error"
                                           : ""
                                       }`}
@@ -991,7 +1349,7 @@ class ReportConfiguration extends React.Component {
                                   >
                                     {" "}
                                     <label class="w-full sm:w-20 sm:text-right sm:mr-5">
-                                      Default SMS msg
+                                      Default SMS Msg
                                     </label>{" "}
                                     <input
                                       type="text"
@@ -1000,13 +1358,19 @@ class ReportConfiguration extends React.Component {
                                           ? "error"
                                           : ""
                                       }`}
-                                      placeholder="Recipient Phone Number"
+                                      placeholder="Default SMS Message"
                                       name="reportDefaultSMSMSG"
                                       value={this.state.reportDefaultSMSMSG}
                                       onChange={(e) => this.handleChange(e)}
                                     />{" "}
                                   </div>{" "}
-                                  <div class="flex flex-col sm:flex-row items-center ">
+                                  <div
+                                    className={`flex flex-col sm:flex-row items-center ${
+                                      this.state.reportDeliveryMode !== "email"
+                                        ? "hide"
+                                        : ""
+                                    }`}
+                                  >
                                     {" "}
                                     <label class="w-full sm:w-20 sm:text-right sm:mr-5">
                                       File Format
@@ -1025,6 +1389,50 @@ class ReportConfiguration extends React.Component {
                               </div>
                             </div>
 
+                            <div class="sm:ml-20 sm:pl-5 mt-5">
+                              {" "}
+                              <button
+                                type="button"
+                                class="button bg-theme-1 text-white"
+                                style={{ float: "right" }}
+                                onClick={() => this.addReport()}
+                              >
+                                Submit
+                              </button>{" "}
+                              <button
+                                type="button"
+                                class="button bg-theme-1 text-white"
+                                style={{ float: "right", marginRight: "10px" }}
+                                onClick={() => this.showAddWidget(false)}
+                              >
+                                Cancel
+                              </button>{" "}
+                            </div>
+                          </div>{" "}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className={`intro-y grid grid-cols-12 ${
+                  !this.state.scheduler ? "hidden" : ""
+                }`}
+              >
+                <div class="col-span-12 lg:col-span-12">
+                  <div class="intro-y box primary_background">
+                    <div class="flex flex-col sm:flex-row items-center p-5 border border-gray-200">
+                      <h1 class="font-medium text-base mr-auto text-4xl ">
+                        Scheduler Config
+                      </h1>
+                    </div>
+                    <div class="p-5" id="vertical-bar-chart">
+                      <div class="preview validate-form">
+                        <div class="overflow-x-auto">
+                          {" "}
+                          <div class="modal__content relative custom_model_content report_config_model">
                             <div class="intro-y box mt-5">
                               <div class="flex flex-col sm:flex-row items-center p-5 border-b border-gray-200 dark:border-dark-5">
                                 <h2 class="font-medium text-base mr-auto">
@@ -1033,6 +1441,100 @@ class ReportConfiguration extends React.Component {
                               </div>
                               <div class="p-5">
                                 <div class="preview">
+                                  <div class="flex flex-col sm:flex-row items-center">
+                                    {" "}
+                                    <label class="w-full sm:w-20 sm:text-right sm:mr-5"></label>{" "}
+                                    <div class="flex flex-col sm:flex-row mt-2">
+                                      <div class="flex items-center text-gray-700 dark:text-gray-500 mr-2">
+                                        {" "}
+                                        <input
+                                          type="radio"
+                                          class="input border mr-2"
+                                          name="isAddScheduler"
+                                          checked={
+                                            this.state.isAddScheduler
+                                              ? true
+                                              : false
+                                          }
+                                          onChange={(e) => this.handleChange(e)}
+                                        />{" "}
+                                        <label
+                                          class="cursor-pointer select-none"
+                                          for="horizontal-radio-chris-evans"
+                                          style={{ width: "4rem" }}
+                                        >
+                                          Add
+                                        </label>{" "}
+                                      </div>
+                                      <div class="flex items-center text-gray-700 dark:text-gray-500 mr-2 mt-2 sm:mt-0">
+                                        {" "}
+                                        <input
+                                          type="radio"
+                                          class="input border mr-2"
+                                          name="isAddScheduler"
+                                          checked={
+                                            !this.state.isAddScheduler
+                                              ? true
+                                              : false
+                                          }
+                                          onChange={(e) => this.handleChange(e)}
+                                        />{" "}
+                                        <label
+                                          class="cursor-pointer select-none"
+                                          for="horizontal-radio-liam-neeson"
+                                        >
+                                          Edit
+                                        </label>{" "}
+                                      </div>
+                                    </div>
+                                  </div>{" "}
+                                  <div
+                                    className={`flex flex-col sm:flex-row items-center  ${
+                                      !this.state.isAddScheduler
+                                        ? "show"
+                                        : "hidden"
+                                    }`}
+                                  >
+                                    {" "}
+                                    <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                                      Select Scheduler Name
+                                    </label>{" "}
+                                    <select
+                                      className={`select2 w-full input w-full border mt-2 flex-1 ${
+                                        this.state.schedulerIdError
+                                          ? "error"
+                                          : ""
+                                      }`}
+                                      name="schedulerId"
+                                      value={this.state.schedulerId}
+                                      onChange={(e) => this.handleChange(e)}
+                                    >
+                                      <option value="-1">
+                                        Select Scheduler Name
+                                      </option>
+                                      {this.loadSchedulerNames()}
+                                    </select>{" "}
+                                  </div>{" "}
+                                  <div
+                                    className={`flex flex-col sm:flex-row items-center `}
+                                  >
+                                    {" "}
+                                    <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                                      Scheduler Name
+                                    </label>{" "}
+                                    <input
+                                      type="text"
+                                      className={`input w-full border mt-2 flex-1 ${
+                                        this.state.schedulerNameError
+                                          ? "error"
+                                          : ""
+                                      }`}
+                                      name="schedulerName"
+                                      placeholder="Scheduler Name"
+                                      value={this.state.schedulerName}
+                                      onChange={(e) => this.handleChange(e)}
+                                    />{" "}
+                                  </div>{" "}
                                   <div class="flex flex-col sm:flex-row items-center">
                                     <label class="w-full sm:w-20 sm:text-right sm:mr-5">
                                       Work Start Time
@@ -1153,9 +1655,13 @@ class ReportConfiguration extends React.Component {
                                       value={this.state.daily_option}
                                       onChange={(e) => this.handleChange(e)}
                                     >
-                                      <option value="1 Hour">1 Hour</option>
-                                      <option value="4 Hours">4 Hours</option>
-                                      <option value="6 Hours">6 Hours</option>
+                                      {this.hour12.map((ho1) => {
+                                        return (
+                                          <option value={`${ho1} Hour`}>
+                                            {ho1} Hour
+                                          </option>
+                                        );
+                                      })}
                                       <option value="Once per day">
                                         Once per day
                                       </option>
@@ -1428,17 +1934,60 @@ class ReportConfiguration extends React.Component {
                                     <label class="w-full sm:w-20 sm:text-right sm:mr-5">
                                       Monthly
                                     </label>{" "}
-                                    <input
-                                      type="text"
-                                      className={`input w-full border mt-2 flex-1`}
-                                      placeholder=""
-                                      autoComplete="off"
-                                      name="selected_month"
-                                      readOnly={true}
-                                      skip={true}
-                                      value={this.state.selected_month}
-                                      onClick={(e) => this.showPicker(e)}
-                                    />
+                                    <div class="relative w-56">
+                                      <div class="absolute rounded-l w-10 h-full flex items-center justify-center text-gray-600 dark:bg-dark-1 dark:border-dark-4">
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          width="24"
+                                          height="24"
+                                          viewBox="0 0 24 24"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          stroke-width="1.5"
+                                          stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                          class="feather feather-calendar mx-auto calender-icon-holder"
+                                        >
+                                          <rect
+                                            x="3"
+                                            y="4"
+                                            width="18"
+                                            height="18"
+                                            rx="2"
+                                            ry="2"
+                                          ></rect>
+                                          <line
+                                            x1="16"
+                                            y1="2"
+                                            x2="16"
+                                            y2="6"
+                                          ></line>
+                                          <line
+                                            x1="8"
+                                            y1="2"
+                                            x2="8"
+                                            y2="6"
+                                          ></line>
+                                          <line
+                                            x1="3"
+                                            y1="10"
+                                            x2="21"
+                                            y2="10"
+                                          ></line>
+                                        </svg>
+                                      </div>
+                                      <input
+                                        type="text"
+                                        className={`input w-full border mt-2 flex-1 monthtextIndent`}
+                                        placeholder=""
+                                        autoComplete="off"
+                                        name="selected_month"
+                                        readOnly={true}
+                                        skip={true}
+                                        value={this.state.selected_month}
+                                        onClick={(e) => this.showPicker(e)}
+                                      />
+                                    </div>
                                   </div>{" "}
                                   <div
                                     className={`flex flex-col sm:flex-row items-center ${
@@ -1466,31 +2015,13 @@ class ReportConfiguration extends React.Component {
                               </div>
                             </div>
 
-                            {/* <div class="flex flex-col sm:flex-row items-center ">
-                              {" "}
-                              <label class="w-full sm:w-20 sm:text-right sm:mr-5">
-                                Send Report Every
-                              </label>{" "}
-                              <select
-                                class="select2 w-full input w-full border mt-2 flex-1"
-                                name="reportInterval"
-                                value={this.state.reportInterval}
-                                onChange={(e) => this.handleChange(e)}
-                              >
-                                <option value="1">1 Hour</option>
-                                <option value="2">4 Hours</option>
-                                <option value="3">6 Hours</option>
-                                <option value="3">Once per day</option>
-                              </select>{" "}
-                            </div>{" "} */}
-
                             <div class="sm:ml-20 sm:pl-5 mt-5">
                               {" "}
                               <button
                                 type="button"
                                 class="button bg-theme-1 text-white"
                                 style={{ float: "right" }}
-                                onClick={() => this.addReport()}
+                                onClick={() => this.addscheduler()}
                               >
                                 Submit
                               </button>{" "}
@@ -1504,29 +2035,6 @@ class ReportConfiguration extends React.Component {
                               </button>{" "}
                             </div>
                           </div>{" "}
-                        </div>
-                      </div>
-                      <div class="source-code hidden">
-                        <button
-                          data-target="#copy-vertical-bar-chart"
-                          class="copy-code button button--sm border flex items-center text-gray-700"
-                        >
-                          {" "}
-                          <i data-feather="file" class="w-4 h-4 mr-2"></i> Copy
-                          code{" "}
-                        </button>
-                        <div class="overflow-y-auto h-64 ">
-                          <pre
-                            class="source-preview"
-                            id="copy-vertical-bar-chart"
-                          >
-                            {" "}
-                            <code class="text-xs p-0 rounded-md html pl-5 pt-8 pb-4 -mb-10 -mt-10">
-                              {" "}
-                              HTMLOpenTagcanvas id="vertical-bar-chart-widget"
-                              height="200"HTMLCloseTagHTMLOpenTag/canvasHTMLCloseTag{" "}
-                            </code>{" "}
-                          </pre>
                         </div>
                       </div>
                     </div>
@@ -1548,6 +2056,8 @@ const mapProperties = (state) => {
     report_details: state.reportReducer.report_details,
     report_object: state.reportReducer.report_object,
     reportSendTime: state.reportReducer.reportSendTime,
+    schedulerNames: state.reportReducer.schedulerNames,
+    schedulerObject: state.reportReducer.schedulerObject,
   };
 };
 const dispatch_action = (dispatch) => {
@@ -1561,9 +2071,16 @@ const dispatch_action = (dispatch) => {
       dispatch(action_type._view_ReportDetails(_state)),
     EDIT_REPORT_DETAILS: (_id) =>
       dispatch(action_type._edit_ReportDetails(_id)),
-    DOWNLOAD_REPORT_DETAILS: (_id) =>
-      dispatch(action_type._download_ReportDetails(_id)),
+    /* DOWNLOAD_REPORT_DETAILS: (_id) =>
+      dispatch(action_type._download_ReportDetails(_id)),*/
     SET_NOTIFICATION: () => dispatch(notify_action_type._setNotify()),
+
+    GET_SCHEDULER_NAMES: () => dispatch(action_type._get_scheduler_names()),
+    POST_SCHEDULER_NAME: (_state) =>
+      dispatch(action_type._post_SchedulerName(_state)),
+    EDIT_SCHEDULER_NAME: (_id) =>
+      dispatch(action_type._edit_SchedulerName(_id)),
+    CLEAR_SCHEDULER: (_id) => dispatch(action_type._clear_Scheduler()),
     /*POST_DASHBOARD_WIDGETS: (_state) =>
     
       dispatch(action_type._post_dashboardWidget(_state)),

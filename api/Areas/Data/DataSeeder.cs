@@ -23,6 +23,7 @@ namespace ASNRTech.CoreService.Core
                     //AddUsersAndClients();
                     //AddNewTransactions();
                     //AddNewUserDashboard();
+
                     //AddChartType();
                     //AddDBConnection();
                 }
@@ -86,7 +87,7 @@ namespace ASNRTech.CoreService.Core
         {
             AddUser(new User
             {
-                UserId = "Admin",
+                UserId = "ADMIN",
                 Email = "jayanthnadig@gmail.com",
                 UserType = UserType.Admin,
                 Password = Utility.GetMd5Hash("testing_1"),
@@ -98,7 +99,7 @@ namespace ASNRTech.CoreService.Core
 
             AddUser(new User
             {
-                UserId = "client",
+                UserId = "CLIENT",
                 Email = "santhuanandmca@gmail.com",
                 UserType = UserType.Client,
                 Password = Utility.GetMd5Hash("testing_1"),
@@ -123,7 +124,8 @@ namespace ASNRTech.CoreService.Core
                 FunctionId = "TVCL",
                 TransactionStatus = "IPR",
                 BranchType = "UBank_SA",
-                Status = "Authorised"
+                Status = "Authorised",
+                UserEmail = "jayanthnadig@gmail.com"
             });
 
             AddTransactions(new Transactions
@@ -138,7 +140,8 @@ namespace ASNRTech.CoreService.Core
                 FunctionId = "TVCL",
                 TransactionStatus = "IPR",
                 BranchType = "SBank_SA",
-                Status = "Authorised"
+                Status = "Authorised",
+                UserEmail = "jayanthnadig@gmail.com"
             });
 
             AddTransactions(new Transactions
@@ -153,7 +156,8 @@ namespace ASNRTech.CoreService.Core
                 FunctionId = "TVCL",
                 TransactionStatus = "IPR",
                 BranchType = "UBank_SA",
-                Status = "Unauthorised"
+                Status = "Unauthorised",
+                UserEmail = "santhuanandmca@gmail.com"
             });
 
             AddTransactions(new Transactions
@@ -168,7 +172,8 @@ namespace ASNRTech.CoreService.Core
                 FunctionId = "TVCL",
                 TransactionStatus = "IPR",
                 BranchType = "UBank_SA",
-                Status = "Unauthorised"
+                Status = "Unauthorised",
+                UserEmail = "jayanthnadig@gmail.com"
             });
 
             AddTransactions(new Transactions
@@ -183,7 +188,8 @@ namespace ASNRTech.CoreService.Core
                 FunctionId = "TVCL",
                 TransactionStatus = "IPR",
                 BranchType = "UBank_SA",
-                Status = "Authorised"
+                Status = "Authorised",
+                UserEmail = "santhuanandmca@gmail.com"
             });
         }
 
@@ -191,38 +197,64 @@ namespace ASNRTech.CoreService.Core
         {
             AddUserDashboard(new UserDashboard
             {
-                DashboardUserId = "ADMIN",
+                //DashboardUserId = "ADMIN",
+                CreatedBy = "ADMIN",
                 DashboardChartType = "Bar Chart",
                 DashboardWidgetName = "My Bar Chart",
-                DashboardConnectionString = "PgAdmin4ConnectionString",
-                DashbaordQuery = "select t1.status as Name, COUNT(t1.status) as Count from public.\"Transactions\" t1 join public.\"Transactions\"  t2 on t1.Id = t2.Id group by t1.status",
+                DashboardUserPermission = "ADMIN,CLIENT",
+                DashboardEmailFormat = "Excel",
+                WidgetConnectionString = "PgAdmin4ConnectionString",
+                WidgetSchedulerType = "SchedulerName1",
+                WidgetSchedulerEmailIDs = "jayanthnadig@gmail.com;santhuanandmca@gmail.com",
+                WidgetQuery = "select t1.status as Name, COUNT(t1.status) as Count from public.\"Transactions\" t1 join public.\"Transactions\"  t2 on t1.Id = t2.Id group by t1.status",
                 Level1ConnectionString = "SqlConnectionString",
+                Level1SchedulerType = "SchedulerName1",
+                L1SchedulerEmailIDs = "jayanthnadig@gmail.com;santhuanandmca@gmail.com",
                 DashbaordQueryL1 = "select * from public.\"Transactions\" where status='@status@'",
                 Level2ConnectionString = "OracleConnectionString",
+                Level2SchedulerType = "SchedulerName1",
+                L2SchedulerEmailIDs = "jayanthnadig@gmail.com;santhuanandmca@gmail.com",
                 DashbaordQueryL2 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@'",
                 Level3ConnectionString = "PgAdmin4ConnectionString",
-                DashbaordQueryL3 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@ and branchname='@branchname@' and makerid='@makerid@' and functionid='@functionid@'",
+                Level3SchedulerType = "SchedulerName1",
+                L3SchedulerEmailIDs = "jayanthnadig@gmail.com;santhuanandmca@gmail.com",
+                DashbaordQueryL3 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@' and branchname='@branchname@' and makerid='@makerid@' and functionid='@functionid@'",
                 Level4ConnectionString = "OracleConnectionString",
-                DashbaordQueryL4 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@ and branchname='@branchname@' and makerid='@makerid@' and functionid='@functionid@'",
-                DashbaordModifiedOn = null
+                Level4SchedulerType = "SchedulerName1",
+                L4SchedulerEmailIDs = "jayanthnadig@gmail.com;santhuanandmca@gmail.com",
+                DashbaordQueryL4 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@' and branchname='@branchname@' and makerid='@makerid@' and functionid='@functionid@'",
+                WidgetSendEmail = true
             });
 
             AddUserDashboard(new UserDashboard
             {
-                DashboardUserId = "ADMIN",
+                //DashboardUserId = "ADMIN",
+                CreatedBy = "ADMIN",
                 DashboardChartType = "Pie Chart",
                 DashboardWidgetName = "My Pie Chart",
-                DashboardConnectionString = "PgAdmin4ConnectionString",
-                DashbaordQuery = "select t1.status as Name, COUNT(t1.status) as Count from public.\"Transactions\" t1 join public.\"Transactions\"  t2 on t1.Id = t2.Id group by t1.status",
+                DashboardUserPermission = "ADMIN",
+                DashboardEmailFormat = "PDF",
+                WidgetConnectionString = "PgAdmin4ConnectionString",
+                WidgetSchedulerType = "SchedulerName2",
+                WidgetSchedulerEmailIDs = "jayanthnadig@gmail.com",
+                WidgetQuery = "select t1.status as Name, COUNT(t1.status) as Count from public.\"Transactions\" t1 join public.\"Transactions\"  t2 on t1.Id = t2.Id group by t1.status",
                 Level1ConnectionString = "SqlConnectionString",
+                Level1SchedulerType = "SchedulerName2",
+                L1SchedulerEmailIDs = "jayanthnadig@gmail.com",
                 DashbaordQueryL1 = "select * from public.\"Transactions\" where status='@status@'",
                 Level2ConnectionString = "OracleConnectionString",
+                Level2SchedulerType = "SchedulerName2",
+                L2SchedulerEmailIDs = "jayanthnadig@gmail.com",
                 DashbaordQueryL2 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@'",
                 Level3ConnectionString = "PgAdmin4ConnectionString",
-                DashbaordQueryL3 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@ and branchname='@branchname@' and makerid='@makerid@' and functionid='@functionid@'",
+                Level3SchedulerType = "SchedulerName2",
+                L3SchedulerEmailIDs = "jayanthnadig@gmail.com",
+                DashbaordQueryL3 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@' and branchname='@branchname@' and makerid='@makerid@' and functionid='@functionid@'",
                 Level4ConnectionString = "OracleConnectionString",
-                DashbaordQueryL4 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@ and branchname='@branchname@' and makerid='@makerid@' and functionid='@functionid@'",
-                DashbaordModifiedOn = null
+                Level4SchedulerType = "SchedulerName2",
+                L4SchedulerEmailIDs = "jayanthnadig@gmail.com",
+                DashbaordQueryL4 = "select * from public.\"Transactions\" where status='@status@' and assignedto='@assignedto@' and transaction_status='@transaction_status@' and branchname='@branchname@' and makerid='@makerid@' and functionid='@functionid@'",
+                WidgetSendEmail = false
             });
         }
 

@@ -46,5 +46,27 @@ namespace ASNRTech.CoreService.Reports
         {
             return await ReportService.DownloadAsync(new TeamHttpContext(HttpContext), reportId).ConfigureAwait(false);
         }
+
+        [HttpPost]
+        [Route("v1/reports/addupdatescheduler/{userId}")]
+        [TeamAuthorize(AccessType.Client, true)]
+        public async Task<ResponseBase> AddUpdateSchedulerAsync([FromBody]SchedulerAddUpdate scheduler)
+        {
+            return await ReportService.AddUpdateSchedulerAsync(new TeamHttpContext(HttpContext), scheduler).ConfigureAwait(false);
+        }
+
+        [HttpGet]
+        [Route("v1/reports/schedulernames/{userId}")]
+        public async Task<ResponseBase<List<SchedulerList>>> SchedulerNames()
+        {
+            return await ReportService.SchedulerNames(new TeamHttpContext(HttpContext)).ConfigureAwait(false);
+        }
+
+        [HttpGet]
+        [Route("v1/reports/editscheduler/{userId}")]
+        public async Task<ResponseBase<SchedulerAddUpdate>> EditSchedulerAsync(int editschedulerId)
+        {
+            return await ReportService.EditSchedulerAsync(new TeamHttpContext(HttpContext), editschedulerId).ConfigureAwait(false);
+        }
     }
 }

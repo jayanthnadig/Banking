@@ -146,11 +146,7 @@ namespace ASNRTech.CoreService.Reports
                         ReportDeliveryMode = item.ReportDeliveryOption,
                         ReportSMSPhoneNumber = item.ReportSMSPhNo,
                         ReportDefaultSMSMSG = item.ReportDefaultSMSMsg,
-                        ReportWorkStartTime = item.ReportWorkStartTime,
-                        ReportWorkEndTime = item.ReportWorkEndTime,
-                        ReportSendFrequency = item.ReportFrequecy,
-                        ReportSendTime = item.ReportSendTime,
-                        ReportSendFrequencyValue = item.ReportFrequecyValue
+                        ReportSchedulerName = item.ReportSchedulerName
                     };
 
                     return GetTypedResponse(teamHttpContext, objReportConfigAddEdit);
@@ -201,11 +197,7 @@ namespace ASNRTech.CoreService.Reports
                     ReportDeliveryOption = report.ReportDeliveryMode,
                     ReportSMSPhNo = report.ReportSMSPhoneNumber,
                     ReportDefaultSMSMsg = report.ReportDefaultSMSMSG,
-                    ReportWorkStartTime = report.ReportWorkStartTime,
-                    ReportWorkEndTime = report.ReportWorkEndTime,
-                    ReportFrequecy = report.ReportSendFrequency,
-                    ReportSendTime = report.ReportSendTime,
-                    ReportFrequecyValue = report.ReportSendFrequencyValue
+                    ReportSchedulerName = report.ReportSchedulerName
                 });
                 return GetResponse(httpContext, HttpStatusCode.OK, "Available");
             }
@@ -262,11 +254,7 @@ namespace ASNRTech.CoreService.Reports
                         ReportDeliveryOption = report.ReportDeliveryMode,
                         ReportSMSPhNo = report.ReportSMSPhoneNumber,
                         ReportDefaultSMSMsg = report.ReportDefaultSMSMSG,
-                        ReportWorkStartTime = report.ReportWorkStartTime,
-                        ReportWorkEndTime = report.ReportWorkEndTime,
-                        ReportFrequecy = report.ReportSendFrequency,
-                        ReportSendTime = report.ReportSendTime,
-                        ReportFrequecyValue = report.ReportSendFrequencyValue
+                        ReportSchedulerName = report.ReportSchedulerName
                     });
                     return GetResponse(httpContext, HttpStatusCode.OK, "Available");
                 }
@@ -303,6 +291,171 @@ namespace ASNRTech.CoreService.Reports
                 }
             }
 
+            return null;
+        }
+
+        public static async Task<ResponseBase> AddUpdateSchedulerAsync(TeamHttpContext teamHttpContext, SchedulerAddUpdate details)
+        {
+            if (teamHttpContext == null)
+            {
+                throw new ArgumentNullException(nameof(teamHttpContext));
+            }
+
+            if (details.SchedulerId == -1)
+            {
+                ResponseBase response = await AddScheduler(teamHttpContext, details).ConfigureAwait(false);
+                if (response.Code == HttpStatusCode.OK)
+                    return GetResponse(teamHttpContext);
+            }
+            else
+            {
+                ResponseBase response = await UpdateScheduler(teamHttpContext, details).ConfigureAwait(false);
+                if (response.Code == HttpStatusCode.OK)
+                    return GetResponse(teamHttpContext);
+            }
+            return null;
+        }
+
+        internal static async Task<ResponseBase> AddScheduler(TeamHttpContext teamHttpContext, SchedulerAddUpdate details)
+        {
+            try
+            {
+                AddSchedulerDatabase(new Scheduler
+                {
+                    SchedulerName = details.SchedulerName,
+                    SchedulerWorkStartTime = details.SchedulerWorkStartTime,
+                    SchedulerWorkEndTime = details.SchedulerWorkEndTime,
+                    SchedulerFrequecy = details.SchedulerSendFrequency,
+                    SchedulerSendTime = details.SchedulerSendTime,
+                    SchedulerFrequecyValue = details.SchedulerSendFrequencyValue,
+                    CreatedBy = teamHttpContext.ContextUserId,
+                    CreatedOn = DateTime.Now
+                });
+                return GetResponse(teamHttpContext, HttpStatusCode.OK, "Available");
+            }
+            catch (Exception ex)
+            {
+                return GetResponse(teamHttpContext, HttpStatusCode.BadRequest, ex.Message.ToString());
+            }
+        }
+
+        private static void AddSchedulerDatabase(Scheduler newscheduler)
+        {
+            using (TeamDbContext dbContext = new TeamDbContext())
+            {
+                if (dbContext.Schedulers.FirstOrDefault(e => e.Id == newscheduler.Id) == null)
+                {
+                    dbContext.Schedulers.Add(newscheduler);
+                    dbContext.SaveChanges();
+                }
+            }
+        }
+
+        internal static async Task<ResponseBase> UpdateScheduler(TeamHttpContext httpContext, SchedulerAddUpdate details)
+        {
+            try
+            {
+                List<Scheduler> objScheduler = new List<Scheduler>();
+                using (TeamDbContext dbContext = new TeamDbContext())
+                {
+                    if (dbContext.Schedulers.AsNoTracking().FirstOrDefault(e => e.Id == details.SchedulerId) != null)
+                    {
+                        objScheduler = dbContext.Schedulers.Where(x => x.Id == details.SchedulerId).ToList();
+                    }
+                }
+
+                if (objScheduler.Count != 0)
+                {
+                    UpdateSchedulerDatabase(new Scheduler
+                    {
+                        Id = details.SchedulerId,
+                        SchedulerName = details.SchedulerName,
+                        SchedulerWorkStartTime = details.SchedulerWorkStartTime,
+                        SchedulerWorkEndTime = details.SchedulerWorkEndTime,
+                        SchedulerFrequecy = details.SchedulerSendFrequency,
+                        SchedulerSendTime = details.SchedulerSendTime,
+                        SchedulerFrequecyValue = details.SchedulerSendFrequencyValue,
+                        CreatedBy = objScheduler[0].CreatedBy,
+                        CreatedOn = objScheduler[0].CreatedOn,
+                        ModifiedBy = httpContext.ContextUserId,
+                        ModifiedOn = DateTime.Now
+                    });
+                    return GetResponse(httpContext, HttpStatusCode.OK, "Available");
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                return GetResponse(httpContext, HttpStatusCode.BadRequest, ex.Message.ToString());
+            }
+        }
+
+        private static void UpdateSchedulerDatabase(Scheduler updatescheduler)
+        {
+            using (TeamDbContext dbContext = new TeamDbContext())
+            {
+                if (dbContext.Schedulers.AsNoTracking().FirstOrDefault(e => e.Id == updatescheduler.Id) != null)
+                {
+                    dbContext.Schedulers.UpdateRange(updatescheduler);
+                    dbContext.SaveChanges();
+                }
+            }
+        }
+
+        public static async Task<ResponseBase<List<SchedulerList>>> SchedulerNames(TeamHttpContext teamHttpContext)
+        {
+            List<SchedulerList> objSchedulerList = new List<SchedulerList>();
+            using (TeamDbContext dbContext = new TeamDbContext())
+            {
+                var schedulernames = from sdr in dbContext.Schedulers
+                                     select new
+                                     {
+                                         Id = sdr.Id,
+                                         SchedulerName = sdr.SchedulerName,
+                                         CreatedBy = sdr.CreatedBy
+                                     };
+
+                var userschedulernames = schedulernames.Where(x => x.CreatedBy == teamHttpContext.ContextUserId).ToList();
+                foreach (var item in userschedulernames)
+                {
+                    SchedulerList schedulerList = new SchedulerList
+                    {
+                        SchedulerId = item.Id,
+                        SchedulerName = item.SchedulerName
+                    };
+
+                    objSchedulerList.Add(schedulerList);
+                }
+            }
+            return GetTypedResponse(teamHttpContext, objSchedulerList);
+        }
+
+        public static async Task<ResponseBase<SchedulerAddUpdate>> EditSchedulerAsync(TeamHttpContext teamHttpContext, int editschedulerId)
+        {
+            List<Scheduler> objEditScheduler = new List<Scheduler>();
+            using (TeamDbContext dbContext = new TeamDbContext())
+            {
+                objEditScheduler = dbContext.Schedulers.Where(x => x.Id == editschedulerId).ToList();
+            }
+
+            if (objEditScheduler.Count != 0)
+            {
+                foreach (var item in objEditScheduler)
+                {
+                    SchedulerAddUpdate objSchedulerEdit = new SchedulerAddUpdate
+                    {
+                        SchedulerId = item.Id,
+                        SchedulerName = item.SchedulerName,
+                        SchedulerWorkStartTime = item.SchedulerWorkStartTime,
+                        SchedulerWorkEndTime = item.SchedulerWorkEndTime,
+                        SchedulerSendFrequency = item.SchedulerFrequecy,
+                        SchedulerSendTime = item.SchedulerSendTime,
+                        SchedulerSendFrequencyValue = item.SchedulerFrequecyValue
+                    };
+
+                    return GetTypedResponse(teamHttpContext, objSchedulerEdit);
+                }
+            }
             return null;
         }
     }

@@ -14,23 +14,30 @@ namespace ASNRTech.CoreService.Dashboard
     {
         [HttpGet]
         [Route("v1/dashboard/allwidget/{userId}")]
-        public async Task<ResponseBase<List<LoadWidgets>>> GetAllWidgetAsync()
+        public async Task<ResponseBase<List<LoadDashboard>>> GetAllWidgetAsync()
         {
             return await DashboardService.GetAllWidgetAsync(new TeamHttpContext(HttpContext)).ConfigureAwait(false);
         }
 
         [HttpGet]
-        [Route("v1/dashboard/chartsandconnstring/{userId}")]
-        public async Task<ResponseBase<List<ChartTypeandDBConnectionString>>> DashboardDropdowns()
+        [Route("v1/dashboard/allwidgetdropDowns/{userId}")]
+        public async Task<ResponseBase<List<AllWidgetDropDowns>>> AllWidgetDropDowns()
         {
-            return await DashboardService.ChartTypeandDBConnectionString(new TeamHttpContext(HttpContext)).ConfigureAwait(false);
+            return await DashboardService.AllWidgetDropDowns(new TeamHttpContext(HttpContext)).ConfigureAwait(false);
         }
 
         [HttpPost]
-        [Route("v1/dashboard/addoreditwidget/{userId}")]
-        public async Task<ResponseBase<List<LoadWidgets>>> AddorEditWidgetAsync([FromBody]DashboardWidget dashboardwidget)
+        [Route("v1/dashboard/addorupdatewidget/{userId}")]
+        public async Task<ResponseBase<List<LoadWidgets>>> AddorUpdateWidgetAsync([FromBody]DashboardWidget dashboardwidget)
         {
-            return await DashboardService.AddorEditWidgetAsync(new TeamHttpContext(HttpContext), dashboardwidget).ConfigureAwait(false);
+            return await DashboardService.AddorUpdateWidgetAsync(new TeamHttpContext(HttpContext), dashboardwidget).ConfigureAwait(false);
+        }
+
+        [HttpGet]
+        [Route("v1/dashboard/editwidget/{userId}")]
+        public async Task<ResponseBase<DashboardWidget>> EditWidgetAsync(int editwidgetId)
+        {
+            return await DashboardService.EditWidgetAsync(new TeamHttpContext(HttpContext), editwidgetId).ConfigureAwait(false);
         }
 
         [HttpDelete]

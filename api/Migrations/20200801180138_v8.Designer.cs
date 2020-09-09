@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using ASNRTech.CoreService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace TeamLease.CssService.Migrations
 {
     [DbContext(typeof(TeamDbContext))]
-    partial class TeamDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200801180138_v8")]
+    partial class v8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -170,6 +172,9 @@ namespace TeamLease.CssService.Migrations
 
                     b.Property<string>("DashboardEmailFormat")
                         .HasColumnName("ud_emailformat");
+
+                    b.Property<string>("DashboardUserId")
+                        .HasColumnName("ud_userid");
 
                     b.Property<string>("DashboardUserPermission")
                         .HasColumnName("ud_userpermission");

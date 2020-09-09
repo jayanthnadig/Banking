@@ -19,27 +19,27 @@ namespace ASNRTech.CoreService.Dashboard
 {
     public class DashboardService : BaseService
     {
-        internal static async Task<ResponseBase<List<LoadWidgets>>> GetAllWidgetAsync(TeamHttpContext teamHttpContext)
+        internal static async Task<ResponseBase<List<LoadDashboard>>> GetAllWidgetAsync(TeamHttpContext teamHttpContext)
         {
             if (teamHttpContext == null)
             {
                 throw new ArgumentNullException(nameof(teamHttpContext));
             }
             //DataRequest dataRequest = new DataRequest(year, month, 0, 0);
-            List<LoadWidgets> Widgets = await GenericService.GetAllWidgetAsync(teamHttpContext).ConfigureAwait(false);
+            List<LoadDashboard> Widgets = await GenericService.GetAllWidgetAsync(teamHttpContext).ConfigureAwait(false);
             return GetTypedResponse(teamHttpContext, Widgets);
         }
 
-        internal static async Task<ResponseBase<List<ChartTypeandDBConnectionString>>> ChartTypeandDBConnectionString(TeamHttpContext teamHttpContext)
+        internal static async Task<ResponseBase<List<AllWidgetDropDowns>>> AllWidgetDropDowns(TeamHttpContext teamHttpContext)
         {
             if (teamHttpContext == null)
             {
                 throw new ArgumentNullException(nameof(teamHttpContext));
             }
-            return await GenericService.ChartTypeandDBConnectionString(teamHttpContext).ConfigureAwait(false);
+            return await GenericService.DashboardAddDropDowns(teamHttpContext).ConfigureAwait(false);
         }
 
-        internal static async Task<ResponseBase<List<LoadWidgets>>> AddorEditWidgetAsync(TeamHttpContext teamHttpContext, DashboardWidget details)
+        internal static async Task<ResponseBase<List<LoadWidgets>>> AddorUpdateWidgetAsync(TeamHttpContext teamHttpContext, DashboardWidget details)
         {
             if (teamHttpContext == null)
             {
@@ -47,10 +47,10 @@ namespace ASNRTech.CoreService.Dashboard
             }
             if (details.WidgetId == -1)
             {
-                ResponseBase response = await GenericService.createWidget(teamHttpContext, details).ConfigureAwait(false);
+                ResponseBase response = await GenericService.addWidget(teamHttpContext, details).ConfigureAwait(false);
                 if (response.Code == HttpStatusCode.OK)
                 {
-                    List<LoadWidgets> Widgets = await GenericService.GetWidgetAsync(teamHttpContext, details.WidgetType, details.WidgetName);//, details.WidgetQuery,details.L1ConnectionString, details.WidgetQueryLevel1, details.L2ConnectionString, details.WidgetQueryLevel2, details.WidgetQueryLevel3, details.WidgetQueryLevel4).ConfigureAwait(false);
+                    List<LoadWidgets> Widgets = await GenericService.GetWidgetAsync(teamHttpContext, details.DashboardChartType, details.DashboardWidgetName);//, details.WidgetQuery,details.L1ConnectionString, details.WidgetQueryLevel1, details.L2ConnectionString, details.WidgetQueryLevel2, details.WidgetQueryLevel3, details.WidgetQueryLevel4).ConfigureAwait(false);
                     return GetTypedResponse(teamHttpContext, Widgets);
                 }
             }
@@ -58,12 +58,60 @@ namespace ASNRTech.CoreService.Dashboard
             {
                 if (!string.IsNullOrEmpty(details.WidgetId.ToString()))
                 {
-                    ResponseBase response = await GenericService.editWidget(teamHttpContext, details).ConfigureAwait(false);
+                    ResponseBase response = await GenericService.updateWidget(teamHttpContext, details).ConfigureAwait(false);
                     if (response.Code == HttpStatusCode.OK)
                     {
-                        List<LoadWidgets> Widgets = await GenericService.GetWidgetAsync(teamHttpContext, details.WidgetType, details.WidgetName);//, details.WidgetQuery, details.WidgetQueryLevel1, details.WidgetQueryLevel2, details.WidgetQueryLevel3, details.WidgetQueryLevel4).ConfigureAwait(false);
+                        List<LoadWidgets> Widgets = await GenericService.GetWidgetAsync(teamHttpContext, details.DashboardChartType, details.DashboardWidgetName);//, details.WidgetQuery, details.WidgetQueryLevel1, details.WidgetQueryLevel2, details.WidgetQueryLevel3, details.WidgetQueryLevel4).ConfigureAwait(false);
                         return GetTypedResponse(teamHttpContext, Widgets);
                     }
+                }
+            }
+            return null;
+        }
+
+        public static async Task<ResponseBase<DashboardWidget>> EditWidgetAsync(TeamHttpContext teamHttpContext, int editwidgetId)
+        {
+            List<UserDashboard> objEditWidget = new List<UserDashboard>();
+            using (TeamDbContext dbContext = new TeamDbContext())
+            {
+                objEditWidget = dbContext.UserDashboards.Where(x => x.Id == editwidgetId).ToList();
+            }
+
+            if (objEditWidget.Count != 0)
+            {
+                foreach (var item in objEditWidget)
+                {
+                    DashboardWidget objWidgetEdit = new DashboardWidget
+                    {
+                        DashboardWidgetName = item.DashboardWidgetName,
+                        WidgetId = item.Id,
+                        DashboardChartType = item.DashboardChartType,
+                        DashboardUserPermission = item.DashboardUserPermission,
+                        DashboardEmailFormat = item.DashboardEmailFormat,
+                        WidgetConnectionString = item.WidgetConnectionString,
+                        WidgetSchedulerType = item.WidgetSchedulerType,
+                        WidgetSchedulerEmailIDs = item.WidgetSchedulerEmailIDs,
+                        WidgetQuery = item.WidgetQuery,
+                        Level1ConnectionString = item.Level1ConnectionString,
+                        Level1SchedulerType = item.Level1SchedulerType,
+                        L1SchedulerEmailIDs = item.L1SchedulerEmailIDs,
+                        DashbaordQueryL1 = item.DashbaordQueryL1,
+                        Level2ConnectionString = item.Level2ConnectionString,
+                        Level2SchedulerType = item.Level2SchedulerType,
+                        L2SchedulerEmailIDs = item.L2SchedulerEmailIDs,
+                        DashbaordQueryL2 = item.DashbaordQueryL2,
+                        Level3ConnectionString = item.Level3ConnectionString,
+                        Level3SchedulerType = item.Level3SchedulerType,
+                        L3SchedulerEmailIDs = item.L3SchedulerEmailIDs,
+                        DashbaordQueryL3 = item.DashbaordQueryL3,
+                        Level4ConnectionString = item.Level4ConnectionString,
+                        Level4SchedulerType = item.Level4SchedulerType,
+                        L4SchedulerEmailIDs = item.L4SchedulerEmailIDs,
+                        DashbaordQueryL4 = item.DashbaordQueryL4,
+                        WidgetSendEmail = item.WidgetSendEmail
+                    };
+
+                    return GetTypedResponse(teamHttpContext, objWidgetEdit);
                 }
             }
             return null;
@@ -149,7 +197,6 @@ namespace ASNRTech.CoreService.Dashboard
                             document.Write(csvByteData);
                             document.Flush();
                         }
-                        //SendMail(emaildata, details.ClickLevel + "_" + "Data for " + DateTime.Now.ToString("dd-MM-yyyy hh:mm"), "Please find the attached report", FileName);
                         SendMail(emaildata, details.ClickLevel + "_" + "Data for " + DateTime.Now.ToString("dd-MM-yyyy hh:mm tt", CultureInfo.InvariantCulture), "Please find the attached report", FileName);
 
                         File.Delete(FileName);
@@ -166,7 +213,7 @@ namespace ASNRTech.CoreService.Dashboard
 
         private static void SendMail(string email, string subject, string body, string path)
         {
-            EmailService.SendAsync(email, subject, body, path);
+            //EmailService.SendAsync(email, subject, body, path);
         }
     }
 }

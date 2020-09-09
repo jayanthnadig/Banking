@@ -130,11 +130,35 @@ export function getQuery(urlString,params,_id) {
     .then(filterJSON);
 }
 
-
-export function getFiles(urlString,params,_id) {
+export function getWidgetData(urlString,params,_id) {
   let url = urlString;
   if (params) {
-    url = `${urlString}/${params}/reportId/${_id}`;
+    url = `${urlString}/${params}?editwidgetId=${_id}`;
+  }
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      //"Cookie": key
+      "Cache-control": " no-cache",
+      "Cache-control": "no-store",
+      Pragma: "no-cache",
+      Expires: "0",
+     'Access-Control-Allow-Origin':'*',
+     'Content-Type':'application/json',
+     'x-client-token':_userDetails.token
+    },
+   // body: JSON.stringify(body),
+    //credentials: "include",
+  })
+    .then(filterStatus)
+    .then(filterJSON);
+}
+
+
+export function getScheduler(urlString,params,_id) {
+  let url = urlString;
+  if (params) {
+    url = `${urlString}/${params}?editschedulerId=${_id}`;
   }
   return fetch(url, {
     method: "GET",
@@ -152,10 +176,6 @@ export function getFiles(urlString,params,_id) {
    // body: JSON.stringify(body),
     //credentials: "include",
   })
-  .then((response) => response.text())
-  .then((responseText) => responseText)
-  .catch((error) => {
-     // this.setState({downloadingCSV: false})
-      console.error("CSV handleDownloadClick:", error)
-  })
+  .then(filterStatus)
+  .then(filterJSON);
 }

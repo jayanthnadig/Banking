@@ -3,11 +3,17 @@ import lookupUtility from "./../../Common/Utility/LookUpDataMapping";
 import API from "./../../Constants/API";
 import * as requestServices from "../../services/request";
 
+let _dashboard_ddropdown = (_res) => {
+  return { type: actionTypes.GET_ALL_DROPDOWNS, payload: _res };
+};
 let _dashboard_data = (_res) => {
   return { type: actionTypes.GET_DASHBOARD_WIDGETS, payload: _res };
 };
 let _new_dashboard_widget = (_res) => {
   return { type: actionTypes.POST_DASHBOARD_WIDGET, payload: _res };
+};
+let _edit_dashboard_widget = (_res) => {
+  return { type: actionTypes.EDIT_DASHBOARD_WIDGET, payload: _res };
 };
 let _delete_dashboard_widget = (_res) => {
   return { type: actionTypes.DELETE_DASHBOARD_WIDGET, payload: _res };
@@ -34,6 +40,24 @@ let _change_statusobject = () => {
   return { type: actionTypes.CHANGE_STATUS, payload: "new" };
 };*/
 let _userDetails = lookupUtility.LoginDetails();
+export const _getDashboardDropdowns = () => {
+  try {    
+    return (dispatch) => {
+      //let _res = lookupUtility.LoginObject();
+      requestServices
+        .get(API.allWidgetDropDowns, _userDetails.userid)
+        .then((res) => {
+          console.log("Response", res);
+          dispatch(_dashboard_ddropdown(res));
+        })
+        .catch((err) => {
+          console.log("Error", err);
+        });
+    };
+  } catch (e) {
+    console.log("actionType-->_getDashboardDropdowns", e);
+  }
+};
 export const _getDashboardWidgets = () => {
   try {
     let _userDetails = lookupUtility.LoginDetails();
@@ -94,6 +118,25 @@ export const _delete_dashboardWidget = (_id) => {
   }
 };
 
+export const _edit_dashboardWidget = (_id) => {
+  try {
+    return (dispatch) => {
+      // let _res = lookupUtility.PostDashboard(_obj);
+      requestServices
+        .getWidgetData(API.editWidget, _userDetails.userid, _id)
+        .then((res) => {
+          console.log("Response", res);         
+          dispatch(_edit_dashboard_widget(res));         
+        })
+        .catch((err) => {
+          console.log("Error", err);
+        });
+    };
+  } catch (e) {
+    console.log("actionType-->_edit_dashboardWidget", e);
+  }
+};
+
 export const _post_drilldowndashboardWidget = (_obj) => {
   try {
     return (dispatch) => {
@@ -149,38 +192,4 @@ export const _user_logout = () => {
     console.log("actionType-->_post_userdata", e);
   }
 };
-/*export const _post_userdata = (_obj, _props) => {
-  try {
-    return (dispatch) => {
-      let _res = lookupUtility.UserInsertObject(_obj, _props);
-      requestServices
-        .post(API.createUser, _res)
-        .then((res) => {
-          console.log("Response", res);
-          dispatch(_insertformprofile_object(res));
-        })
-        .catch((err) => {
-          console.log("Error", err);
-        });
-    };
-  } catch (e) {
-    console.log("actionType-->_post_userdata", e);
-  }
-};
-export const _update_userdata = (_obj, _props) => {
-  try {
-    return (dispatch) => {
-      let _res = lookupUtility.UserInsertObject(_obj, _props);
-      requestServices
-        .put(API.updateUser, _res)
-        .then((res) => {
-          dispatch(_formprofile_object(res));
-        })
-        .catch((err) => {
-          console.log("Error", err);
-        });
-    };
-  } catch (e) {
-    console.log("actionType-->_update_userdata", e);
-  }
-};*/
+

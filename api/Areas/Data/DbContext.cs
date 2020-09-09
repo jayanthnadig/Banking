@@ -66,6 +66,7 @@ namespace ASNRTech.CoreService.Data
         public DbSet<ChartType> ChartTypes { get; set; }
         public DbSet<DBConnection> DBConnections { get; set; }
         public DbSet<ReportConfig> ReportConfigs { get; set; }
+        public DbSet<Scheduler> Schedulers { get; set; }
 
         public override int SaveChanges()
         {

@@ -23,7 +23,11 @@ report_object:{},
 report_time:-1,
 g_dbStatus:false,
 g_dbMsg:"",
-g_flag:""
+g_flag:"",
+schedulerNames:[],
+schedulerObject:{},
+dashboardDropdown:{},
+singleDashboardWidget:{}
 }
 
 export default initstate;

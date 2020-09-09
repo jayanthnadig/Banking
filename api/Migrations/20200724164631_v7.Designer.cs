@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using ASNRTech.CoreService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace TeamLease.CssService.Migrations
 {
     [DbContext(typeof(TeamDbContext))]
-    partial class TeamDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200724164631_v7")]
+    partial class v7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,6 +155,12 @@ namespace TeamLease.CssService.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnName("created_date");
 
+                    b.Property<DateTime?>("DashbaordModifiedOn")
+                        .HasColumnName("ud_modifiedon");
+
+                    b.Property<string>("DashbaordQuery")
+                        .HasColumnName("ud_widgetquery");
+
                     b.Property<string>("DashbaordQueryL1")
                         .HasColumnName("ud_querylevel1");
 
@@ -168,11 +176,11 @@ namespace TeamLease.CssService.Migrations
                     b.Property<string>("DashboardChartType")
                         .HasColumnName("ud_charttype");
 
-                    b.Property<string>("DashboardEmailFormat")
-                        .HasColumnName("ud_emailformat");
+                    b.Property<string>("DashboardConnectionString")
+                        .HasColumnName("ud_dashboardconnectionstring");
 
-                    b.Property<string>("DashboardUserPermission")
-                        .HasColumnName("ud_userpermission");
+                    b.Property<string>("DashboardUserId")
+                        .HasColumnName("ud_userid");
 
                     b.Property<string>("DashboardWidgetName")
                         .HasColumnName("ud_widgetname");
@@ -180,62 +188,23 @@ namespace TeamLease.CssService.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
-                    b.Property<string>("L1SchedulerEmailIDs")
-                        .HasColumnName("ud_l1scheduleremailids");
-
-                    b.Property<string>("L2SchedulerEmailIDs")
-                        .HasColumnName("ud_l2scheduleremailids");
-
-                    b.Property<string>("L3SchedulerEmailIDs")
-                        .HasColumnName("ud_l3scheduleremailids");
-
-                    b.Property<string>("L4SchedulerEmailIDs")
-                        .HasColumnName("ud_l4scheduleremailids");
-
                     b.Property<string>("Level1ConnectionString")
                         .HasColumnName("ud_l1connectionstring");
-
-                    b.Property<string>("Level1SchedulerType")
-                        .HasColumnName("ud_l1schedulertype");
 
                     b.Property<string>("Level2ConnectionString")
                         .HasColumnName("ud_l2connectionstring");
 
-                    b.Property<string>("Level2SchedulerType")
-                        .HasColumnName("ud_l2schedulertype");
-
                     b.Property<string>("Level3ConnectionString")
                         .HasColumnName("ud_l3connectionstring");
 
-                    b.Property<string>("Level3SchedulerType")
-                        .HasColumnName("ud_l3schedulertype");
-
                     b.Property<string>("Level4ConnectionString")
                         .HasColumnName("ud_l4connectionstring");
-
-                    b.Property<string>("Level4SchedulerType")
-                        .HasColumnName("ud_l4schedulertype");
 
                     b.Property<string>("ModifiedBy")
                         .HasColumnName("modified_by");
 
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnName("modified_date");
-
-                    b.Property<string>("WidgetConnectionString")
-                        .HasColumnName("ud_widgetconnectionstring");
-
-                    b.Property<string>("WidgetQuery")
-                        .HasColumnName("ud_widgetquery");
-
-                    b.Property<string>("WidgetSchedulerEmailIDs")
-                        .HasColumnName("ud_widgetscheduleremailids");
-
-                    b.Property<string>("WidgetSchedulerType")
-                        .HasColumnName("ud_widgetschedulertype");
-
-                    b.Property<bool>("WidgetSendEmail")
-                        .HasColumnName("ud_sendemail");
 
                     b.HasKey("Id");
 
@@ -452,6 +421,12 @@ namespace TeamLease.CssService.Migrations
                     b.Property<string>("ReportFileFormat")
                         .HasColumnName("rc_fileformat");
 
+                    b.Property<string>("ReportFrequecy")
+                        .HasColumnName("rc_frequency");
+
+                    b.Property<string>("ReportFrequecyValue")
+                        .HasColumnName("rc_frequencyvalue");
+
                     b.Property<DateTime?>("ReportModifiedOn")
                         .HasColumnName("rc_modifiedon");
 
@@ -467,56 +442,18 @@ namespace TeamLease.CssService.Migrations
                     b.Property<string>("ReportSMSPhNo")
                         .HasColumnName("rc_SMSphno");
 
-                    b.Property<string>("ReportSchedulerName")
-                        .HasColumnName("rc_schedulername");
+                    b.Property<string>("ReportSendTime")
+                        .HasColumnName("rc_sendtime");
+
+                    b.Property<string>("ReportWorkEndTime")
+                        .HasColumnName("rc_workendtime");
+
+                    b.Property<string>("ReportWorkStartTime")
+                        .HasColumnName("rc_workstarttime");
 
                     b.HasKey("Id");
 
                     b.ToTable("Report_Config","public");
-                });
-
-            modelBuilder.Entity("ASNRTech.CoreService.Reports.Scheduler", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnName("created_date");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnName("deleted");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnName("modified_by");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnName("modified_date");
-
-                    b.Property<string>("SchedulerFrequecy")
-                        .HasColumnName("sd_frequency");
-
-                    b.Property<string>("SchedulerFrequecyValue")
-                        .HasColumnName("sd_frequencyvalue");
-
-                    b.Property<string>("SchedulerName")
-                        .HasColumnName("sd_name");
-
-                    b.Property<string>("SchedulerSendTime")
-                        .HasColumnName("sd_sendtime");
-
-                    b.Property<string>("SchedulerWorkEndTime")
-                        .HasColumnName("sd_workendtime");
-
-                    b.Property<string>("SchedulerWorkStartTime")
-                        .HasColumnName("sd_workstarttime");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Scheduler","public");
                 });
 
             modelBuilder.Entity("ASNRTech.CoreService.Security.UploadLog", b =>

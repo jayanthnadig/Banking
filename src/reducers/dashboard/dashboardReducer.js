@@ -21,18 +21,34 @@ const dashboardReducer = (state = initstate, action) => {
         );
         if (
           _dashboard.widgetData.filter(
-            (xx) => xx.widgetId == _newwidget.data[0].widgetId
+            (xx) => xx.dashboardWidgetId == _newwidget.data[0].widgetId
           ).length
-        ) {         
+        ) {
           _dashboard.widgetData.map((yy, jj) => {
-            if (yy.widgetId == _newwidget.data[0].widgetId) _index = jj;
+            if (yy.dashboardWidgetId == _newwidget.data[0].widgetId)
+              _index = jj;
           });
-          if (_index !== -1) _dashboard.widgetData[_index] = _newwidget.data[0];
-        } else _dashboard.widgetData.push(_newwidget.data[0]);
+          if (_index !== -1) {
+            _dashboard.widgetData[_index].dashbaordWidgetData =
+              _newwidget.data[0].widgetData;
+            _dashboard.widgetData[_index].dashboardWidgetName =
+              _newwidget.data[0].dashboardWidgetName;
+            _dashboard.widgetData[_index].dashboardWidgetType =
+              _newwidget.data[0].dashboardChartType;
+          }
+        } else {
+          var _obj = new Object();
+          _obj.dashboardWidgetId = _newwidget.data[0].widgetId;
+          _obj.dashbaordWidgetData = _newwidget.data[0].widgetData;
+          _obj.dashboardWidgetName = _newwidget.data[0].dashboardWidgetName;
+          _obj.dashboardWidgetType = _newwidget.data[0].dashboardChartType;
+          _dashboard.widgetData.push(_obj);
+        }
+        _dashboard.singleDashboardWidget = {};
       }
-      
+
       let _msg =
-        (_index === -1)
+        _index === -1
           ? "Widget Added Successfully"
           : "Widget Updated Successfully";
       LookUpUtilities.SetNotification(true, _msg, 1);
@@ -48,10 +64,10 @@ const dashboardReducer = (state = initstate, action) => {
         );
         var _index = -1;
         _delete_dashboard.widgetData.map((yy, jj) => {
-          if (yy.widgetId == _deletewidget.widgetId) _index = jj;
+          if (yy.dashboardWidgetId == _deletewidget.widgetId) _index = jj;
         });
         if (_index !== -1) _delete_dashboard.widgetData.splice(_index, 1);
-        
+
         LookUpUtilities.SetNotification(true, "Widget Deleted Successfully", 1);
         state = _delete_dashboard;
       }
@@ -66,6 +82,24 @@ const dashboardReducer = (state = initstate, action) => {
         );
         _drilldown_dashboard.drilldownData = _drilldowndata.data;
         state = _drilldown_dashboard;
+      }
+      return state;
+
+    case actionTypes.EDIT_DASHBOARD_WIDGET:
+      let _editdashboardwidget = action.payload;
+      let _db_editdashboardwidget = Object.assign({}, state);
+      if (_editdashboardwidget.code == 200) {
+        _db_editdashboardwidget.singleDashboardWidget =
+          _editdashboardwidget.data;
+        state = _db_editdashboardwidget;
+      }
+      return state;
+    case actionTypes.GET_ALL_DROPDOWNS:
+      let _dashboarddropdown = action.payload;
+      let _db_dashboarddropdown = Object.assign({}, state);
+      if (_dashboarddropdown.code == 200) {
+        _db_dashboarddropdown.dashboardDropdown = _dashboarddropdown.data;
+        state = _db_dashboarddropdown;
       }
       return state;
     case actionTypes.USER_LOGOUT:

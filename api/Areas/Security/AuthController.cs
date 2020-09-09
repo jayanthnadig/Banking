@@ -26,7 +26,6 @@ namespace ASNRTech.CoreService.Security
 
         [HttpGet]
         [Route("v1/auth/viewallusers/{userId}")]
-        //[TeamAuthorize(AccessType.Admin | AccessType.Client, false)]
         [TeamAuthorize(AccessType.Client, true)]
         public async Task<ResponseBase<List<AddEditNewUser>>> viewallusers()
         {
@@ -35,11 +34,10 @@ namespace ASNRTech.CoreService.Security
 
         [HttpPost]
         [Route("v1/auth/userconfig/{userId}")]
-        //[TeamAuthorize(AccessType.Admin | AccessType.Client, false)]
         [TeamAuthorize(AccessType.Client, true)]
-        public async Task<ResponseBase<List<AddEditNewUser>>> addeditnewuser([FromBody]List<AddEditNewUser> adduser)
+        public async Task<ResponseBase<List<AddEditNewUser>>> addeditnewuser([FromBody]List<AddEditNewUser> user)
         {
-            return await AuthService.AddEditNewUser(new TeamHttpContext(HttpContext), adduser).ConfigureAwait(false);
+            return await AuthService.AddEditNewUser(new TeamHttpContext(HttpContext), user).ConfigureAwait(false);
         }
     }
 }

@@ -262,6 +262,7 @@ class UserConfig extends React.Component {
             <td class="border">
               <input
                 type="text"
+                readOnly={true}
                 className={`grid_input ${
                   this.state.userListError[_index][0] ? "error" : ""
                 }`}
@@ -717,7 +718,7 @@ class UserConfig extends React.Component {
                                   Delete Permission
                                 </th>{" "}
                                 <th class="border border-b-2 whitespace-no-wrap">
-                                  IsActive
+                                  Active
                                 </th>{" "}
                               </tr>{" "}
                             </thead>{" "}

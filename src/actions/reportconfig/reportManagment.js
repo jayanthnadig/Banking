@@ -10,57 +10,58 @@ let _new_report_details = (_res) => {
   return { type: actionTypes.POST_REPORT_DETAILS, payload: _res };
 };
 let _view_report_details = (_res) => {
-    return { type: actionTypes.VIEW_REPORT_DETAILS, payload: _res };
-  };
-  let _edit_report_details = (_res) => {
-    return { type: actionTypes.EDIT_REPORT_DETAILS, payload: _res };
-  };
+  return { type: actionTypes.VIEW_REPORT_DETAILS, payload: _res };
+};
+let _edit_report_details = (_res) => {
+  return { type: actionTypes.EDIT_REPORT_DETAILS, payload: _res };
+};
 let _download_report_details = (_res) => {
-    return { type: actionTypes.DOWNLOAD_REPORT_DETAILS, payload: _res };
-  };  
+  return { type: actionTypes.DOWNLOAD_REPORT_DETAILS, payload: _res };
+};
 let _delete_dashboard_widget = (_res) => {
   return { type: actionTypes.DELETE_DASHBOARD_WIDGET, payload: _res };
 };
 let _drilldown_dashboard_widget = (_res) => {
   return { type: actionTypes.DRILLDOWN_DASHBOARD_WIDGET, payload: _res };
 };
-/*let _getuserprofile_data = (_res) => {
-  return { type: actionTypes.GET_USER_DETAILS, payload: _res };
+let _get_schedulers_names = (_res) => {
+  return { type: actionTypes.GET_SCHEDULER_NAMES, payload: _res };
 };
-let _formprofile_object = (_res) => {
-  return { type: actionTypes.PUT_USER_DETAILS, payload: _res };
+let _new_schedulers_names = (_res) => {
+  return { type: actionTypes.POST_SCHEDULER_NAME, payload: _res };
 };
-let _insertformprofile_object = (_res) => {
-  return { type: actionTypes.POST_USER_DETAILS, payload: _res };
+let _edit_schedulers_names = (_res) => {
+  return { type: actionTypes.EDIT_SCHEDULER_NAME, payload: _res };
 };
-let _change_statusobject = () => {
-  return { type: actionTypes.CHANGE_STATUS, payload: "new" };
-};*/
+let _set_notification = (_res) => {
+  return { type: actionTypes.SET_NOTIFICATION, payload: _res };
+};
+
 let _userDetails = lookupUtility.LoginDetails();
 export const _getReportNames = () => {
-    try {
-        return (dispatch) => {
-          //let _res = lookupUtility.LoginObject();
-          requestServices
-            .get(API.getReportName,_userDetails.userid)
-            .then((res) => {
-              console.log("Response", res);
-              dispatch(_report_names(res));
-            })
-            .catch((err) => {
-              console.log("Error", err);
-            });
-        };
-      } catch (e) {
-        console.log("actionType-->_getReportNames", e);
-      }
+  try {
+    return (dispatch) => {
+      //let _res = lookupUtility.LoginObject();
+      requestServices
+        .get(API.getReportName, _userDetails.userid)
+        .then((res) => {
+          console.log("Response", res);
+          dispatch(_report_names(res));
+        })
+        .catch((err) => {
+          console.log("Error", err);
+        });
+    };
+  } catch (e) {
+    console.log("actionType-->_getReportNames", e);
+  }
 };
 export const _post_ReportDetails = (_obj) => {
   try {
     return (dispatch) => {
-     // let _res = lookupUtility.PostDashboard(_obj);
+      // let _res = lookupUtility.PostDashboard(_obj);
       requestServices
-        .postquery(API.postReportName, _obj,_userDetails.userid)
+        .postquery(API.postReportName, _obj, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_new_report_details(res));
@@ -70,77 +71,57 @@ export const _post_ReportDetails = (_obj) => {
         });
     };
   } catch (e) {
-    console.log("actionType-->_post_userdata", e);
+    console.log("actionType-->_post_ReportDetails", e);
   }
 };
 
 export const _view_ReportDetails = (_obj) => {
-    try {
-      return (dispatch) => {
-       // let _res = lookupUtility.PostDashboard(_obj);
-        requestServices
-          .getQuery(API.viewReportName, _userDetails.userid,_obj)
-          .then((res) => {
-            console.log("Response", res);
-            dispatch(_view_report_details(res));
-          })
-          .catch((err) => {
-            console.log("Error", err);
-          });
-      };
-    } catch (e) {
-      console.log("actionType-->_post_userdata", e);
-    }
-  };
+  try {
+    return (dispatch) => {
+      // let _res = lookupUtility.PostDashboard(_obj);
+      requestServices
+        .getQuery(API.viewReportName, _userDetails.userid, _obj)
+        .then((res) => {
+          console.log("Response", res);
+          dispatch(_view_report_details(res));
+        })
+        .catch((err) => {
+          console.log("Error", err);
+        });
+    };
+  } catch (e) {
+    console.log("actionType-->_view_ReportDetails", e);
+  }
+};
 
-  export const _edit_ReportDetails = (_obj) => {
-    try {
-      return (dispatch) => {
-       // let _res = lookupUtility.PostDashboard(_obj);
-        requestServices
-          .getQuery(API.editReportName, _userDetails.userid,_obj)
-          .then((res) => {
-            console.log("Response", res);
-            dispatch(_edit_report_details(res));
-          })
-          .catch((err) => {
-            console.log("Error", err);
-          });
-      };
-    } catch (e) {
-      console.log("actionType-->_post_userdata", e);
-    }
-  };
-  export const _download_ReportDetails = (_obj) => {
-    try {
-      return (dispatch) => {
-       // let _res = lookupUtility.PostDashboard(_obj);
-        requestServices
-          .getFiles(API.downloadReportName, _userDetails.userid,_obj)
-          .then((res) => {
-            console.log("Response", res);
-            dispatch(_download_report_details(res));
-          })
-          .catch((err) => {
-            console.log("Error", err);
-          });
-      };
-    } catch (e) {
-      console.log("actionType-->_post_userdata", e);
-    }
-  };
-
-
+export const _edit_ReportDetails = (_obj) => {
+  try {
+    return (dispatch) => {
+      // let _res = lookupUtility.PostDashboard(_obj);
+      requestServices
+        .getQuery(API.editReportName, _userDetails.userid, _obj)
+        .then((res) => {
+          console.log("Response", res);
+          dispatch(_edit_report_details(res));
+        })
+        .catch((err) => {
+          console.log("Error", err);
+        });
+    };
+  } catch (e) {
+    console.log("actionType-->_edit_ReportDetails", e);
+  }
+};
 
 export const _delete_dashboardWidget = (_id) => {
   try {
     return (dispatch) => {
-     // let _res = lookupUtility.PostDashboard(_obj);
+      // let _res = lookupUtility.PostDashboard(_obj);
       requestServices
-        .deleteQuery(API.deleteDashboard,_userDetails.userid,_id)
+        .deleteQuery(API.deleteDashboard, _userDetails.userid, _id)
         .then((res) => {
           console.log("Response", res);
-          res.widgetId=_id;
+          res.widgetId = _id;
           dispatch(_delete_dashboard_widget(res));
         })
         .catch((err) => {
@@ -148,7 +129,7 @@ export const _delete_dashboardWidget = (_id) => {
         });
     };
   } catch (e) {
-    console.log("actionType-->_post_userdata", e);
+    console.log("actionType-->_delete_dashboardWidget", e);
   }
 };
 
@@ -157,7 +138,7 @@ export const _post_drilldowndashboardWidget = (_obj) => {
     return (dispatch) => {
       //let _res = lookupUtility.PostDashboard(_obj);
       requestServices
-        .postquery(API.drilldownDashboard, _obj,_userDetails.userid)
+        .postquery(API.drilldownDashboard, _obj, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_drilldown_dashboard_widget(res));
@@ -167,43 +148,73 @@ export const _post_drilldowndashboardWidget = (_obj) => {
         });
     };
   } catch (e) {
-    console.log("actionType-->_post_userdata", e);
+    console.log("actionType-->_post_drilldowndashboardWidget", e);
   }
 };
-
-
-/*export const _post_userdata = (_obj, _props) => {
+export const _get_scheduler_names = () => {
   try {
     return (dispatch) => {
-      let _res = lookupUtility.UserInsertObject(_obj, _props);
+      //let _res = lookupUtility.PostDashboard(_obj);
       requestServices
-        .post(API.createUser, _res)
+        .get(API.getSchedulerNames, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
-          dispatch(_insertformprofile_object(res));
+          dispatch(_get_schedulers_names(res));
         })
         .catch((err) => {
           console.log("Error", err);
         });
     };
   } catch (e) {
-    console.log("actionType-->_post_userdata", e);
+    console.log("actionType-->_post_drilldowndashboardWidget", e);
   }
 };
-export const _update_userdata = (_obj, _props) => {
+
+export const _post_SchedulerName = (_obj) => {
   try {
     return (dispatch) => {
-      let _res = lookupUtility.UserInsertObject(_obj, _props);
+      // let _res = lookupUtility.PostDashboard(_obj);
       requestServices
-        .put(API.updateUser, _res)
+        .postquery(API.addUpdateSchedular, _obj, _userDetails.userid)
         .then((res) => {
-          dispatch(_formprofile_object(res));
+          console.log("Response", res);
+          dispatch(_new_schedulers_names(res));
+          dispatch(_set_notification({}));
         })
         .catch((err) => {
           console.log("Error", err);
         });
     };
   } catch (e) {
-    console.log("actionType-->_update_userdata", e);
+    console.log("actionType-->_post_ReportDetails", e);
   }
-};*/
+};
+
+export const _edit_SchedulerName = (_id) => {
+  try {
+    return (dispatch) => {
+      // let _res = lookupUtility.PostDashboard(_obj);
+      requestServices
+        .getScheduler(API.editSchedulerNames, _userDetails.userid, _id)
+        .then((res) => {
+          console.log("Response", res);
+          dispatch(_edit_schedulers_names(res));
+        })
+        .catch((err) => {
+          console.log("Error", err);
+        });
+    };
+  } catch (e) {
+    console.log("actionType-->_edit_SchedulerName", e);
+  }
+};
+
+export const _clear_Scheduler = (_id) => {
+  try {
+    return (dispatch) => {
+      dispatch({ type: actionTypes.CLEAR_SCHEDULER, payload: {} });
+    };
+  } catch (e) {
+    console.log("actionType-->_clear_Scheduler", e);
+  }
+};

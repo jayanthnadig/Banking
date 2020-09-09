@@ -18,18 +18,17 @@ namespace ASNRTech.CoreService.Alcs
 {
     public class GenericService : BaseService
     {
-        internal static async Task<List<LoadWidgets>> GetAllWidgetAsync(TeamHttpContext httpContext)
+        internal static async Task<List<LoadDashboard>> GetAllWidgetAsync(TeamHttpContext httpContext)
         {
-            //string connString = Utility.GetConnectionString("PgAdmin4ConnectionString");
             string userid = httpContext.ContextUserId;
-            //string userid = "Admin";
-            List<LoadWidgets> returnValue = new List<LoadWidgets>();
+            List<LoadDashboard> returnValue = new List<LoadDashboard>();
             PostgresService postgresService = new PostgresService();
             List<UserDashboard> objUserDashboard = new List<UserDashboard>();
             using (TeamDbContext dbContext = new TeamDbContext())
             {
                 //objUserDashboard = dbContext.UserDashboards.Where(x => x.DashboardUserId == userid && x.Deleted == false).ToList(); //user specific
-                objUserDashboard = dbContext.UserDashboards.Where(x => x.Deleted == false).ToList(); // For all users
+                //objUserDashboard = dbContext.UserDashboards.Where(x => x.Deleted == false).ToList(); // For all users
+                objUserDashboard = dbContext.UserDashboards.Where(x => x.Deleted == false && x.DashboardUserPermission.Contains(httpContext.ContextUserId)).ToList(); // For permitted  users
             }
 
             if (objUserDashboard.Count != 0)
@@ -37,8 +36,8 @@ namespace ASNRTech.CoreService.Alcs
                 foreach (var item in objUserDashboard)
                 {
                     List<WidgetRead> objWidgetRead = new List<WidgetRead>();
-                    string connString = Utility.GetConnectionString(item.DashboardConnectionString);
-                    using (NpgsqlDataReader sqlData = postgresService.ExecuteSqlReturnReader(connString, item.DashbaordQuery))
+                    string connString = Utility.GetConnectionString(item.WidgetConnectionString);
+                    using (NpgsqlDataReader sqlData = postgresService.ExecuteSqlReturnReader(connString, item.WidgetQuery))
                     {
                         while (sqlData.Read())
                         {
@@ -49,22 +48,12 @@ namespace ASNRTech.CoreService.Alcs
                             });
                         }
                     }
-                    LoadWidgets newItem = new LoadWidgets
+                    LoadDashboard newItem = new LoadDashboard
                     {
-                        WidgetName = item.DashboardWidgetName,
-                        WidgetId = item.Id,
-                        WidgetType = item.DashboardChartType,
-                        WidgetData = objWidgetRead.ToArray(),
-                        WidgetConnectionString = item.DashboardConnectionString,
-                        WidgetQuery = item.DashbaordQuery,
-                        L1ConnectionString = item.Level1ConnectionString,
-                        WidgetQueryLevel1 = item.DashbaordQueryL1,
-                        L2ConnectionString = item.Level2ConnectionString,
-                        WidgetQueryLevel2 = item.DashbaordQueryL2,
-                        L3ConnectionString = item.Level3ConnectionString,
-                        WidgetQueryLevel3 = item.DashbaordQueryL3,
-                        L4ConnectionString = item.Level4ConnectionString,
-                        WidgetQueryLevel4 = item.DashbaordQueryL4
+                        DashboardWidgetName = item.DashboardWidgetName,
+                        DashboardWidgetId = item.Id,
+                        DashboardWidgetType = item.DashboardChartType,
+                        DashbaordWidgetData = objWidgetRead.ToArray()
                     };
                     returnValue.Add(newItem);
                 }
@@ -73,11 +62,13 @@ namespace ASNRTech.CoreService.Alcs
             return returnValue;
         }
 
-        public static async Task<ResponseBase<List<ChartTypeandDBConnectionString>>> ChartTypeandDBConnectionString(TeamHttpContext teamHttpContext)
+        public static async Task<ResponseBase<List<AllWidgetDropDowns>>> DashboardAddDropDowns(TeamHttpContext teamHttpContext)
         {
             List<ChartTypes> objChartTypes = new List<ChartTypes>();
+            List<string> objUserList = new List<string>();
+            List<SchedulerTypes> objSchedulerTypes = new List<SchedulerTypes>();
             List<DBConnectionStrings> objDBConnectionStrings = new List<DBConnectionStrings>();
-            List<ChartTypeandDBConnectionString> objChartTypeandDBConnectionString = new List<ChartTypeandDBConnectionString>();
+            List<AllWidgetDropDowns> objDashboardAddDropDowns = new List<AllWidgetDropDowns>();
             using (TeamDbContext dbContext = new TeamDbContext())
             {
                 var charttypes = from ct in dbContext.ChartTypes
@@ -97,12 +88,40 @@ namespace ASNRTech.CoreService.Alcs
                     objChartTypes.Add(chartList);
                 }
 
+                var userlists = from ul in dbContext.Users
+                                select new
+                                {
+                                    UserId = ul.UserId
+                                };
+                foreach (var item in userlists)
+                {
+                    objUserList.Add(item.UserId);
+                }
+
+                var schedulertypes = from sd in dbContext.Schedulers
+                                     select new
+                                     {
+                                         Id = sd.Id,
+                                         SchedulerName = sd.SchedulerName
+                                     };
+                foreach (var item in schedulertypes)
+                {
+                    SchedulerTypes schedulerType = new SchedulerTypes
+                    {
+                        SchedulerId = item.Id,
+                        SchedulerName = item.SchedulerName
+                    };
+
+                    objSchedulerTypes.Add(schedulerType);
+                }
+
                 var dbconnectionstrings = from dbcs in dbContext.DBConnections
                                           select new
                                           {
                                               DBConnectionId = dbcs.DBConnectionId,
                                               DBConnectionName = dbcs.DBConnectionName
                                           };
+
                 foreach (var item in dbconnectionstrings)
                 {
                     DBConnectionStrings connectionList = new DBConnectionStrings
@@ -115,28 +134,28 @@ namespace ASNRTech.CoreService.Alcs
                 }
             }
 
-            ChartTypeandDBConnectionString finallist = new ChartTypeandDBConnectionString
+            AllWidgetDropDowns finallist = new AllWidgetDropDowns
             {
                 Charts = objChartTypes,
+                Users = objUserList,
+                Schedulers = objSchedulerTypes,
                 ConnectionStrings = objDBConnectionStrings
             };
 
-            objChartTypeandDBConnectionString.Add(finallist);
+            objDashboardAddDropDowns.Add(finallist);
 
-            return GetTypedResponse(teamHttpContext, objChartTypeandDBConnectionString);
+            return GetTypedResponse(teamHttpContext, objDashboardAddDropDowns);
         }
 
         internal static async Task<List<LoadWidgets>> GetWidgetAsync(TeamHttpContext httpContext, string widgettype, string widgetname)//, string widgetquery, string widgetquerylevel1, string widgetquerylevel2, string widgetquerylevel3, string widgetquerylevel4)
         {
-            //string connString = Utility.GetConnectionString("PgAdmin4ConnectionString");
             string userid = httpContext.ContextUserId;
-            //string userid = "Admin";
             List<LoadWidgets> returnValue = new List<LoadWidgets>();
             PostgresService postgresService = new PostgresService();
             List<UserDashboard> objUserDashboard = new List<UserDashboard>();
             using (TeamDbContext dbContext = new TeamDbContext())
             {
-                objUserDashboard = dbContext.UserDashboards.Where(x => x.DashboardUserId == userid && x.DashboardChartType == widgettype && x.DashboardWidgetName == widgetname && x.Deleted == false).ToList();
+                objUserDashboard = dbContext.UserDashboards.Where(x => x.CreatedBy == userid && x.DashboardChartType == widgettype && x.DashboardWidgetName == widgetname && x.Deleted == false).ToList();
             }
 
             if (objUserDashboard.Count != 0)
@@ -144,8 +163,8 @@ namespace ASNRTech.CoreService.Alcs
                 foreach (var item in objUserDashboard)
                 {
                     List<WidgetRead> objWidgetRead = new List<WidgetRead>();
-                    string connString = Utility.GetConnectionString(item.DashboardConnectionString);
-                    using (NpgsqlDataReader sqlData = postgresService.ExecuteSqlReturnReader(connString, item.DashbaordQuery))
+                    string connString = Utility.GetConnectionString(item.WidgetConnectionString);
+                    using (NpgsqlDataReader sqlData = postgresService.ExecuteSqlReturnReader(connString, item.WidgetQuery))
                     {
                         while (sqlData.Read())
                         {
@@ -159,20 +178,33 @@ namespace ASNRTech.CoreService.Alcs
 
                     LoadWidgets newItem = new LoadWidgets
                     {
-                        WidgetName = item.DashboardWidgetName,
+                        DashboardWidgetName = item.DashboardWidgetName,
                         WidgetId = item.Id,
-                        WidgetType = item.DashboardChartType,
+                        DashboardChartType = item.DashboardChartType,
+                        DashboardUserPermission = item.DashboardUserPermission,
+                        DashboardEmailFormat = item.DashboardEmailFormat,
                         WidgetData = objWidgetRead.ToArray(),
-                        WidgetConnectionString = item.DashboardConnectionString,
-                        WidgetQuery = item.DashbaordQuery,
-                        L1ConnectionString = item.Level1ConnectionString,
-                        WidgetQueryLevel1 = item.DashbaordQueryL1,
-                        L2ConnectionString = item.Level2ConnectionString,
-                        WidgetQueryLevel2 = item.DashbaordQueryL2,
-                        L3ConnectionString = item.Level3ConnectionString,
-                        WidgetQueryLevel3 = item.DashbaordQueryL3,
-                        L4ConnectionString = item.Level4ConnectionString,
-                        WidgetQueryLevel4 = item.DashbaordQueryL4
+                        WidgetConnectionString = item.WidgetConnectionString,
+                        WidgetSchedulerType = item.WidgetSchedulerType,
+                        WidgetSchedulerEmailIDs = item.WidgetSchedulerEmailIDs,
+                        WidgetQuery = item.WidgetQuery,
+                        Level1ConnectionString = item.Level1ConnectionString,
+                        Level1SchedulerType = item.Level1SchedulerType,
+                        L1SchedulerEmailIDs = item.L1SchedulerEmailIDs,
+                        DashbaordQueryL1 = item.DashbaordQueryL1,
+                        Level2ConnectionString = item.Level2ConnectionString,
+                        Level2SchedulerType = item.Level2SchedulerType,
+                        L2SchedulerEmailIDs = item.L2SchedulerEmailIDs,
+                        DashbaordQueryL2 = item.DashbaordQueryL2,
+                        Level3ConnectionString = item.Level3ConnectionString,
+                        Level3SchedulerType = item.Level3SchedulerType,
+                        L3SchedulerEmailIDs = item.L3SchedulerEmailIDs,
+                        DashbaordQueryL3 = item.DashbaordQueryL3,
+                        Level4ConnectionString = item.Level4ConnectionString,
+                        Level4SchedulerType = item.Level4SchedulerType,
+                        L4SchedulerEmailIDs = item.L4SchedulerEmailIDs,
+                        DashbaordQueryL4 = item.DashbaordQueryL4,
+                        WidgetSendEmail = item.WidgetSendEmail
                     };
                     returnValue.Add(newItem);
                 }
@@ -192,7 +224,7 @@ namespace ASNRTech.CoreService.Alcs
             }
         }
 
-        private static void EditUserDashboard(UserDashboard userdashboard)
+        private static void UpdateUserDashboard(UserDashboard userdashboard)
         {
             using (TeamDbContext dbContext = new TeamDbContext())
             {
@@ -204,30 +236,39 @@ namespace ASNRTech.CoreService.Alcs
             }
         }
 
-        internal async static Task<ResponseBase> createWidget(TeamHttpContext httpContext, DashboardWidget widgetdata)
+        internal async static Task<ResponseBase> addWidget(TeamHttpContext httpContext, DashboardWidget widgetdata)
         {
             try
             {
                 AddUserDashboard(new UserDashboard
                 {
-                    DashboardUserId = httpContext.ContextUserId,
-                    //DashboardUserId = "Admin",
-                    DashboardChartType = widgetdata.WidgetType,
-                    DashboardWidgetName = widgetdata.WidgetName,
-                    DashboardConnectionString = widgetdata.WidgetConnectionString,
-                    DashbaordQuery = widgetdata.WidgetQuery,
+                    DashboardWidgetName = widgetdata.DashboardWidgetName,
+                    DashboardChartType = widgetdata.DashboardChartType,
+                    DashboardUserPermission = widgetdata.DashboardUserPermission,
+                    DashboardEmailFormat = widgetdata.DashboardEmailFormat,
+                    WidgetConnectionString = widgetdata.WidgetConnectionString,
+                    WidgetSchedulerType = widgetdata.WidgetSchedulerType,
+                    WidgetSchedulerEmailIDs = widgetdata.WidgetSchedulerEmailIDs,
+                    WidgetQuery = widgetdata.WidgetQuery,
+                    Level1ConnectionString = widgetdata.Level1ConnectionString,
+                    Level1SchedulerType = widgetdata.Level1SchedulerType,
+                    L1SchedulerEmailIDs = widgetdata.L1SchedulerEmailIDs,
+                    DashbaordQueryL1 = widgetdata.DashbaordQueryL1,
+                    Level2ConnectionString = widgetdata.Level2ConnectionString,
+                    Level2SchedulerType = widgetdata.Level2SchedulerType,
+                    L2SchedulerEmailIDs = widgetdata.L2SchedulerEmailIDs,
+                    DashbaordQueryL2 = widgetdata.DashbaordQueryL2,
+                    Level3ConnectionString = widgetdata.Level3ConnectionString,
+                    Level3SchedulerType = widgetdata.Level3SchedulerType,
+                    L3SchedulerEmailIDs = widgetdata.L3SchedulerEmailIDs,
+                    DashbaordQueryL3 = widgetdata.DashbaordQueryL3,
+                    Level4ConnectionString = widgetdata.Level4ConnectionString,
+                    Level4SchedulerType = widgetdata.Level4SchedulerType,
+                    L4SchedulerEmailIDs = widgetdata.L4SchedulerEmailIDs,
+                    DashbaordQueryL4 = widgetdata.DashbaordQueryL4,
+                    WidgetSendEmail = widgetdata.WidgetSendEmail,
                     CreatedBy = httpContext.ContextUserId,
-                    //CreatedBy = "Admin",
-                    Level1ConnectionString = widgetdata.L1ConnectionString,
-                    DashbaordQueryL1 = widgetdata.WidgetQueryLevel1,
-                    Level2ConnectionString = widgetdata.L2ConnectionString,
-                    DashbaordQueryL2 = widgetdata.WidgetQueryLevel2,
-                    Level3ConnectionString = widgetdata.L3ConnectionString,
-                    DashbaordQueryL3 = widgetdata.WidgetQueryLevel3,
-                    Level4ConnectionString = widgetdata.L4ConnectionString,
-                    DashbaordQueryL4 = widgetdata.WidgetQueryLevel4,
-                    CreatedOn = DateTime.Now,
-                    DashbaordModifiedOn = null,
+                    CreatedOn = DateTime.Now
                 });
                 return GetResponse(httpContext, HttpStatusCode.OK, "Available");
             }
@@ -237,7 +278,7 @@ namespace ASNRTech.CoreService.Alcs
             }
         }
 
-        internal async static Task<ResponseBase> editWidget(TeamHttpContext httpContext, DashboardWidget widgetdata)
+        internal async static Task<ResponseBase> updateWidget(TeamHttpContext httpContext, DashboardWidget widgetdata)
         {
             try
             {
@@ -252,29 +293,38 @@ namespace ASNRTech.CoreService.Alcs
 
                 if (objUserDashboard.Count != 0)
                 {
-                    EditUserDashboard(new UserDashboard
+                    UpdateUserDashboard(new UserDashboard
                     {
                         Id = widgetdata.WidgetId,
-                        DashboardUserId = httpContext.ContextUserId,
-                        //DashboardUserId = "Admin",
-                        DashboardChartType = widgetdata.WidgetType,
-                        DashboardWidgetName = widgetdata.WidgetName,
-                        DashboardConnectionString = widgetdata.WidgetConnectionString,
-                        DashbaordQuery = widgetdata.WidgetQuery,
-                        Level1ConnectionString = widgetdata.L1ConnectionString,
-                        DashbaordQueryL1 = widgetdata.WidgetQueryLevel1,
-                        Level2ConnectionString = widgetdata.L2ConnectionString,
-                        DashbaordQueryL2 = widgetdata.WidgetQueryLevel2,
-                        Level3ConnectionString = widgetdata.L3ConnectionString,
-                        DashbaordQueryL3 = widgetdata.WidgetQueryLevel3,
-                        Level4ConnectionString = widgetdata.L4ConnectionString,
-                        DashbaordQueryL4 = widgetdata.WidgetQueryLevel4,
+                        DashboardWidgetName = widgetdata.DashboardWidgetName,
+                        DashboardChartType = widgetdata.DashboardChartType,
+                        DashboardUserPermission = widgetdata.DashboardUserPermission,
+                        DashboardEmailFormat = widgetdata.DashboardEmailFormat,
+                        WidgetConnectionString = widgetdata.WidgetConnectionString,
+                        WidgetSchedulerType = widgetdata.WidgetSchedulerType,
+                        WidgetSchedulerEmailIDs = widgetdata.WidgetSchedulerEmailIDs,
+                        WidgetQuery = widgetdata.WidgetQuery,
+                        Level1ConnectionString = widgetdata.Level1ConnectionString,
+                        Level1SchedulerType = widgetdata.Level1SchedulerType,
+                        L1SchedulerEmailIDs = widgetdata.L1SchedulerEmailIDs,
+                        DashbaordQueryL1 = widgetdata.DashbaordQueryL1,
+                        Level2ConnectionString = widgetdata.Level2ConnectionString,
+                        Level2SchedulerType = widgetdata.Level2SchedulerType,
+                        L2SchedulerEmailIDs = widgetdata.L2SchedulerEmailIDs,
+                        DashbaordQueryL2 = widgetdata.DashbaordQueryL2,
+                        Level3ConnectionString = widgetdata.Level3ConnectionString,
+                        Level3SchedulerType = widgetdata.Level3SchedulerType,
+                        L3SchedulerEmailIDs = widgetdata.L3SchedulerEmailIDs,
+                        DashbaordQueryL3 = widgetdata.DashbaordQueryL3,
+                        Level4ConnectionString = widgetdata.Level4ConnectionString,
+                        Level4SchedulerType = widgetdata.Level4SchedulerType,
+                        L4SchedulerEmailIDs = widgetdata.L4SchedulerEmailIDs,
+                        DashbaordQueryL4 = widgetdata.DashbaordQueryL4,
+                        WidgetSendEmail = widgetdata.WidgetSendEmail,
                         CreatedBy = objUserDashboard[0].CreatedBy,
                         CreatedOn = objUserDashboard[0].CreatedOn,
                         ModifiedBy = httpContext.ContextUserId,
-                        //ModifiedBy = "Admin",
-                        ModifiedOn = DateTime.Now,
-                        DashbaordModifiedOn = DateTime.Now,
+                        ModifiedOn = DateTime.Now
                     });
                     return GetResponse(httpContext, HttpStatusCode.OK, "Available");
                 }
