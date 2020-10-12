@@ -10,6 +10,7 @@ import Notification from "../Notification";
 import * as notify_action_type from "../../actions/notification/notifiyaction";
 import DayPicker from "react-day-picker";
 import DayPickerInput from "react-day-picker/DayPickerInput";
+import Spinner from "../Notification/Spinner";
 
 import "react-day-picker/lib/style.css";
 
@@ -79,7 +80,7 @@ class ReportConfiguration extends React.Component {
       31,
     ];
     this.state = {
-      modal: true,
+      modal: false,
       scheduler: false,
       userDetails: {},
       reportQuery: "",
@@ -121,6 +122,9 @@ class ReportConfiguration extends React.Component {
       endIndex: 11,
       pagination: false,
       gridlength: 0,
+      emailSubject: "",
+      emailBody: "",
+      useGridEmail:"true"
     };
   }
   componentDidMount() {
@@ -190,6 +194,9 @@ class ReportConfiguration extends React.Component {
         reportDefaultSMSMSG: nextProps.report_object.reportDefaultSMSMSG,
         reportSchedulerName: nextProps.report_object.reportSchedulerName,
         isActive: nextProps.report_object.isActive,
+        emailSubject: nextProps.report_object.emailSubject,
+        emailBody: nextProps.report_object.emailBody,
+        useGridEmail:nextProps.report_object.useGridEmail.toString(),
       });
     }
     if (nextProps.report_details.length)
@@ -255,6 +262,9 @@ class ReportConfiguration extends React.Component {
       schedulerIdError: false,
       schedulerId: -1,
       reportSchedulerName: "",
+      emailSubject: "",
+      emailBody: "",
+      useGridEmail:"true",
     });
     if (this.state.scheduler) this.props.CLEAR_SCHEDULER();
   }
@@ -368,7 +378,7 @@ class ReportConfiguration extends React.Component {
     }
   }
   addReport() {
-    const _emailreg = /^(\s?[^\s,]+@[^\s,]+\.[^\s,]+\s?,)*(\s?[^\s,]+@[^\s,]+\.[^\s,]+)$/;    
+    const _emailreg = /^(\s?[^\s,]+@[^\s,]+\.[^\s,]+\s?,)*(\s?[^\s,]+@[^\s,]+\.[^\s,]+)$/;
     let _emailstatus = false;
     if (
       this.state.reportDeliveryMode === "email" &&
@@ -643,6 +653,7 @@ class ReportConfiguration extends React.Component {
   render() {
     return (
       <>
+        <Spinner></Spinner>
         {this.monthPicker()}
         <div className="app">
           <div className="border-b border-theme-24 -mt-10 md:-mt-5 -mx-3 sm:-mx-8 px-3 sm:px-8 pt-3 md:pt-0 mb-10">
@@ -915,6 +926,8 @@ class ReportConfiguration extends React.Component {
                         <select
                           class="select2 w-full input border mt-2 "
                           style={{ width: "50%" }}
+                          name="reportId"
+                          value={this.state.reportId}
                           onChange={(e) => this.loadReportDetails(e)}
                         >
                           <option value="-1">
@@ -1268,10 +1281,33 @@ class ReportConfiguration extends React.Component {
                                     </div>{" "}
                                   </div>{" "}
                                   <div
-                                    className={`flex flex-col sm:flex-row items-center ${
+                                    className={`flex flex-col sm:flex-row items-center mb-2 ${
                                       this.state.reportDeliveryMode !== "email"
                                         ? "hide"
                                         : ""
+                                    }`}
+                                  >
+                                    {" "}
+                                    <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                                     Report Email Option
+                                    </label>{" "}
+                                    <select
+                                      class="select2 w-full input w-full border mt-2 flex-1"
+                                      name="useGridEmail"
+                                      value={this.state.useGridEmail}
+                                      onChange={(e) => this.handleChange(e)}
+                                    >
+                                      <option value="true">Grid Users</option>
+                                      <option value="false">
+                                        Specific Users
+                                      </option>
+                                    </select>{" "}
+                                  </div>{" "}
+                                  <div
+                                    className={`flex flex-col sm:flex-row items-center ${
+                                      this.state.reportDeliveryMode !== "email" || this.state.useGridEmail === "true"
+                                        ? "hide"
+                                        : "show"
                                     }`}
                                   >
                                     {" "}
@@ -1315,6 +1351,42 @@ class ReportConfiguration extends React.Component {
                                         onBlur={(e) => this.bindEnteredEmail(e)}
                                       />{" "}
                                     </div>
+                                  </div>{" "}
+                                  <div className={`flex flex-col sm:flex-row items-center ${
+                                      this.state.reportDeliveryMode !== "email"
+                                        ? "hide"
+                                        : ""
+                                    }`}>
+                                    {" "}
+                                    <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                                      Email Subject
+                                    </label>{" "}
+                                    <input
+                                      type="text"
+                                      className={`input w-full border mt-2 flex-1 `}
+                                      name="emailSubject"
+                                      placeholder="Email Subject"
+                                      value={this.state.emailSubject}
+                                      onChange={(e) => this.handleChange(e)}
+                                    />{" "}
+                                  </div>{" "}
+                                  <div className={`flex flex-col sm:flex-row items-center ${
+                                      this.state.reportDeliveryMode !== "email"
+                                        ? "hide"
+                                        : ""
+                                    }`}>
+                                    {" "}
+                                    <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                                      Email Body
+                                    </label>{" "}
+                                    <textarea
+                                      className={`input w-full border mt-2 flex-1 `}
+                                      placeholder="Email Body"
+                                      name="emailBody"
+                                      value={this.state.emailBody}
+                                      onChange={(e) => this.handleChange(e)}
+                                      style={{ height: "100px" }}
+                                    />{" "}
                                   </div>{" "}
                                   <div
                                     className={`flex flex-col sm:flex-row items-center ${
@@ -1524,6 +1596,7 @@ class ReportConfiguration extends React.Component {
                                     </label>{" "}
                                     <input
                                       type="text"
+                                      readOnly={!this.state.isAddScheduler}
                                       className={`input w-full border mt-2 flex-1 ${
                                         this.state.schedulerNameError
                                           ? "error"

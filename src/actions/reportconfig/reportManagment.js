@@ -36,20 +36,26 @@ let _edit_schedulers_names = (_res) => {
 let _set_notification = (_res) => {
   return { type: actionTypes.SET_NOTIFICATION, payload: _res };
 };
+let _set_spinner = (_res) => {
+  return { type: actionTypes.SET_SPINNER };
+};
 
 let _userDetails = lookupUtility.LoginDetails();
 export const _getReportNames = () => {
   try {
     return (dispatch) => {
       //let _res = lookupUtility.LoginObject();
+      dispatch(_set_spinner());
       requestServices
         .get(API.getReportName, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_report_names(res));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -60,14 +66,17 @@ export const _post_ReportDetails = (_obj) => {
   try {
     return (dispatch) => {
       // let _res = lookupUtility.PostDashboard(_obj);
+      dispatch(_set_spinner());
       requestServices
         .postquery(API.postReportName, _obj, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_new_report_details(res));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -79,14 +88,17 @@ export const _view_ReportDetails = (_obj) => {
   try {
     return (dispatch) => {
       // let _res = lookupUtility.PostDashboard(_obj);
+      dispatch(_set_spinner());
       requestServices
         .getQuery(API.viewReportName, _userDetails.userid, _obj)
         .then((res) => {
           console.log("Response", res);
           dispatch(_view_report_details(res));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -98,14 +110,17 @@ export const _edit_ReportDetails = (_obj) => {
   try {
     return (dispatch) => {
       // let _res = lookupUtility.PostDashboard(_obj);
+      dispatch(_set_spinner());
       requestServices
         .getQuery(API.editReportName, _userDetails.userid, _obj)
         .then((res) => {
           console.log("Response", res);
           dispatch(_edit_report_details(res));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -117,15 +132,18 @@ export const _delete_dashboardWidget = (_id) => {
   try {
     return (dispatch) => {
       // let _res = lookupUtility.PostDashboard(_obj);
+      dispatch(_set_spinner());
       requestServices
         .deleteQuery(API.deleteDashboard, _userDetails.userid, _id)
         .then((res) => {
           console.log("Response", res);
           res.widgetId = _id;
           dispatch(_delete_dashboard_widget(res));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -137,14 +155,17 @@ export const _post_drilldowndashboardWidget = (_obj) => {
   try {
     return (dispatch) => {
       //let _res = lookupUtility.PostDashboard(_obj);
+      dispatch(_set_spinner());
       requestServices
         .postquery(API.drilldownDashboard, _obj, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_drilldown_dashboard_widget(res));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -155,14 +176,17 @@ export const _get_scheduler_names = () => {
   try {
     return (dispatch) => {
       //let _res = lookupUtility.PostDashboard(_obj);
+      dispatch(_set_spinner());
       requestServices
         .get(API.getSchedulerNames, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_get_schedulers_names(res));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -174,15 +198,18 @@ export const _post_SchedulerName = (_obj) => {
   try {
     return (dispatch) => {
       // let _res = lookupUtility.PostDashboard(_obj);
+      dispatch(_set_spinner());
       requestServices
         .postquery(API.addUpdateSchedular, _obj, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_new_schedulers_names(res));
           dispatch(_set_notification({}));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -194,14 +221,17 @@ export const _edit_SchedulerName = (_id) => {
   try {
     return (dispatch) => {
       // let _res = lookupUtility.PostDashboard(_obj);
+      dispatch(_set_spinner());
       requestServices
         .getScheduler(API.editSchedulerNames, _userDetails.userid, _id)
         .then((res) => {
           console.log("Response", res);
           dispatch(_edit_schedulers_names(res));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {

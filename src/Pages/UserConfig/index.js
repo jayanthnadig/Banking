@@ -5,6 +5,7 @@ import LookUpUtilities from "../../Common/Utility/LookUpDataMapping";
 import Notification from "../Notification";
 import * as action_type from "../../actions/users/userManagement";
 import * as notify_action_type from "../../actions/notification/notifiyaction";
+import Spinner from "../Notification/Spinner";
 import logo from "../../dist/images/logo.png";
 import user_logout from "../../dist/images/user_mark.svg";
 
@@ -263,7 +264,7 @@ class UserConfig extends React.Component {
               <input
                 type="text"
                 readOnly={true}
-                className={`grid_input ${
+                className={`grid_input c_pointer ${
                   this.state.userListError[_index][0] ? "error" : ""
                 }`}
                 name="userId"
@@ -370,6 +371,7 @@ class UserConfig extends React.Component {
   render() {
     return (
       <>
+         <Spinner></Spinner>
         <div className="app">
           <div className="border-b border-theme-24 -mt-10 md:-mt-5 -mx-3 sm:-mx-8 px-3 sm:px-8 pt-3 md:pt-0 mb-10">
             <div className="top-bar-boxed flex items-center">

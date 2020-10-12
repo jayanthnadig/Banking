@@ -196,14 +196,27 @@ namespace ASNRTech.CoreService.Dashboard
         public WidgetRead[] DashbaordWidgetData { get; set; }
     }
 
-    public class OnScreenClick
+    public class OnScreenClick : GridSendEmailSMS
     {
+        //public string ClickedOnValue { get; set; }
+        public string[] GridColumns { get; set; }
+
+        public List<string[]> GridData { get; set; }
+    }
+
+    public class GridSendEmailSMS
+    {
+        public string SendType { get; set; }
         public string ClickLevel { get; set; }
         public int ClickedWidgetId { get; set; }
         public string ClickedOnValue { get; set; }
-        public string[] GridColumns { get; set; }
-        public List<string[]> GridData { get; set; }
         public SelectedGridInput[] GridInput { get; set; }
+        public string SendEmailOption { get; set; }
+        public string RecipientEmails { get; set; }
+        public string FileFormat { get; set; }
+        public string SendPhNo { get; set; }
+        public string DefaultSMSText { get; set; }
+        public string SMSColumnType { get; set; }
     }
 
     public class WidgetRead

@@ -4,6 +4,7 @@ import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import logo from "../../dist/images/logo.svg";
 import * as action_type from "../../actions/reportconfig/reportManagment";
+import Spinner from "../Notification/Spinner";
 
 class ReportDetails extends React.Component {
   constructor(props) {
@@ -30,6 +31,7 @@ class ReportDetails extends React.Component {
   render() {
     return (
       <>
+      <Spinner></Spinner>
         <div className="app">
          
          

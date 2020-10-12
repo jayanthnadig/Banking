@@ -155,7 +155,7 @@ namespace ASNRTech.CoreService.Dashboard
             }
         }
 
-        internal static async Task<ResponseBase> GridSendEmail(TeamHttpContext teamHttpContext, OnScreenClick details)
+        internal static async Task<ResponseBase> GridSendEmailSMS(TeamHttpContext teamHttpContext, GridSendEmailSMS details)
         {
             try
             {
@@ -163,43 +163,64 @@ namespace ASNRTech.CoreService.Dashboard
                 {
                     throw new ArgumentNullException(nameof(teamHttpContext));
                 }
-                List<OnScreenClick> GridData = await GenericService.GetGridDataAsync(teamHttpContext, details).ConfigureAwait(false);
-                var columnnames = from t in GridData[0].GridColumns.Where(x => x.Equals("email") || x.Equals("Email") || x.Equals("EMAIL") || x.Equals("EMail") || x.Equals("e-Mail") || x.Equals("e-mail") || x.Equals("E-mail") || x.Equals("E-Mail") || x.Contains("E-MAIL")) select t;
-
-                int indexOfEmail = -1;
-                foreach (var result in columnnames)
+                OnScreenClick objOnScreenClick = new OnScreenClick
                 {
-                    indexOfEmail = GridData[0].GridColumns.Select((item, i) => new
-                    {
-                        Item = item,
-                        Position = i
-                    }).Where(m => m.Item.Equals(result)).First().Position;
-                }
+                    ClickLevel = details.ClickLevel,
+                    ClickedWidgetId = details.ClickedWidgetId,
+                    ClickedOnValue = details.ClickedOnValue,
+                    GridInput = details.GridInput
+                };
 
-                if (indexOfEmail != -1)
+                List<OnScreenClick> GridData = await GenericService.GetGridDataAsync(teamHttpContext, objOnScreenClick).ConfigureAwait(false);
+
+                if (GridData.Count > 0)
                 {
-                    List<string> emaillist = new List<string>();
-
-                    foreach (var email in GridData[0].GridData)
+                    if (details.SendType == "Email")
                     {
-                        var list1 = email[indexOfEmail];
-                        if (!emaillist.Contains(list1))
-                            emaillist.Add(list1);
-                    }
-
-                    foreach (var emaildata in emaillist)
-                    {
-                        var userdatalist = GridData[0].GridData.Where(x => x.Contains(emaildata)).ToList();
-                        byte[] csvByteData = HelperMethods.ConvertObjectListToCsv(userdatalist, string.Join(",", GridData[0].GridColumns));
-                        string FileName = @"EmailFiles" + "\\" + teamHttpContext.ContextUserId + "_" + details.ClickLevel + "_" + DateTime.Now.ToString("ddMMyyyyhhmmss", CultureInfo.InvariantCulture) + ".csv";
-                        using (FileStream document = new FileStream(FileName, FileMode.CreateNew))
+                        if (details.SendEmailOption == "Send To")
                         {
-                            document.Write(csvByteData);
-                            document.Flush();
+                            //List<string> emailids = details.RecipientEmails.Split(',').ToList<string>();
+                            byte[] specificByteData = HelperMethods.ConvertObjectListToCsv(GridData[0].GridData.ToList(), string.Join(",", GridData[0].GridColumns));
+                            CreateDocumentForAttachment(teamHttpContext, details.ClickLevel, specificByteData, details.RecipientEmails);
                         }
-                        SendMail(emaildata, details.ClickLevel + "_" + "Data for " + DateTime.Now.ToString("dd-MM-yyyy hh:mm tt", CultureInfo.InvariantCulture), "Please find the attached report", FileName);
+                        else
+                        {
+                            var columnnames = from t in GridData[0].GridColumns.Where(x => x.Equals("email") || x.Equals("Email") || x.Equals("EMAIL") || x.Equals("EMail") || x.Equals("e-Mail") || x.Equals("e-mail") || x.Equals("E-mail") || x.Equals("E-Mail") || x.Contains("E-MAIL")) select t;
 
-                        File.Delete(FileName);
+                            int indexOfEmail = -1;
+                            foreach (var result in columnnames)
+                            {
+                                indexOfEmail = GridData[0].GridColumns.Select((item, i) => new
+                                {
+                                    Item = item,
+                                    Position = i
+                                }).Where(m => m.Item.Equals(result)).First().Position;
+                            }
+
+                            if (indexOfEmail != -1)
+                            {
+                                List<string> emaillist = new List<string>();
+
+                                foreach (var email in GridData[0].GridData)
+                                {
+                                    var list1 = email[indexOfEmail];
+                                    if (!emaillist.Contains(list1))
+                                        emaillist.Add(list1);
+                                }
+
+                                foreach (var emaildata in emaillist)
+                                {
+                                    var userdatalist = GridData[0].GridData.Where(x => x.Contains(emaildata)).ToList();
+                                    byte[] csvByteData = HelperMethods.ConvertObjectListToCsv(userdatalist, string.Join(",", GridData[0].GridColumns));
+
+                                    CreateDocumentForAttachment(teamHttpContext, details.ClickLevel, csvByteData, emaildata);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return null;
                     }
                 }
 
@@ -211,9 +232,22 @@ namespace ASNRTech.CoreService.Dashboard
             }
         }
 
+        private static void CreateDocumentForAttachment(TeamHttpContext teamHttpContext, string clicklevel, byte[] csvbyte, string emailid)
+        {
+            string FileName = @"EmailFiles" + "\\" + teamHttpContext.ContextUserId + "_" + clicklevel + "_" + DateTime.Now.ToString("ddMMyyyyhhmmss", CultureInfo.InvariantCulture) + ".csv";
+            using (FileStream document = new FileStream(FileName, FileMode.CreateNew))
+            {
+                document.Write(csvbyte);
+                document.Flush();
+            }
+            SendMail(emailid, clicklevel + "_" + "Data for " + DateTime.Now.ToString("dd-MM-yyyy hh:mm tt", CultureInfo.InvariantCulture), "Please find the attached report", FileName);
+
+            File.Delete(FileName);
+        }
+
         private static void SendMail(string email, string subject, string body, string path)
         {
-            //EmailService.SendAsync(email, subject, body, path);
+            EmailService.SendAsync(email, subject, body, path);
         }
     }
 }

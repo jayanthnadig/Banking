@@ -3,6 +3,7 @@ import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import Validation from "../../Common/Utility/Validation";
 import * as action_type from "../../actions/users/userManagement";
+import Spinner from "../Notification/Spinner";
 import logo from "../../dist/images/logo.png";
 class Login extends React.Component {
   constructor(props) {
@@ -46,6 +47,8 @@ class Login extends React.Component {
   }
   render() {
     return (
+      <>
+      <Spinner></Spinner>
       <div className="login validate-form" onKeyPress={(e)=>this.keyPress(e)}>
         <div className="container sm:px-10">
           <div className="block xl:grid grid-cols-2 gap-4">
@@ -146,6 +149,7 @@ class Login extends React.Component {
           </div>
         </div>
       </div>
+      </>
     );
   }
 }

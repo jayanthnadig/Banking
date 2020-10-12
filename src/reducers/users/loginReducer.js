@@ -27,6 +27,7 @@ const loginReducer = (state = initstate, action) => {
         _login.loginstatus = false;
         _login.loginmsg = "Failed";
       }
+      _login.loading=false;
       state = _login;
       return state;
 
@@ -54,6 +55,7 @@ const loginReducer = (state = initstate, action) => {
           : "User Updated Successfully";
       LookUpUtilities.SetNotification(true, _msg, 1);        
       }
+      _users.loading=false;
       state = _users;
       return state;
     case actionTypes.GET_USER_DETAILS:
@@ -63,6 +65,7 @@ const loginReducer = (state = initstate, action) => {
         _emptyusers.userDetails = JSON.parse(JSON.stringify(_emptyusers.userDetails));
         _emptyusers.userDetails=_fulluserDetails.data;        
       }
+      _emptyusers.loading=false;
       state = _emptyusers;
       return state;
   }

@@ -27,7 +27,8 @@ g_flag:"",
 schedulerNames:[],
 schedulerObject:{},
 dashboardDropdown:{},
-singleDashboardWidget:{}
+singleDashboardWidget:{},
+loading:false
 }
 
 export default initstate;

@@ -15,6 +15,9 @@ let _getuserprofile_data = (_res) => {
 let _set_notification = (_res) => {
   return { type: actionTypes.SET_NOTIFICATION, payload: _res };
 };
+let _set_spinner = (_res) => {
+  return { type: actionTypes.SET_SPINNER };
+};
 /*let _formprofile_object = (_res) => {
   return { type: actionTypes.PUT_USER_DETAILS, payload: _res };
 };
@@ -29,14 +32,17 @@ export const _userLogin = (_obj) => {
     try {
         return (dispatch) => {
           let _res = lookupUtility.LoginObject(_obj);
+          dispatch(_set_spinner());
           requestServices
             .post(API.loginUser, _res)
             .then((res) => {
               console.log("Response", res);
               dispatch(_profile_data(res));
+              dispatch(_set_spinner());
             })
             .catch((err) => {
               console.log("Error", err);
+              dispatch(_set_spinner());
             });
         };
       } catch (e) {
@@ -47,15 +53,18 @@ export const _post_userdata = (_obj, ) => {
   try {
     return (dispatch) => {
       let _res = lookupUtility.UserInsertObject(_obj);
+      dispatch(_set_spinner());
       requestServices
         .postquery(API.postuserDetails, _res,_userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_insertformprofile_object(res));
           dispatch(_set_notification({}));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -66,14 +75,17 @@ export const _get_userdata = (_id) => {
   try {
     return (dispatch) => {
       //let _res = lookupUtility.UserInsertObject(_obj, _props);
+      dispatch(_set_spinner());
       requestServices
         .get(API.getuserDetails, _id)
         .then((res) => {
           console.log("Response", res);
           dispatch(_getuserprofile_data(res));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {

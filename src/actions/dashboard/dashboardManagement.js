@@ -30,6 +30,9 @@ let _send_mail = (_res) => {
 let _set_notification = (_res) => {
   return { type: actionTypes.SET_NOTIFICATION, payload: _res };
 };
+let _set_spinner = (_res) => {
+  return { type: actionTypes.SET_SPINNER };
+};
 /*let _formprofile_object = (_res) => {
   return { type: actionTypes.PUT_USER_DETAILS, payload: _res };
 };
@@ -44,14 +47,17 @@ export const _getDashboardDropdowns = () => {
   try {    
     return (dispatch) => {
       //let _res = lookupUtility.LoginObject();
+      dispatch(_set_spinner());
       requestServices
         .get(API.allWidgetDropDowns, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_dashboard_ddropdown(res));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -63,14 +69,17 @@ export const _getDashboardWidgets = () => {
     let _userDetails = lookupUtility.LoginDetails();
     return (dispatch) => {
       //let _res = lookupUtility.LoginObject();
+      dispatch(_set_spinner());
       requestServices
         .get(API.loadDashboard, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_dashboard_data(res));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -81,15 +90,18 @@ export const _post_dashboardWidget = (_obj) => {
   try {
     return (dispatch) => {
       let _res = lookupUtility.PostDashboard(_obj);
+      dispatch(_set_spinner());
       requestServices
         .postquery(API.postDashboard, _res, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_new_dashboard_widget(res));        
           dispatch(_set_notification({}));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -101,6 +113,7 @@ export const _delete_dashboardWidget = (_id) => {
   try {
     return (dispatch) => {
       // let _res = lookupUtility.PostDashboard(_obj);
+      dispatch(_set_spinner());
       requestServices
         .deleteQuery(API.deleteDashboard, _userDetails.userid, _id)
         .then((res) => {
@@ -108,9 +121,11 @@ export const _delete_dashboardWidget = (_id) => {
           res.widgetId = _id;
           dispatch(_delete_dashboard_widget(res));
           dispatch(_set_notification({}));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -122,14 +137,17 @@ export const _edit_dashboardWidget = (_id) => {
   try {
     return (dispatch) => {
       // let _res = lookupUtility.PostDashboard(_obj);
+      dispatch(_set_spinner());
       requestServices
         .getWidgetData(API.editWidget, _userDetails.userid, _id)
         .then((res) => {
           console.log("Response", res);         
-          dispatch(_edit_dashboard_widget(res));         
+          dispatch(_edit_dashboard_widget(res));   
+          dispatch(_set_spinner());      
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -141,14 +159,17 @@ export const _post_drilldowndashboardWidget = (_obj) => {
   try {
     return (dispatch) => {
       //let _res = lookupUtility.PostDashboard(_obj);
+      dispatch(_set_spinner());
       requestServices
         .postquery(API.drilldownDashboard, _obj, _userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_drilldown_dashboard_widget(res));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -160,14 +181,17 @@ export const _sendmail_drilldowndashboardWidget = (_obj) => {
   try {
     return (dispatch) => {
       //let _res = lookupUtility.PostDashboard(_obj);
+      dispatch(_set_spinner());
       requestServices
         .postquery(API.gridEmailSend, _obj,_userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_send_mail(res));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {
@@ -177,15 +201,18 @@ export const _sendmail_drilldowndashboardWidget = (_obj) => {
 
 export const _user_logout = () => {
   try {
-    return (dispatch) => {      
+    return (dispatch) => {    
+      dispatch(_set_spinner());  
       requestServices
         .postquery(API.logoutUser,"",_userDetails.userid)
         .then((res) => {
           console.log("Response", res);
           dispatch(_logout_user(res));
+          dispatch(_set_spinner());
         })
         .catch((err) => {
           console.log("Error", err);
+          dispatch(_set_spinner());
         });
     };
   } catch (e) {

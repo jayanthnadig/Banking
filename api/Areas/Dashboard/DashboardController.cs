@@ -55,10 +55,10 @@ namespace ASNRTech.CoreService.Dashboard
         }
 
         [HttpPost]
-        [Route("v1/dashboard/gridsendemail/{userId}")]
-        public async Task<ResponseBase> Gridsendemail([FromBody]OnScreenClick widgetclick)
+        [Route("v1/dashboard/gridsendemailsms/{userId}")]
+        public async Task<ResponseBase> GridSendEmailSMS([FromBody]GridSendEmailSMS sendemail)
         {
-            return await DashboardService.GridSendEmail(new TeamHttpContext(HttpContext), widgetclick).ConfigureAwait(false);
+            return await DashboardService.GridSendEmailSMS(new TeamHttpContext(HttpContext), sendemail).ConfigureAwait(false);
         }
     }
 }

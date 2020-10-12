@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import LookUpUtilities from "../../Common/Utility/LookUpDataMapping";
 import * as action_type from "../../actions/dashboard/dashboardManagement";
 import logo from "../../dist/images/logo.png";
+import Spinner from "../Notification/Spinner";
 
 class Report extends React.Component {
   constructor(props) {
@@ -12,18 +13,19 @@ class Report extends React.Component {
       header: "",
       level: 0,
       send_mail_pop: false,
-      reportDeliveryMode: "email",
+      reportDeliveryMode: "Email",
       startIndex: 0,
       endIndex: 11,
       pagination: false,
       gridlength: 0,
       emailOption: "1",
+      phoneOption: "1",
       emailReceipient: "",
       fileFormat: "",
       phoneNo: "",
       defaultSMS: "",
       gridColumnName: "",
-      emailReceipientError:false
+      emailReceipientError: false,
     };
     this.mailobj = new Object();
   }
@@ -43,6 +45,7 @@ class Report extends React.Component {
       header: _obj.clickedOnValue,
       level: _params[_params.length - 4],
     });
+    _obj.sendType = this.state.reportDeliveryMode;
     this.mailobj = _obj;
     this.props.GET_DASHBOARD_DRILLDOWN(_obj);
   }
@@ -51,7 +54,7 @@ class Report extends React.Component {
   componentWillReceiveProps(nextProps) {
     console.log(nextProps);
     if (nextProps.drilldown_data.length) {
-      this.props.SEND_DASHBOARD_MAIL(this.mailobj);
+      // this.props.SEND_DASHBOARD_MAIL(this.mailobj);
       if (nextProps.drilldown_data[0].gridData.length > 20)
         this.setState({
           pagination: true,
@@ -71,13 +74,13 @@ class Report extends React.Component {
     let _name = e.target.name;
     let _value = "";
     if (e.target.type == "checkbox" || e.target.type == "radio")
-      _value = e.target.checked;      
+      _value = e.target.checked;
     else _value = e.target.value;
     this.setState((prevState) => {
       let _tempField = Object.assign({}, prevState);
       if (_name === "reportDeliveryMode") {
-        _tempField[_name] = _tempField[_name] === "email" ? "sms" : "email";
-      }else if (_name.includes("Dummy")) {
+        _tempField[_name] = _tempField[_name] === "Email" ? "sms" : "Email";
+      } else if (_name.includes("Dummy")) {
         _tempField[_name] = _value;
         if (_value.indexOf(";") !== -1) {
           if (_emailreg.test(_value.trim())) {
@@ -206,10 +209,24 @@ class Report extends React.Component {
       link.click();
     }
   }
+  sendMailOrSms() {
+    this.mailobj["SendType"] = this.state.reportDeliveryMode;
+    this.mailobj["sendEmailOption"] =
+      this.state.emailOption === "2" ? "Send To" : "Grid";
+    this.mailobj["recipientEmails"] = this.state.emailReceipient;
+    this.mailobj["fileFormat"] = this.state.fileFormat;
+    this.mailobj["sendPhNo"] = this.state.phoneNo;
+    this.mailobj["defaultSMSText"] = this.state.defaultSMS;
+    this.mailobj["smsColumnType"] = this.state.gridColumnName;
+    this.mailobj.gridData = this.props.drilldown_data[0].gridData;
+    this.mailobj.gridColumns = this.props.drilldown_data[0].gridColumns;
+    this.props.SEND_DASHBOARD_MAIL(this.mailobj);
+    this.sendMailPop(false);
+  }
   sendMailPop(_flag) {
     this.setState({
       send_mail_pop: _flag,
-      reportDeliveryMode: "email",
+      reportDeliveryMode: "Email",
     });
   }
   logout() {
@@ -272,6 +289,7 @@ class Report extends React.Component {
   render() {
     return (
       <>
+        <Spinner></Spinner>
         <div className="app">
           <div className="border border-theme-24 -mt-10 md:-mt-5 -mx-3 sm:-mx-8 px-3 sm:px-8 pt-3 md:pt-0 mb-10">
             <div className="top-bar-boxed flex items-center">
@@ -540,7 +558,7 @@ class Report extends React.Component {
                     type="radio"
                     name="reportDeliveryMode"
                     checked={
-                      this.state.reportDeliveryMode === "email" ? true : false
+                      this.state.reportDeliveryMode === "Email" ? true : false
                     }
                     onChange={(e) => this.handleChange(e)}
                     class="input border mr-2"
@@ -559,7 +577,7 @@ class Report extends React.Component {
                     type="radio"
                     name="reportDeliveryMode"
                     checked={
-                      this.state.reportDeliveryMode !== "email" ? true : false
+                      this.state.reportDeliveryMode !== "Email" ? true : false
                     }
                     onChange={(e) => this.handleChange(e)}
                     class="input border mr-2"
@@ -575,7 +593,7 @@ class Report extends React.Component {
             </div>{" "}
             <div
               className={`flex flex-col sm:flex-row items-center mt-3 ${
-                this.state.reportDeliveryMode !== "email" ? "hide" : ""
+                this.state.reportDeliveryMode !== "Email" ? "hide" : ""
               }`}
             >
               {" "}
@@ -594,7 +612,7 @@ class Report extends React.Component {
             </div>{" "}
             <div
               className={`flex flex-col sm:flex-row items-center mt-3 ${
-                this.state.reportDeliveryMode !== "email" ||
+                this.state.reportDeliveryMode !== "Email" ||
                 this.state.emailOption === "1"
                   ? "hide"
                   : ""
@@ -644,7 +662,7 @@ class Report extends React.Component {
             </div>{" "}
             <div
               className={`flex flex-col sm:flex-row items-center mt-3 ${
-                this.state.reportDeliveryMode !== "email" ? "hide" : ""
+                this.state.reportDeliveryMode !== "Email" ? "hide" : ""
               }`}
             >
               {" "}
@@ -663,7 +681,29 @@ class Report extends React.Component {
             </div>{" "}
             <div
               className={`flex flex-col sm:flex-row items-center mt-3 ${
-                this.state.reportDeliveryMode === "email" ? "hide" : ""
+                this.state.reportDeliveryMode === "Email" ? "hide" : ""
+              }`}
+            >
+              {" "}
+              <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                Phone Option
+              </label>{" "}
+              <select
+                class="select2 w-full input w-full border mt-2 flex-1"
+                name="phoneOption"
+                value={this.state.phoneOption}
+                onChange={(e) => this.handleChange(e)}
+              >
+                <option value="1">Grid Users</option>
+                <option value="2">Specific Users</option>
+              </select>{" "}
+            </div>{" "}
+            <div
+              className={`flex flex-col sm:flex-row items-center mt-3 ${
+                this.state.reportDeliveryMode === "Email" ||
+                this.state.phoneOption === "1"
+                  ? "hide"
+                  : ""
               }`}
             >
               <label class="w-full sm:w-20 sm:text-right sm:mr-5">
@@ -682,7 +722,7 @@ class Report extends React.Component {
             </div>{" "}
             <div
               className={`flex flex-col sm:flex-row items-center mt-3 ${
-                this.state.reportDeliveryMode === "email" ? "hide" : ""
+                this.state.reportDeliveryMode === "Email" ? "hide" : ""
               }`}
             >
               <label class="w-full sm:w-20 sm:text-right sm:mr-5">
@@ -701,7 +741,7 @@ class Report extends React.Component {
             </div>{" "}
             <div
               className={`flex flex-col sm:flex-row items-center mt-3 ${
-                this.state.reportDeliveryMode === "email" ? "hide" : ""
+                this.state.reportDeliveryMode === "Email" ? "hide" : ""
               }`}
             >
               <label class="w-full sm:w-20 sm:text-right sm:mr-5">
@@ -721,7 +761,7 @@ class Report extends React.Component {
               <button
                 type="button"
                 class="button bg-theme-1 text-white"
-                onClick={() => this.sendMailPop(false)}
+                onClick={() => this.sendMailOrSms()}
               >
                 Send
               </button>{" "}

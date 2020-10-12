@@ -29,8 +29,16 @@ const reportReducer = (state = initstate, action) => {
       if (_viewreport.code === 200) {
         view_details.report_time = new Date().getMilliseconds();
         view_details.report_details = _viewreport.data;
-        if (_viewreport.data.length)
+        if (_viewreport.data.length){
           view_details.report_object.reportId = _viewreport.data[0].reportId;
+        }else{
+          view_details.report_object = {};
+         // view_details.report_object.reportId = _viewreport.data[0].reportId;
+          view_details.report_details = [];         
+        }
+      } else {
+        view_details.report_details = [];
+        view_details.report_object = {};
       }
       state = view_details;
       return state;

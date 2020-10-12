@@ -29,6 +29,7 @@ class Dashboard extends React.Component {
       dashboardUserPermissionError: false,
       dashboardEmailFormat: "",
       widgetSchedulerType: "0",
+      widgetUseGridEmail: false,
       widgetSchedulerEmailIDs: "",
       widgetSchedulerEmailIDsDummy: "",
       widgetSchedulerEmailIDsError: false,
@@ -38,19 +39,23 @@ class Dashboard extends React.Component {
       dashbaordQueryL4: "",
       level1ConnectionString: "",
       level1SchedulerType: "0",
+      l1UseGridEmail: "1",
       l1SchedulerEmailIDs: "",
       l1SchedulerEmailIDsDummy: "",
       l1SchedulerEmailIDsError: false,
       level2ConnectionString: "",
       level2SchedulerType: "0",
+      l2UseGridEmail: "1",
       l2SchedulerEmailIDs: "",
       l2SchedulerEmailIDsDummy: "",
       l2SchedulerEmailIDsError: false,
+      l3UseGridEmail: "1",
       level3ConnectionString: "",
       level3SchedulerType: "0",
       l3SchedulerEmailIDs: "",
       l3SchedulerEmailIDsDummy: "",
       l3SchedulerEmailIDsError: false,
+      l4UseGridEmail: "1",
       level4ConnectionString: "",
       level4SchedulerType: "0",
       widgetConnectionString: "",
@@ -64,6 +69,16 @@ class Dashboard extends React.Component {
       l2error: false,
       l3error: false,
       l4error: false,
+      widgetEmailSubject: "",
+      widgetEmailBody: "",
+      l1EmailSubject: "",
+      l1EmailBody: "",
+      l2EmailSubject: "",
+      l2EmailBody: "",
+      l3EmailSubject: "",
+      l3EmailBody: "",
+      l4EmailSubject: "",
+      l4EmailBody: "",
 
       selectOpen: false,
     };
@@ -114,26 +129,41 @@ class Dashboard extends React.Component {
         _tempField.dashboardChartType = _obj.dashboardChartType;
         _tempField.dashboardUserPermission = _obj.dashboardUserPermission;
         _tempField.widgetSchedulerEmailIDs = _obj.widgetSchedulerEmailIDs;
+        _tempField.widgetUseGridEmail = _obj.widgetUseGridEmail;
         _tempField.widgetSchedulerType = _obj.widgetSchedulerType;
         _tempField.dashboardEmailFormat = _obj.dashboardEmailFormat;
         _tempField.widgetQuery = _obj.widgetQuery;
         _tempField.dashbaordQueryL1 = _obj.dashbaordQueryL1;
         _tempField.level1SchedulerType = _obj.level1SchedulerType;
+        _tempField.l1UseGridEmail = _obj.l1UseGridEmail.toString();
         _tempField.l1SchedulerEmailIDs = _obj.l1SchedulerEmailIDs;
         _tempField.dashbaordQueryL2 = _obj.dashbaordQueryL2;
         _tempField.level2SchedulerType = _obj.level2SchedulerType;
+        _tempField.l2UseGridEmail = _obj.l2UseGridEmail.toString();
         _tempField.l2SchedulerEmailIDs = _obj.l2SchedulerEmailIDs;
         _tempField.dashbaordQueryL3 = _obj.dashbaordQueryL3;
         _tempField.level3SchedulerType = _obj.level3SchedulerType;
+        _tempField.l3UseGridEmail = _obj.l3UseGridEmail.toString();
         _tempField.l3SchedulerEmailIDs = _obj.l3SchedulerEmailIDs;
         _tempField.dashbaordQueryL4 = _obj.dashbaordQueryL4;
         _tempField.level4SchedulerType = _obj.level4SchedulerType;
+        _tempField.l4UseGridEmail = _obj.l4UseGridEmail.toString();
         _tempField.l4SchedulerEmailIDs = _obj.l4SchedulerEmailIDs;
         _tempField.widgetConnectionString = _obj.widgetConnectionString;
         _tempField.level1ConnectionString = _obj.level1ConnectionString;
         _tempField.level2ConnectionString = _obj.level2ConnectionString;
         _tempField.level3ConnectionString = _obj.level3ConnectionString;
         _tempField.level4ConnectionString = _obj.level4ConnectionString;
+        _tempField.widgetEmailSubject = _obj.widgetEmailSubject;
+        _tempField.widgetEmailBody = _obj.widgetEmailBody;
+        _tempField.l1EmailSubject = _obj.l1EmailSubject;
+        _tempField.l1EmailBody = _obj.l1EmailBody;
+        _tempField.l2EmailSubject = _obj.l2EmailSubject;
+        _tempField.l2EmailBody = _obj.l2EmailBody;
+        _tempField.l3EmailSubject = _obj.l3EmailSubject;
+        _tempField.l3EmailBody = _obj.l3EmailBody;
+        _tempField.l4EmailSubject = _obj.l4EmailSubject;
+        _tempField.l4EmailBody = _obj.l4EmailBody;
       } else {
         _tempField.dashboardWidgetName = "";
         _tempField.widgetId = -1;
@@ -143,11 +173,16 @@ class Dashboard extends React.Component {
         _tempField.dashbaordQueryL2 = "";
         _tempField.dashbaordQueryL3 = "";
         _tempField.dashbaordQueryL4 = "";
+        _tempField.widgetUseGridEmail = false;
         _tempField.level1ConnectionString = "PgAdmin4ConnectionString";
         _tempField.level2ConnectionString = "PgAdmin4ConnectionString";
         _tempField.level3ConnectionString = "PgAdmin4ConnectionString";
         _tempField.level4ConnectionString = "PgAdmin4ConnectionString";
         _tempField.widgetConnectionString = "PgAdmin4ConnectionString";
+        _tempField.l1UseGridEmail = "true";
+        _tempField.l2UseGridEmail = "true";
+        _tempField.l3UseGridEmail = "true";
+        _tempField.l4UseGridEmail = "true";
         _tempField.level1SchedulerType = "0";
         _tempField.level2SchedulerType = "0";
         _tempField.level3SchedulerType = "0";
@@ -168,6 +203,16 @@ class Dashboard extends React.Component {
         _tempField.l2SchedulerEmailIDsError = false;
         _tempField.l3SchedulerEmailIDsError = false;
         _tempField.l4SchedulerEmailIDsError = false;
+        _tempField.widgetEmailSubject = "";
+        _tempField.widgetEmailBody = "";
+        _tempField.l1EmailSubject = "";
+        _tempField.l1EmailBody = "";
+        _tempField.l2EmailSubject = "";
+        _tempField.l2EmailBody = "";
+        _tempField.l3EmailSubject = "";
+        _tempField.l3EmailBody = "";
+        _tempField.l4EmailSubject = "";
+        _tempField.l4EmailBody = "";
       }
       return _tempField;
     });
@@ -361,15 +406,15 @@ class Dashboard extends React.Component {
       this.state.dashboardWidgetName.trim() === "" ||
       this.state.widgetQuery.trim() === "" ||
       this.state.dashboardUserPermission === "" ||
-      (this.state.widgetSchedulerType !== "0" &&
+      (this.state.widgetUseGridEmail !== "true" &&
         this.state.widgetSchedulerEmailIDs === "") ||
-      (this.state.level1SchedulerType !== "0" &&
+      (this.state.l1UseGridEmail !== "true" &&
         this.state.l1SchedulerEmailIDs === "") ||
-      (this.state.level2SchedulerType !== "0" &&
+      (this.state.l2UseGridEmail !== "true" &&
         this.state.l2SchedulerEmailIDs === "") ||
-      (this.state.level3SchedulerType !== "0" &&
+      (this.state.l3UseGridEmail !== "true" &&
         this.state.l3SchedulerEmailIDs === "") ||
-      (this.state.level4SchedulerType !== "0" &&
+      (this.state.l4UseGridEmail !== "true" &&
         this.state.l4SchedulerEmailIDs === "")
     ) {
       this.setState({
@@ -379,27 +424,27 @@ class Dashboard extends React.Component {
         dashboardUserPermissionError:
           this.state.dashboardUserPermission.trim() === "" ? true : false,
         widgetSchedulerEmailIDsError:
-          this.state.widgetSchedulerType !== "0" &&
+          this.state.widgetUseGridEmail !== "true" &&
           this.state.widgetSchedulerEmailIDs === ""
             ? true
             : false,
-        l1SchedulerEmailIDsError:
-          this.state.level1SchedulerType !== "0" &&
+        l1SchedulerEmailIDsError:          
+          this.state.l1UseGridEmail !== "true" &&
           this.state.l1SchedulerEmailIDs === ""
             ? true
             : false,
-        l2SchedulerEmailIDsError:
-          this.state.level2SchedulerType !== "0" &&
+        l2SchedulerEmailIDsError:          
+          this.state.l2UseGridEmail !== "true" &&
           this.state.l2SchedulerEmailIDs === ""
             ? true
             : false,
-        l3SchedulerEmailIDsError:
-          this.state.level3SchedulerType !== "0" &&
+        l3SchedulerEmailIDsError:         
+          this.state.l3UseGridEmail !== "true" &&
           this.state.l3SchedulerEmailIDs === ""
             ? true
             : false,
-        l4SchedulerEmailIDsError:
-          this.state.level4SchedulerType !== "0" &&
+        l4SchedulerEmailIDsError:        
+          this.state.l4UseGridEmail !== "true" &&
           this.state.l4SchedulerEmailIDs === ""
             ? true
             : false,
@@ -592,7 +637,7 @@ class Dashboard extends React.Component {
   render() {
     return (
       <>
-        {/* <Spinner></Spinner> */}
+        <Spinner></Spinner>
         <div className="app">
           <div className="border-b border-theme-24 -mt-10 md:-mt-5 -mx-3 sm:-mx-8 px-3 sm:px-8 pt-3 md:pt-0 mb-10">
             <div className="top-bar-boxed flex items-center">
@@ -1017,7 +1062,13 @@ class Dashboard extends React.Component {
                               {this.bindDropdownLookup("schedulers")}
                             </select>{" "}
                           </div>{" "}
-                          <div class="flex flex-col sm:flex-row items-center mt-3">
+                          <div
+                            className={`flex flex-col sm:flex-row items-center mt-3 ${
+                              this.state.widgetUseGridEmail === true
+                                ? "hide"
+                                : "show"
+                            }`}
+                          >
                             {" "}
                             <label class="w-full sm:w-20 sm:text-right sm:mr-5">
                               Widget Scheduling EmailIds
@@ -1067,6 +1118,34 @@ class Dashboard extends React.Component {
                                 }
                               />{" "}
                             </div>
+                          </div>{" "}
+                          <div class="flex flex-col sm:flex-row items-center">
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Widget Email Subject
+                            </label>{" "}
+                            <input
+                              type="text"
+                              className={`input w-full border mt-2 flex-1 `}
+                              name="widgetEmailSubject"
+                              placeholder="Widget Email Subject"
+                              value={this.state.widgetEmailSubject}
+                              onChange={(e) => this.handleChange(e)}
+                            />{" "}
+                          </div>{" "}
+                          <div class="flex flex-col sm:flex-row items-center">
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Widget Email Body
+                            </label>{" "}
+                            <textarea
+                              className={`input w-full border mt-2 flex-1 `}
+                              placeholder="Email Body"
+                              name="widgetEmailBody"
+                              value={this.state.widgetEmailBody}
+                              onChange={(e) => this.handleChange(e)}
+                              style={{ height: "100px" }}
+                            />{" "}
                           </div>{" "}
                           <div class="flex flex-col sm:flex-row items-center">
                             {" "}
@@ -1155,7 +1234,30 @@ class Dashboard extends React.Component {
                               {this.bindDropdownLookup("schedulers")}
                             </select>{" "}
                           </div>{" "}
-                          <div class="flex flex-col sm:flex-row items-center mt-3">
+                          <div
+                            className={`flex flex-col sm:flex-row items-center mt-3 `}
+                          >
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Level 1 Email Option
+                            </label>{" "}
+                            <select
+                              class="select2 w-full input w-full border mt-2 flex-1"
+                              name="l1UseGridEmail"
+                              value={this.state.l1UseGridEmail}
+                              onChange={(e) => this.handleChange(e)}
+                            >
+                              <option value="true">Grid Users</option>
+                              <option value="false">Specific Users</option>
+                            </select>{" "}
+                          </div>{" "}
+                          <div
+                            className={`flex flex-col sm:flex-row items-center mt-3 ${
+                              this.state.l1UseGridEmail === "true"
+                                ? "hide"
+                                : "show"
+                            }`}
+                          >
                             {" "}
                             <label class="w-full sm:w-20 sm:text-right sm:mr-5">
                               Level 1 Scheduling EmailIds
@@ -1205,6 +1307,34 @@ class Dashboard extends React.Component {
                                 }
                               />{" "}
                             </div>
+                          </div>{" "}
+                          <div class="flex flex-col sm:flex-row items-center">
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Level1 Email Subject
+                            </label>{" "}
+                            <input
+                              type="text"
+                              className={`input w-full border mt-2 flex-1 `}
+                              name="l1EmailSubject"
+                              placeholder="Level1 Email Subject"
+                              value={this.state.l1EmailSubject}
+                              onChange={(e) => this.handleChange(e)}
+                            />{" "}
+                          </div>{" "}
+                          <div class="flex flex-col sm:flex-row items-center">
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Level1 Email Body
+                            </label>{" "}
+                            <textarea
+                              className={`input w-full border mt-2 flex-1 `}
+                              placeholder="Email Body"
+                              name="l1EmailBody"
+                              value={this.state.l1EmailBody}
+                              onChange={(e) => this.handleChange(e)}
+                              style={{ height: "100px" }}
+                            />{" "}
                           </div>{" "}
                           <div class="flex flex-col sm:flex-row items-center">
                             {" "}
@@ -1279,7 +1409,30 @@ class Dashboard extends React.Component {
                               {this.bindDropdownLookup("schedulers")}
                             </select>{" "}
                           </div>{" "}
-                          <div class="flex flex-col sm:flex-row items-center mt-3">
+                          <div
+                            className={`flex flex-col sm:flex-row items-center mt-3 `}
+                          >
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Level 2 Email Option
+                            </label>{" "}
+                            <select
+                              class="select2 w-full input w-full border mt-2 flex-1"
+                              name="l2UseGridEmail"
+                              value={this.state.l2UseGridEmail}
+                              onChange={(e) => this.handleChange(e)}
+                            >
+                              <option value="true">Grid Users</option>
+                              <option value="false">Specific Users</option>
+                            </select>{" "}
+                          </div>{" "}
+                          <div
+                            className={`flex flex-col sm:flex-row items-center mt-3 ${
+                              this.state.l2UseGridEmail === "true"
+                                ? "hide"
+                                : "show"
+                            }`}
+                          >
                             {" "}
                             <label class="w-full sm:w-20 sm:text-right sm:mr-5">
                               Level 2 Scheduling EmailIds
@@ -1329,6 +1482,34 @@ class Dashboard extends React.Component {
                                 }
                               />{" "}
                             </div>
+                          </div>{" "}
+                          <div class="flex flex-col sm:flex-row items-center">
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Level2 Email Subject
+                            </label>{" "}
+                            <input
+                              type="text"
+                              className={`input w-full border mt-2 flex-1 `}
+                              name="l2EmailSubject"
+                              placeholder="Level2 Email Subject"
+                              value={this.state.l2EmailSubject}
+                              onChange={(e) => this.handleChange(e)}
+                            />{" "}
+                          </div>{" "}
+                          <div class="flex flex-col sm:flex-row items-center">
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Level2 Email Body
+                            </label>{" "}
+                            <textarea
+                              className={`input w-full border mt-2 flex-1 `}
+                              placeholder="Email Body"
+                              name="l2EmailBody"
+                              value={this.state.l2EmailBody}
+                              onChange={(e) => this.handleChange(e)}
+                              style={{ height: "100px" }}
+                            />{" "}
                           </div>{" "}
                           <div class="flex flex-col sm:flex-row items-center">
                             {" "}
@@ -1399,7 +1580,30 @@ class Dashboard extends React.Component {
                               {this.bindDropdownLookup("schedulers")}
                             </select>{" "}
                           </div>{" "}
-                          <div class="flex flex-col sm:flex-row items-center mt-3">
+                          <div
+                            className={`flex flex-col sm:flex-row items-center mt-3 `}
+                          >
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Level 3 Email Option
+                            </label>{" "}
+                            <select
+                              class="select2 w-full input w-full border mt-2 flex-1"
+                              name="l3UseGridEmail"
+                              value={this.state.l3UseGridEmail}
+                              onChange={(e) => this.handleChange(e)}
+                            >
+                              <option value="true">Grid Users</option>
+                              <option value="false">Specific Users</option>
+                            </select>{" "}
+                          </div>{" "}
+                          <div
+                            className={`flex flex-col sm:flex-row items-center mt-3 ${
+                              this.state.l3UseGridEmail === "true"
+                                ? "hide"
+                                : "show"
+                            }`}
+                          >
                             {" "}
                             <label class="w-full sm:w-20 sm:text-right sm:mr-5">
                               Level 3 Scheduling EmailIds
@@ -1449,6 +1653,34 @@ class Dashboard extends React.Component {
                                 }
                               />{" "}
                             </div>
+                          </div>{" "}
+                          <div class="flex flex-col sm:flex-row items-center">
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Level3 Email Subject
+                            </label>{" "}
+                            <input
+                              type="text"
+                              className={`input w-full border mt-2 flex-1 `}
+                              name="l3EmailSubject"
+                              placeholder="Level3 Email Subject"
+                              value={this.state.l3EmailSubject}
+                              onChange={(e) => this.handleChange(e)}
+                            />{" "}
+                          </div>{" "}
+                          <div class="flex flex-col sm:flex-row items-center">
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Level3 Email Body
+                            </label>{" "}
+                            <textarea
+                              className={`input w-full border mt-2 flex-1 `}
+                              placeholder="Email Body"
+                              name="l3EmailBody"
+                              value={this.state.l3EmailBody}
+                              onChange={(e) => this.handleChange(e)}
+                              style={{ height: "100px" }}
+                            />{" "}
                           </div>{" "}
                           <div class="flex flex-col sm:flex-row items-center">
                             {" "}
@@ -1519,7 +1751,30 @@ class Dashboard extends React.Component {
                               {this.bindDropdownLookup("schedulers")}
                             </select>{" "}
                           </div>{" "}
-                          <div class="flex flex-col sm:flex-row items-center mt-3">
+                          <div
+                            className={`flex flex-col sm:flex-row items-center mt-3 `}
+                          >
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Level 4 Email Option
+                            </label>{" "}
+                            <select
+                              class="select2 w-full input w-full border mt-2 flex-1"
+                              name="l4UseGridEmail"
+                              value={this.state.l4UseGridEmail}
+                              onChange={(e) => this.handleChange(e)}
+                            >
+                              <option value="true">Grid Users</option>
+                              <option value="false">Specific Users</option>
+                            </select>{" "}
+                          </div>{" "}
+                          <div
+                            className={`flex flex-col sm:flex-row items-center mt-3 ${
+                              this.state.l4UseGridEmail === "true"
+                                ? "hide"
+                                : "show"
+                            }`}
+                          >
                             {" "}
                             <label class="w-full sm:w-20 sm:text-right sm:mr-5">
                               Level 4 Scheduling EmailIds
@@ -1570,6 +1825,34 @@ class Dashboard extends React.Component {
                                 }
                               />{" "}
                             </div>
+                          </div>{" "}
+                          <div class="flex flex-col sm:flex-row items-center">
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Level4 Email Subject
+                            </label>{" "}
+                            <input
+                              type="text"
+                              className={`input w-full border mt-2 flex-1 `}
+                              name="l4EmailSubject"
+                              placeholder="Level4 Email Subject"
+                              value={this.state.l4EmailSubject}
+                              onChange={(e) => this.handleChange(e)}
+                            />{" "}
+                          </div>{" "}
+                          <div class="flex flex-col sm:flex-row items-center">
+                            {" "}
+                            <label class="w-full sm:w-20 sm:text-right sm:mr-5">
+                              Level4 Email Body
+                            </label>{" "}
+                            <textarea
+                              className={`input w-full border mt-2 flex-1 `}
+                              placeholder="Email Body"
+                              name="l4EmailBody"
+                              value={this.state.l4EmailBody}
+                              onChange={(e) => this.handleChange(e)}
+                              style={{ height: "100px" }}
+                            />{" "}
                           </div>{" "}
                           <div class="flex flex-col sm:flex-row items-center">
                             {" "}

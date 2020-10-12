@@ -119,6 +119,13 @@
   left: 260px;
   top: 88px;
 }
+.report_topnav ul li{
+  cursor: pointer;
+}
+.c_pointer{
+  cursor: pointer;
+  color:#000!important;
+}
 .report_content{
   top: 20px;
   position: relative;
@@ -449,6 +456,9 @@ width: 300px;
   padding-right: 10px;
   float: left;
   
+}
+.feather{
+  cursor: pointer;
 }
 @media (min-width: 640px){
   .widget_model_content .sm\:w-20 {
